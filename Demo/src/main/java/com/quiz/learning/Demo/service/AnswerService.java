@@ -1,6 +1,7 @@
 package com.quiz.learning.Demo.service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
@@ -17,6 +18,11 @@ public class AnswerService {
 
     public List<Answer> handleFetchAllAnswer() {
         return this.answerRepository.findAll();
+    }
+
+    public List<Answer> handleFetchAllCorrectedAnswers() {
+        return this.answerRepository.findAll().stream().filter(answer -> answer.isCorrect())
+                .collect(Collectors.toList());
     }
 
 }
