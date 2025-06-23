@@ -1,0 +1,40 @@
+React do Facebook phát triển
+React có cơ chế gọi là Hot Reloading giúp trang web không cần refresh
+"Toolchain" là một tập hợp công cụ đi kèm giúp bạn:
+
+- Viết code (React)
+
+- Biên dịch/transpile (Babel)
+
+- Đóng gói (Webpack)
+
+- Lint/check lỗi
+
+- Chạy thử
+
+- Build ra bản chạy thật
+
+
+File README là file phải đọc đầu tiên khi tham gia 1 dự án
+
+file package-lock.json được sinh ra khi ta chạy câu lệnh npm i hay npm install
+ngoài ra file này còn là một thể hiện đầy đủ hơn của file package.json
+
+file index.js là file quan trọng nhất, là nơi bắt nguồn của tất cả các component của react và là nơi chạy đầu tiên khi start
+
+reportWebVitals là file để đo lường hiệu năng -> tối ưu hóa
+
+file public/robots.txt là file được google dùng để xếp hạng trang web hay để sắp xếp trang web lên
+
+React là SPA chỉ chạy 1 file duy nhất là file index.html
+
+SSR: Server-Side Rendering: Khi người dùng truy cập vào 1 đường dẫn sẽ gửi 1 request đến server, server sẽ xem xét trang người dùng muốn xem và sẽ trả
+ra một response là tài nguyên trên trang đó tức là file .html tương tứng. Server nắm vai trò chủ chốt
+
+SPA thì không phụ thuộc nhiều vào Server mà phụ thuộc chủ yếu vào Trình Duyệt, mỗi lần đổi đường dẫn không tự động reload tạo ra cảm giác mượt mà hơn
+file duy nhất được request và response là file index.html
+
+
+ npm install --save-exact sass@1.53.0
+    + Để tạo đúng phiên bản
+    + Không tự nâng phân bản để đảm bảo tính bền vững của code

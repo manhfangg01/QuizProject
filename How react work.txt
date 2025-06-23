@@ -1,0 +1,3 @@
+1. Dịch code - Babel compiler => code nhiều version của Java Script
+
+2. Tối ưu code, nén thành 1 vài file và nhúng với div root trong file index.html: css / js => Dùng Webpack

@@ -1,0 +1,13 @@
+-   Chức năng	Mô tả
+
+-   Đăng ký / Đăng nhập	Có thể dùng JWT hoặc session
+
+-   Xem danh sách bài Quiz (đề thi)	Lấy từ database
+
+-   Làm bài Quiz	Gửi danh sách đáp án về backend
+
+-   Tính điểm và lưu kết quả	Lưu trong DB, hiển thị lại
+
+-   Quản lý câu hỏi / đề thi	(Tùy vai trò: Admin thêm đề thi, question)
+
+-   Xem lịch sử làm bài	Mỗi user có nhiều kết quả
