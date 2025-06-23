@@ -1,6 +1,7 @@
 package com.quiz.learning.Demo.service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -23,6 +24,10 @@ public class AnswerService {
     public List<Answer> handleFetchAllCorrectedAnswers() {
         return this.answerRepository.findAll().stream().filter(answer -> answer.isCorrect())
                 .collect(Collectors.toList());
+    }
+
+    public Optional<Answer> handleFetchAnswerById(long id) {
+        return this.answerRepository.findById(id);
     }
 
 }
