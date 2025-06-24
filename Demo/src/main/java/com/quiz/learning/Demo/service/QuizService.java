@@ -50,11 +50,9 @@ public class QuizService {
         return this.quizRepository.save(quiz);
     }
 
-    public Quiz setProperties(Quiz quiz1, Quiz quiz2) {
+    private Quiz setProperties(Quiz quiz1, Quiz quiz2) {
         quiz1.setTitle(quiz2.getTitle());
-        quiz1.setResults(quiz2.getResults());
         quiz1.setSubjectName(quiz2.getSubjectName());
-        quiz1.setTimeLimit(quiz2.getTimeLimit());
         quiz1.setQuestions(quiz2.getQuestions());
         quiz1.setDifficulty(quiz2.getDifficulty());
         quiz1.setTotalParticipants(quiz2.getTotalParticipants());

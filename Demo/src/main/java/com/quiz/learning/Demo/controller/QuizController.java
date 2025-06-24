@@ -63,7 +63,8 @@ public class QuizController {
 
     @DeleteMapping("admin/quizzies/delete/{id}")
     @ApiMessage("Xóa 1 Quiz")
-    public ResponseEntity<Void> deleteQuiz(@PathVariable("id") long id) {
+    public ResponseEntity<Void> deleteQuiz(@PathVariable("id") long id) throws ObjectNotFound {
+        this.quizService.handleDeleteQuiz(id);
         return ResponseEntity.ok().body(null);
     }
 
