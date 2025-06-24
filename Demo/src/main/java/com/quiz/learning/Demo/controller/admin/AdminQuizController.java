@@ -1,4 +1,4 @@
-package com.quiz.learning.Demo.controller;
+package com.quiz.learning.Demo.controller.admin;
 
 import java.util.List;
 import java.util.Optional;
@@ -6,11 +6,10 @@ import java.util.Optional;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.quiz.learning.Demo.domain.Quiz;
-import com.quiz.learning.Demo.domain.response.DisplayClientDTO;
-import com.quiz.learning.Demo.domain.response.FetchClientDTO;
+import com.quiz.learning.Demo.domain.response.client.DisplayClientDTO;
+import com.quiz.learning.Demo.domain.response.client.FetchClientDTO;
 import com.quiz.learning.Demo.domain.restResponse.ApiMessage;
-import com.quiz.learning.Demo.repository.QuizRepository;
-import com.quiz.learning.Demo.service.QuizService;
+import com.quiz.learning.Demo.service.admin.AdminQuizService;
 import com.quiz.learning.Demo.util.error.DuplicatedObjectException;
 import com.quiz.learning.Demo.util.error.NullObjectException;
 import com.quiz.learning.Demo.util.error.ObjectNotFound;
@@ -23,14 +22,13 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/api")
-public class QuizController {
-    private final QuizService quizService;
+public class AdminQuizController {
+    private final AdminQuizService quizService;
 
-    public QuizController(QuizService quizService) {
+    public AdminQuizController(AdminQuizService quizService) {
         this.quizService = quizService;
     }
 
@@ -66,26 +64,6 @@ public class QuizController {
     public ResponseEntity<Void> deleteQuiz(@PathVariable("id") long id) throws ObjectNotFound {
         this.quizService.handleDeleteQuiz(id);
         return ResponseEntity.ok().body(null);
-    }
-
-    // Client API
-
-    @GetMapping("/client/quizzies/fetch")
-    @ApiMessage("Truy cập các Quizzies công khai")
-    public ResponseEntity<List<FetchClientDTO.QuizClientDTO>> ClientfetchQuizzies() {
-        return ResponseEntity.ok().body(this.quizService.handleClientFetchQuizzies());
-    }
-
-    @GetMapping("/client/quizzies/display/{id}")
-    @ApiMessage("Hiển thị làm bài Quiz")
-    public ResponseEntity<DisplayClientDTO.QuizPlayDTO> ClientdisplayQuiz(@PathVariable("id") long id)
-            throws ObjectNotFound {
-        return ResponseEntity.ok().body(this.quizService.handleClientDisplayQuiz(id));
-    }
-
-    @GetMapping("/client/quizzies/fetch/{id}")
-    public ResponseEntity<Quiz> ClientfetchOne(@PathVariable("id") long id) throws ObjectNotFound {
-        return ResponseEntity.ok().body(this.quizService.handleFetchQuizById(id));
     }
 
 }

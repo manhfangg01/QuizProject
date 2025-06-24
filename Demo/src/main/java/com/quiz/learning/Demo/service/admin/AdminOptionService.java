@@ -1,14 +1,14 @@
-package com.quiz.learning.Demo.service;
+package com.quiz.learning.Demo.service.admin;
 
 import org.springframework.stereotype.Service;
 
 import com.quiz.learning.Demo.repository.OptionRepository;
 
 @Service
-public class OptionService {
+public class AdminOptionService {
     private final OptionRepository optionRepository;
 
-    public OptionService(OptionRepository optionRepository) {
+    public AdminOptionService(OptionRepository optionRepository) {
         this.optionRepository = optionRepository;
     }
 

@@ -1,4 +1,4 @@
-package com.quiz.learning.Demo.service;
+package com.quiz.learning.Demo.service.admin;
 
 import java.util.List;
 import java.util.Optional;
@@ -13,10 +13,10 @@ import com.quiz.learning.Demo.util.error.NullObjectException;
 import com.quiz.learning.Demo.util.error.ObjectNotFound;
 
 @Service
-public class QuestionService {
+public class AdminQuestionService {
     private final QuestionRepository questionRepository;
 
-    public QuestionService(QuestionRepository questionRepository) {
+    public AdminQuestionService(QuestionRepository questionRepository) {
         this.questionRepository = questionRepository;
     }
 
@@ -45,7 +45,7 @@ public class QuestionService {
     private Question setProperties(Question ques1, Question ques2) {
         ques1.setContext(ques2.getContext());
         ques1.setOptions(ques2.getOptions());
-        ques1.setQuiz(ques2.getQuiz());
+        ques1.setQuizzies(ques2.getQuizzies());
         return ques1;
     }
 

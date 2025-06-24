@@ -1,4 +1,4 @@
-package com.quiz.learning.Demo.service;
+package com.quiz.learning.Demo.service.admin;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -9,10 +9,10 @@ import com.quiz.learning.Demo.domain.Answer;
 import com.quiz.learning.Demo.repository.AnswerRepository;
 
 @Service
-public class AnswerService {
+public class AdminAnswerService {
     private final AnswerRepository answerRepository;
 
-    public AnswerService(AnswerRepository answerRepository) {
+    public AdminAnswerService(AnswerRepository answerRepository) {
         this.answerRepository = answerRepository;
     }
 
