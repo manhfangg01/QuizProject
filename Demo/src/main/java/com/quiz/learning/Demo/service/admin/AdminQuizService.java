@@ -1,21 +1,13 @@
 package com.quiz.learning.Demo.service.admin;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
-import com.quiz.learning.Demo.domain.Question;
 import com.quiz.learning.Demo.domain.Quiz;
-import com.quiz.learning.Demo.domain.Result;
 import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO;
-import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO.FetchQuestionDTO;
-import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO.FetchResultDTO;
-import com.quiz.learning.Demo.domain.response.client.DisplayClientDTO;
-import com.quiz.learning.Demo.domain.response.client.FetchClientDTO;
 import com.quiz.learning.Demo.repository.QuizRepository;
 import com.quiz.learning.Demo.util.error.DuplicatedObjectException;
 import com.quiz.learning.Demo.util.error.NullObjectException;
@@ -24,9 +16,40 @@ import com.quiz.learning.Demo.util.error.ObjectNotFound;
 @Service
 public class AdminQuizService {
     private final QuizRepository quizRepository;
+    private final AdminQuestionService adminQuestionService;
+    private final AdminResultService adminResultService;
 
-    public AdminQuizService(QuizRepository quizRepository) {
+    public AdminQuizService(QuizRepository quizRepository, AdminQuestionService adminQuestionService,
+            AdminResultService adminResultService) {
         this.quizRepository = quizRepository;
+        this.adminQuestionService = adminQuestionService;
+        this.adminResultService = adminResultService;
+    }
+
+    public FetchAdminDTO.FetchQuizDTO convertToDTO(Quiz quiz) {
+        FetchAdminDTO.FetchQuizDTO dto = new FetchAdminDTO.FetchQuizDTO();
+        dto.setQuizId(quiz.getId());
+        dto.setTitle(quiz.getTitle());
+        dto.setSubjectName(quiz.getSubjectName());
+        dto.setTimeLimit(quiz.getTimeLimit());
+        dto.setTotalParticipants(quiz.getTotalParticipants());
+        dto.setActive(quiz.isActive());
+        dto.setDifficulty(quiz.getDifficulty());
+
+        // ✅ convert list question
+        List<FetchAdminDTO.FetchQuestionDTO> questionDTOs = quiz.getQuestions()
+                .stream()
+                .map(adminQuestionService::convertToDTO)
+                .collect(Collectors.toList());
+        dto.setQuestions(questionDTOs);
+
+        List<FetchAdminDTO.FetchResultDTO> resultDTOs = quiz.getResults()
+                .stream()
+                .map(adminResultService::convertToDTO)
+                .collect(Collectors.toList());
+        dto.setResults(resultDTOs);
+
+        return dto;
     }
 
     public List<Quiz> handleFetchAllQuizzies() {

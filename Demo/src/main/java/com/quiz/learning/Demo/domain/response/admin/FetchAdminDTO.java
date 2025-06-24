@@ -32,7 +32,6 @@ public class FetchAdminDTO {
     public static class FetchQuestionDTO {
         private long questionId;
         private String context;
-        private List<FetchAnswerDTO> answers; // ✅ dùng DTO thay vì entity
         private List<FetchOptionDTO> options;
     }
 
@@ -48,7 +47,9 @@ public class FetchAdminDTO {
     @Setter
     public static class FetchOptionDTO {
         private long id;
-        private String content;
+        private String context;
+        private List<FetchAnswerDTO> answers; // ✅ dùng DTO thay vì entity
+
     }
 
     @Getter

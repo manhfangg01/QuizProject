@@ -1,12 +1,15 @@
 package com.quiz.learning.Demo.service.admin;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
 import com.quiz.learning.Demo.domain.Question;
 import com.quiz.learning.Demo.domain.Quiz;
+import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO;
 import com.quiz.learning.Demo.repository.QuestionRepository;
 import com.quiz.learning.Demo.util.error.DuplicatedObjectException;
 import com.quiz.learning.Demo.util.error.NullObjectException;
@@ -15,9 +18,29 @@ import com.quiz.learning.Demo.util.error.ObjectNotFound;
 @Service
 public class AdminQuestionService {
     private final QuestionRepository questionRepository;
+    private final AdminOptionService adminOptionService;
 
-    public AdminQuestionService(QuestionRepository questionRepository) {
+    public AdminQuestionService(QuestionRepository questionRepository, AdminOptionService adminOptionService) {
         this.questionRepository = questionRepository;
+        this.adminOptionService = adminOptionService;
+    }
+
+    public FetchAdminDTO.FetchQuestionDTO convertToDTO(Question question) {
+        FetchAdminDTO.FetchQuestionDTO dto = new FetchAdminDTO.FetchQuestionDTO();
+        dto.setQuestionId(question.getId());
+        dto.setContext(question.getContext());
+
+        if (question.getOptions() == null) {
+            question.setOptions(Collections.emptyList());
+        } else {
+            List<FetchAdminDTO.FetchOptionDTO> optionDTOs = question.getOptions()
+                    .stream()
+                    .map(adminOptionService::convertToDTO)
+                    .collect(Collectors.toList());
+            dto.setOptions(optionDTOs);
+        }
+
+        return dto;
     }
 
     public List<Question> handleFetchAllQuestions() {

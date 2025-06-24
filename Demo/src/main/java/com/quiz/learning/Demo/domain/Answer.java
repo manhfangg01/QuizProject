@@ -25,8 +25,6 @@ public class Answer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    @Enumerated(EnumType.STRING)
-    private AnswerOption selectedOption;
     private boolean isCorrect;
 
     @ManyToOne
@@ -34,6 +32,6 @@ public class Answer {
     private Result result;
 
     @ManyToOne
-    @JoinColumn(name = "question_id")
-    private Question question;
+    @JoinColumn(name = "selected_option_id")
+    private Option selectedOption;
 }

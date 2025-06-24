@@ -1,5 +1,6 @@
 package com.quiz.learning.Demo.domain;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -25,7 +26,7 @@ public class Result {
     private int totalQuestion;
     private int totalCorrectedAnswer;
     private int score;
-    private LocalDateTime submittedAt;
+    private Instant submittedAt;
     private long duration;
 
     @ManyToOne

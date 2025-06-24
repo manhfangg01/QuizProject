@@ -6,6 +6,8 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 import com.quiz.learning.Demo.domain.Answer;
+import com.quiz.learning.Demo.domain.request.PostSubmissionDTO.AnswerDTO;
+import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO;
 import com.quiz.learning.Demo.repository.AnswerRepository;
 
 @Service
@@ -16,13 +18,12 @@ public class AdminAnswerService {
         this.answerRepository = answerRepository;
     }
 
-    public List<Answer> handleFetchAllAnswer() {
-        return this.answerRepository.findAll();
-    }
-
-    public List<Answer> handleFetchAllCorrectedAnswers() {
-        return this.answerRepository.findAll().stream().filter(answer -> answer.isCorrect())
-                .collect(Collectors.toList());
+    public FetchAdminDTO.FetchAnswerDTO convertToDTO(Answer answer) {
+        FetchAdminDTO.FetchAnswerDTO dto = new FetchAdminDTO.FetchAnswerDTO();
+        dto.setId(answer.getId());
+        dto.setCorrect(answer.isCorrect()); // hoặc answer.getIsCorrect() tùy vào
+        dto.setOptionId(answer.getSelectedOption().getId());
+        return dto;
     }
 
 }

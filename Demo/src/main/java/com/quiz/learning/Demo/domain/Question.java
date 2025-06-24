@@ -32,9 +32,6 @@ public class Question {
     private String context;
 
     @OneToMany(mappedBy = "question")
-    private List<Answer> answers;
-
-    @OneToMany(mappedBy = "question")
     private List<Option> options;
 
     @ManyToMany(mappedBy = "questions")
