@@ -21,7 +21,7 @@ import lombok.Setter;
 public class Result {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private long id;
     private int totalQuestion;
     private int totalCorrectedAnswer;
     private int score;

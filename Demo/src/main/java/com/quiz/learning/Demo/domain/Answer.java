@@ -24,7 +24,7 @@ import lombok.Setter;
 public class Answer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private long id;
     @Enumerated(EnumType.STRING)
     private AnswerOption selectedOption;
     private boolean isCorrect;
