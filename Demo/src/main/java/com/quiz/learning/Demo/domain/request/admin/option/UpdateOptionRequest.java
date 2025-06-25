@@ -8,5 +8,5 @@ import lombok.Setter;
 public class UpdateOptionRequest {
     private Long id;
     private String context;
-    private boolean isCorrect;
+    private Boolean isCorrect;
 }

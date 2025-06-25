@@ -85,7 +85,7 @@ public class AdminQuestionService {
                 .map(optReq -> {
                     Option option = new Option();
                     option.setContext(optReq.getContext());
-                    option.setCorrect(optReq.isCorrect());
+                    option.setIsCorrect(optReq.getIsCorrect());
                     option.setQuestion(question); // gán quan hệ ngược
                     return option;
                 })
@@ -115,7 +115,7 @@ public class AdminQuestionService {
                 .map(optReq -> {
                     Option option = new Option();
                     option.setContext(optReq.getContext());
-                    option.setCorrect(optReq.isCorrect());
+                    option.setIsCorrect(optReq.getIsCorrect());
                     option.setQuestion(question); // gán quan hệ ngược
                     return option;
                 })

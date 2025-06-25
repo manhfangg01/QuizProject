@@ -13,7 +13,7 @@ public class CreateQuizRequest {
     private String title;
     private String subjectName;
     private Long timeLimit;
-    private boolean isActive;
+    private Boolean isActive;
     private DifficultyLevel difficulty;
     private List<Long> questions;
 }

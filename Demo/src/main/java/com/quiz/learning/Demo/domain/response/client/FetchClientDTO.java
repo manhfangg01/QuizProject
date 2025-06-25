@@ -22,7 +22,7 @@ public class FetchClientDTO {
         private DifficultyLevel difficulty;
         private Long timeLimit;
         private int numberOfQuestion;
-        private boolean isActive;
+        private Boolean isActive;
     }
 
 }

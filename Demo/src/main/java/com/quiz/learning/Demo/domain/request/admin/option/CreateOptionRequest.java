@@ -7,5 +7,5 @@ import lombok.Setter;
 @Setter
 public class CreateOptionRequest {
     private String context;
-    private boolean isCorrect;
+    private Boolean isCorrect;
 }

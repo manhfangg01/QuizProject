@@ -24,7 +24,7 @@ public class ResponseSubmissionDTO {
     public static class Detail {
         private Long questionId;
         private Long selectedOptionId;
-        private boolean isCorrect;
+        private Boolean isCorrect;
     }
 
 }

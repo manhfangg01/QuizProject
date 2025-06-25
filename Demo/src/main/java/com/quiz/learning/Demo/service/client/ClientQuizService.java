@@ -25,7 +25,7 @@ public class ClientQuizService {
         FetchClientDTO.QuizClientDTO quizDTO = new FetchClientDTO.QuizClientDTO();
         quizDTO.setId(quiz.getId());
         quizDTO.setNumberOfQuestion(quiz.getQuestions() != null ? quiz.getQuestions().size() : 0);
-        quizDTO.setActive(quiz.isActive());
+        quizDTO.setIsActive(quiz.getIsActive());
         quizDTO.setDifficulty(quiz.getDifficulty());
         quizDTO.setTimeLimit(quiz.getTimeLimit());
         quizDTO.setTitle(quiz.getTitle());

@@ -18,7 +18,7 @@ public class AdminAnswerService {
     public FetchAdminDTO.FetchAnswerDTO convertToDTO(Answer answer) {
         FetchAdminDTO.FetchAnswerDTO dto = new FetchAdminDTO.FetchAnswerDTO();
         dto.setId(answer.getId());
-        dto.setCorrect(answer.isCorrect()); // hoặc answer.getIsCorrect() tùy vào
+        dto.setIsCorrect(answer.getIsCorrect()); // hoặc answer.getIsCorrect() tùy vào
         dto.setOptionId(answer.getSelectedOption().getId());
         return dto;
     }

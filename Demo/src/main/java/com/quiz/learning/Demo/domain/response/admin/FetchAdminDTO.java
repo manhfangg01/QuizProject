@@ -22,7 +22,7 @@ public class FetchAdminDTO {
         private String subjectName;
         private Long timeLimit;
         private Long totalParticipants;
-        private boolean isActive;
+        private Boolean isActive;
         @Enumerated(EnumType.STRING)
         private DifficultyLevel difficulty;
         private List<FetchQuestionDTO> questions;
@@ -42,7 +42,7 @@ public class FetchAdminDTO {
     public static class FetchAnswerDTO {
         private Long id;
         private Long optionId;
-        private boolean isCorrect;
+        private Boolean isCorrect;
     }
 
     @Getter
@@ -50,7 +50,7 @@ public class FetchAdminDTO {
     public static class FetchOptionDTO {
         private Long id;
         private String context;
-        private List<FetchAnswerDTO> answers; // ✅ dùng DTO thay vì entity
+        private Boolean isCorrect;
 
     }
 

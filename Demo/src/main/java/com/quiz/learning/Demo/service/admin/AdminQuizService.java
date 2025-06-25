@@ -40,7 +40,7 @@ public class AdminQuizService {
         dto.setSubjectName(quiz.getSubjectName());
         dto.setTimeLimit(quiz.getTimeLimit());
         dto.setTotalParticipants(quiz.getTotalParticipants());
-        dto.setActive(quiz.isActive());
+        dto.setIsActive(quiz.getIsActive());
         dto.setDifficulty(quiz.getDifficulty());
 
         // ✅ convert list question
@@ -100,13 +100,13 @@ public class AdminQuizService {
         }
 
         Quiz quiz = new Quiz();
-        quiz.setActive(createdQuiz.isActive());
+        quiz.setIsActive(createdQuiz.getIsActive());
         quiz.setDifficulty(createdQuiz.getDifficulty());
         quiz.setQuestions(fetchQuestionsByIds(createdQuiz.getQuestions()));
         quiz.setSubjectName(createdQuiz.getSubjectName());
         quiz.setTimeLimit(createdQuiz.getTimeLimit());
         quiz.setTitle(createdQuiz.getTitle());
-        quiz.setTotalParticipants(null);
+        quiz.setTotalParticipants(Long.valueOf(0));
 
         Quiz saved = quizRepository.save(quiz);
         return convertToDTO(saved);
@@ -125,7 +125,7 @@ public class AdminQuizService {
         quiz.setTitle(request.getTitle());
         quiz.setSubjectName(request.getSubjectName());
         quiz.setTimeLimit(request.getTimeLimit());
-        quiz.setActive(request.isActive());
+        quiz.setIsActive(request.getIsActive());
         quiz.setDifficulty(request.getDifficulty());
 
         // Lấy danh sách câu hỏi mới

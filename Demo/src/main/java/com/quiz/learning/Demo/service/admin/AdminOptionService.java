@@ -36,16 +36,6 @@ public class AdminOptionService {
         dto.setContext(option.getContext());
         dto.setId(option.getId());
         // Convert answers nếu có DTO cho nó
-
-        if (option.getAnswers() == null) {
-            dto.setAnswers(Collections.emptyList());
-        } else {
-            List<FetchAdminDTO.FetchAnswerDTO> answerDTOs = option.getAnswers()
-                    .stream()
-                    .map(adminAnswerService::convertToDTO)
-                    .collect(Collectors.toList());
-            dto.setAnswers(answerDTOs);
-        }
         return dto;
     }
 
@@ -69,7 +59,7 @@ public class AdminOptionService {
         }
         Option option = new Option();
         option.setContext(newOption.getContext());
-        option.setCorrect(newOption.isCorrect());
+        option.setIsCorrect(newOption.getIsCorrect());
         return this.convertToDTO(this.optionRepository.save(option));
     }
 
@@ -85,7 +75,7 @@ public class AdminOptionService {
             }
         }
         realOption.setContext(updatedOption.getContext());
-        realOption.setCorrect(updatedOption.isCorrect());
+        realOption.setIsCorrect(updatedOption.getIsCorrect());
         return this.convertToDTO(this.optionRepository.save(realOption));
 
     }

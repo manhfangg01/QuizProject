@@ -19,7 +19,7 @@ public class Answer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private boolean isCorrect;
+    private Boolean isCorrect;
 
     @ManyToOne
     @JoinColumn(name = "result_id")

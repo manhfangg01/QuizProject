@@ -23,7 +23,7 @@ public class Role {
     @Column(columnDefinition = "MEDIUMTEXT")
     private String name;
     private String description;
-    private boolean isActive;
+    private Boolean isActive;
 
     // Mối quan hệ: Một vai trò có thể được gán cho nhiều user
     @ManyToMany(mappedBy = "roles")
