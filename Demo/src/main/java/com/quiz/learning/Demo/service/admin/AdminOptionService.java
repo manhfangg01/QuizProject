@@ -55,7 +55,7 @@ public class AdminOptionService {
                 .collect(Collectors.toList());
     }
 
-    public FetchAdminDTO.FetchOptionDTO handleFetchOneOption(long id) {
+    public FetchAdminDTO.FetchOptionDTO handleFetchOneOption(Long id) {
         Optional<Option> checkOption = this.optionRepository.findById(id);
         if (checkOption.isEmpty()) {
             throw new ObjectNotFound("There is no option that has id " + id);
@@ -90,7 +90,7 @@ public class AdminOptionService {
 
     }
 
-    public void handleDeleteOption(long id) {
+    public void handleDeleteOption(Long id) {
         Optional<Option> checkOption = this.optionRepository.findById(id);
         if (checkOption.isEmpty()) {
             throw new ObjectNotFound("There is no option that has id " + id);

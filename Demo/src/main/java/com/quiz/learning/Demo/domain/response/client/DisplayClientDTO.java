@@ -13,9 +13,9 @@ public class DisplayClientDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class QuizPlayDTO {
-        private long quizId;
+        private Long quizId;
         private String title;
-        private long timeLimit;
+        private Long timeLimit;
         private List<QuestionDTO> questions;
 
         // getters & setters
@@ -26,7 +26,7 @@ public class DisplayClientDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class QuestionDTO {
-        private long questionId;
+        private Long questionId;
         private String content;
         private List<OptionDTO> options;
 
@@ -38,7 +38,7 @@ public class DisplayClientDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class OptionDTO {
-        private long optionId;
+        private Long optionId;
         private String content;
 
         // getters & setters

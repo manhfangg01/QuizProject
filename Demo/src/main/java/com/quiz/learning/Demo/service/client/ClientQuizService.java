@@ -32,7 +32,7 @@ public class ClientQuizService {
         return quizDTO;
     }
 
-    public FetchClientDTO.QuizClientDTO handleFetchQuizById(long id) {
+    public FetchClientDTO.QuizClientDTO handleFetchQuizById(Long id) {
         Optional<Quiz> checkQuiz = this.quizRepository.findById(id);
         if (checkQuiz.isEmpty()) {
             throw new ObjectNotFound("Quiz Not Found");
@@ -40,7 +40,7 @@ public class ClientQuizService {
         return this.convertToDTO(checkQuiz.get());
     }
 
-    public DisplayClientDTO.QuizPlayDTO handleClientDisplayQuiz(long id) {
+    public DisplayClientDTO.QuizPlayDTO handleClientDisplayQuiz(Long id) {
         Optional<Quiz> checkQuiz = this.quizRepository.findById(id);
         if (checkQuiz.isEmpty()) {
             throw new ObjectNotFound("Quiz Not Found");

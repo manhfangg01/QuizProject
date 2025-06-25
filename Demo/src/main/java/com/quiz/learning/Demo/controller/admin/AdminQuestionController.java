@@ -42,7 +42,7 @@ public class AdminQuestionController {
     }
 
     @GetMapping("/admin/questions/fetch/{id}")
-    public ResponseEntity<FetchAdminDTO.FetchQuestionDTO> fetchOne(@PathVariable("id") long id) {
+    public ResponseEntity<FetchAdminDTO.FetchQuestionDTO> fetchOne(@PathVariable("id") Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(this.questionService.handleFetchOneQuestion(id));
     }
 
@@ -58,7 +58,7 @@ public class AdminQuestionController {
     }
 
     @DeleteMapping("/admin/questions/delete/{id}")
-    public ResponseEntity<Void> delete(@PathVariable long id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         this.questionService.handleDeleteQuestion(id);
         return ResponseEntity.status(HttpStatus.OK).body(null);
     }

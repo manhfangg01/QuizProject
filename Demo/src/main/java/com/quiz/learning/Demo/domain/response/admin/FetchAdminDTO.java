@@ -3,6 +3,7 @@ package com.quiz.learning.Demo.domain.response.admin;
 import java.time.Instant;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.quiz.learning.Demo.util.constant.DifficultyLevel;
 
 import jakarta.persistence.EnumType;
@@ -15,11 +16,11 @@ public class FetchAdminDTO {
     @Getter
     @Setter
     public static class FetchQuizDTO {
-        private long quizId;
+        private Long quizId;
         private String title;
         private String subjectName;
-        private long timeLimit;
-        private long totalParticipants;
+        private Long timeLimit;
+        private Long totalParticipants;
         private boolean isActive;
         @Enumerated(EnumType.STRING)
         private DifficultyLevel difficulty;
@@ -30,7 +31,7 @@ public class FetchAdminDTO {
     @Getter
     @Setter
     public static class FetchQuestionDTO {
-        private long questionId;
+        private Long questionId;
         private String context;
         private List<FetchOptionDTO> options;
     }
@@ -38,15 +39,15 @@ public class FetchAdminDTO {
     @Getter
     @Setter
     public static class FetchAnswerDTO {
-        private long id;
-        private long optionId;
+        private Long id;
+        private Long optionId;
         private boolean isCorrect;
     }
 
     @Getter
     @Setter
     public static class FetchOptionDTO {
-        private long id;
+        private Long id;
         private String context;
         private List<FetchAnswerDTO> answers; // ✅ dùng DTO thay vì entity
 
@@ -55,9 +56,12 @@ public class FetchAdminDTO {
     @Getter
     @Setter
     public static class FetchResultDTO {
-        private long id;
-        private long userId;
+        private Long id;
+        private Long userId;
+        private Long quizId;
+        private List<FetchAnswerDTO> answers;
         private int score;
+        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
         private Instant submittedAt;
     }
 

@@ -2,10 +2,9 @@ package com.quiz.learning.Demo.service.admin;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collector;
+
 import java.util.stream.Collectors;
 
-import org.hibernate.ObjectNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.quiz.learning.Demo.domain.Question;
@@ -71,7 +70,7 @@ public class AdminQuizService {
         return quizDTOs;
     }
 
-    public FetchAdminDTO.FetchQuizDTO handleFetchQuizById(long id) {
+    public FetchAdminDTO.FetchQuizDTO handleFetchQuizById(Long id) {
         Optional<Quiz> checkQuiz = this.quizRepository.findById(id);
         if (checkQuiz.isEmpty()) {
             throw new ObjectNotFound("Quiz Not Found");
@@ -107,7 +106,7 @@ public class AdminQuizService {
         quiz.setSubjectName(createdQuiz.getSubjectName());
         quiz.setTimeLimit(createdQuiz.getTimeLimit());
         quiz.setTitle(createdQuiz.getTitle());
-        quiz.setTotalParticipants(0);
+        quiz.setTotalParticipants(null);
 
         Quiz saved = quizRepository.save(quiz);
         return convertToDTO(saved);
@@ -136,7 +135,7 @@ public class AdminQuizService {
         return convertToDTO(quizRepository.save(quiz));
     }
 
-    public void handleDeleteQuiz(long id) {
+    public void handleDeleteQuiz(Long id) {
         Optional<Quiz> checkQuiz = this.quizRepository.findById(id);
         if (checkQuiz.isEmpty()) {
             throw new ObjectNotFound("Quiz Not Found");

@@ -13,7 +13,7 @@ public class UpdateQuizRequest {
     private Long quizId; // ID của quiz cần cập nhật
     private String title; // Tên mới (nếu có)
     private String subjectName; // Môn học
-    private long timeLimit; // Giới hạn thời gian
+    private Long timeLimit; // Giới hạn thời gian
     private boolean isActive; // Trạng thái (mở/bị ẩn)
     private DifficultyLevel difficulty; // Độ khó (Easy, Medium, Hard - bạn có thể dùng Enum)
     private List<Long> questionIds; // Danh sách các ID câu hỏi

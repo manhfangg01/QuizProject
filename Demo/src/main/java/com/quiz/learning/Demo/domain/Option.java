@@ -20,7 +20,7 @@ import lombok.Setter;
 public class Option {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
     private String context;
     private boolean isCorrect;
 

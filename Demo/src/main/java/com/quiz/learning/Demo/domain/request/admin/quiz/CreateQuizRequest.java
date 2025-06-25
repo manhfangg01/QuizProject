@@ -12,7 +12,7 @@ import lombok.Setter;
 public class CreateQuizRequest {
     private String title;
     private String subjectName;
-    private long timeLimit;
+    private Long timeLimit;
     private boolean isActive;
     private DifficultyLevel difficulty;
     private List<Long> questions;

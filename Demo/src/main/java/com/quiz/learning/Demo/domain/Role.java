@@ -19,7 +19,7 @@ import lombok.Setter;
 public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
     @Column(columnDefinition = "MEDIUMTEXT")
     private String description;
     private boolean isActive;

@@ -34,7 +34,7 @@ public class AdminOptionController {
     }
 
     @GetMapping("/admin/options/fetch/{id}")
-    public ResponseEntity<FetchAdminDTO.FetchOptionDTO> fetchOne(@PathVariable("id") long id) {
+    public ResponseEntity<FetchAdminDTO.FetchOptionDTO> fetchOne(@PathVariable("id") Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(this.optionService.handleFetchOneOption(id));
     }
 
@@ -49,7 +49,7 @@ public class AdminOptionController {
     }
 
     @GetMapping("/admin/options/delete/{id}")
-    public ResponseEntity<Void> delete(@PathVariable("id") long id) {
+    public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(null);
     }
 

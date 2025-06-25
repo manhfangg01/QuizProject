@@ -23,11 +23,11 @@ import lombok.Setter;
 public class Quiz {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
     private String title;
     private String subjectName;
-    private long timeLimit;
-    private long totalParticipants;
+    private Long timeLimit;
+    private Long totalParticipants;
     private boolean isActive;
     @Enumerated(EnumType.STRING)
     private DifficultyLevel difficulty;

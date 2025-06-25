@@ -1,12 +1,6 @@
 package com.quiz.learning.Demo.domain;
 
-import java.time.Instant;
-
-import com.quiz.learning.Demo.util.constant.AnswerOption;
-
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -24,7 +18,7 @@ import lombok.Setter;
 public class Answer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
     private boolean isCorrect;
 
     @ManyToOne

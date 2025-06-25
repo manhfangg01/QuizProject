@@ -8,14 +8,14 @@ import lombok.Setter;
 @Getter
 @Setter
 public class PostSubmissionDTO {
-    private long userId;
-    private long quizId;
+    private Long userId;
+    private Long quizId;
     private List<AnswerDTO> answers;
 
     @Getter
     @Setter
     public static class AnswerDTO {
-        private long questionId;
+        private Long questionId;
         private Long selectedOptionId;
     }
 }

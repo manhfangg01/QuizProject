@@ -3,7 +3,6 @@ package com.quiz.learning.Demo.service.admin;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -14,7 +13,6 @@ import com.quiz.learning.Demo.domain.Quiz;
 import com.quiz.learning.Demo.domain.request.admin.question.CreateQuestionRequest;
 import com.quiz.learning.Demo.domain.request.admin.question.UpdateQuestionRequest;
 import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO;
-import com.quiz.learning.Demo.repository.OptionRepository;
 import com.quiz.learning.Demo.repository.QuestionRepository;
 import com.quiz.learning.Demo.repository.QuizRepository;
 import com.quiz.learning.Demo.util.error.DuplicatedObjectException;
@@ -60,7 +58,7 @@ public class AdminQuestionService {
                 }).collect(Collectors.toList());
     }
 
-    public FetchAdminDTO.FetchQuestionDTO handleFetchOneQuestion(long id) {
+    public FetchAdminDTO.FetchQuestionDTO handleFetchOneQuestion(Long id) {
         Optional<Question> checkQuestion = this.questionRepository.findById(id);
         if (checkQuestion.isEmpty()) {
             throw new ObjectNotFound("Question not found");
@@ -129,7 +127,7 @@ public class AdminQuestionService {
         return convertToDTO(saved);
     }
 
-    public void handleDeleteQuestion(long id) {
+    public void handleDeleteQuestion(Long id) {
         Optional<Question> checkQuestion = this.questionRepository.findById(id);
         if (checkQuestion.isEmpty()) {
             throw new ObjectNotFound("Question not found");

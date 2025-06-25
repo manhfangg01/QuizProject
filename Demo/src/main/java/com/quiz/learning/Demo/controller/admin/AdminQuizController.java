@@ -44,7 +44,7 @@ public class AdminQuizController {
 
     @GetMapping("admin/quizzies/fetch/{id}")
     @ApiMessage("Truy vấn 1 Quiz")
-    public ResponseEntity<FetchAdminDTO.FetchQuizDTO> fetchOne(@PathVariable("id") long id) {
+    public ResponseEntity<FetchAdminDTO.FetchQuizDTO> fetchOne(@PathVariable("id") Long id) {
         return ResponseEntity.ok().body(this.quizService.handleFetchQuizById(id));
     }
 
@@ -63,7 +63,7 @@ public class AdminQuizController {
 
     @DeleteMapping("admin/quizzies/delete/{id}")
     @ApiMessage("Xóa 1 Quiz")
-    public ResponseEntity<Void> deleteQuiz(@PathVariable("id") long id) {
+    public ResponseEntity<Void> deleteQuiz(@PathVariable("id") Long id) {
         this.quizService.handleDeleteQuiz(id);
         return ResponseEntity.ok().body(null);
     }

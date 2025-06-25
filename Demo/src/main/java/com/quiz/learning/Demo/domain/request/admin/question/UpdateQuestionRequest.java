@@ -10,7 +10,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class UpdateQuestionRequest {
-    private long id;
+    private Long id;
     private String context;
     private List<UpdateOptionRequest> options;
 }
