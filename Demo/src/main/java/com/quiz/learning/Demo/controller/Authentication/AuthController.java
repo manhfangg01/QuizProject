@@ -1,4 +1,4 @@
-package com.quiz.learning.Demo.controller.Authentication;
+package com.quiz.learning.Demo.controller.authentication;
 
 public class AuthController {
 

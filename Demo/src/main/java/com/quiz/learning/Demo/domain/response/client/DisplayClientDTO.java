@@ -1,4 +1,4 @@
-package com.quiz.learning.Demo.domain.response;
+package com.quiz.learning.Demo.domain.response.client;
 
 import java.util.List;
 
