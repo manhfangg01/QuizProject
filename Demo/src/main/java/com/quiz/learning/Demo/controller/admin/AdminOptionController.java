@@ -7,8 +7,6 @@ import com.quiz.learning.Demo.domain.request.admin.option.UpdateOptionRequest;
 import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO;
 import com.quiz.learning.Demo.domain.restResponse.ApiMessage;
 import com.quiz.learning.Demo.service.admin.AdminOptionService;
-import com.quiz.learning.Demo.util.error.DuplicatedObjectException;
-
 import java.util.List;
 
 import org.springframework.http.HttpStatus;

@@ -1,22 +1,13 @@
 package com.quiz.learning.Demo.controller.admin;
 
 import java.util.List;
-import java.util.Optional;
-
 import org.springframework.web.bind.annotation.RestController;
 
-import com.quiz.learning.Demo.domain.Quiz;
 import com.quiz.learning.Demo.domain.request.admin.quiz.CreateQuizRequest;
 import com.quiz.learning.Demo.domain.request.admin.quiz.UpdateQuizRequest;
 import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO;
-import com.quiz.learning.Demo.domain.response.client.DisplayClientDTO;
-import com.quiz.learning.Demo.domain.response.client.FetchClientDTO;
 import com.quiz.learning.Demo.domain.restResponse.ApiMessage;
 import com.quiz.learning.Demo.service.admin.AdminQuizService;
-import com.quiz.learning.Demo.util.error.DuplicatedObjectException;
-import com.quiz.learning.Demo.util.error.NullObjectException;
-import com.quiz.learning.Demo.util.error.ObjectNotFound;
-
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;

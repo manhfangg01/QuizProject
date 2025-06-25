@@ -13,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/api")
@@ -30,16 +29,16 @@ public class AdminResultController {
         return ResponseEntity.status(HttpStatus.OK).body(this.resultService.handleFetchAllResults());
     }
 
-    @GetMapping("/admin/results/fetch/{id}")
-    @ApiMessage("fetch a result")
-    public ResponseEntity<FetchAdminDTO.FetchResultDTO> fetchOne(@PathVariable("id") Long id) {
-        return ResponseEntity.status(HttpStatus.OK).body(this.resultService.handleFetchOneResult(id));
+    @GetMapping("/admin/results/quiz/fetch/{id}")
+    @ApiMessage("fetch all results by quiz_id")
+    public ResponseEntity<List<FetchAdminDTO.FetchResultDTO>> fetchByQuiz(@PathVariable("id") Long id) {
+        return ResponseEntity.status(HttpStatus.OK).body(this.resultService.handleFetchResultsByQuizId(id));
     }
 
     @GetMapping("/admin/results/user/fetch/{id}")
     @ApiMessage("fetch all results by user_id")
-    public ResponseEntity<List<FetchAdminDTO.FetchResultDTO>> getMethodName(@PathVariable("id") Long userId) {
-        return ResponseEntity.status(HttpStatus.OK).body(this.resultService.handleFetchResultByUserId(userId));
+    public ResponseEntity<List<FetchAdminDTO.FetchResultDTO>> fetchByUser(@PathVariable("id") Long userId) {
+        return ResponseEntity.status(HttpStatus.OK).body(this.resultService.handleFetchResultsByUserId(userId));
     }
 
 }
