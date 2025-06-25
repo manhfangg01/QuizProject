@@ -28,18 +28,14 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private String fullName;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
     private Instant createdAt;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
     private Instant updatedAt;
     private String createdBy;
     private String updatedBy;
-
-    @Email(message = "Email không hợp lệ")
-    @NotBlank(message = "Email không được để trống")
     private String email;
-
-    @NotBlank(message = "Mật khẩu không được để trống")
     private String password;
 
     @OneToMany(mappedBy = "user")

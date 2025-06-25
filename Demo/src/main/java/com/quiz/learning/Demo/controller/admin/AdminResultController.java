@@ -3,6 +3,7 @@ package com.quiz.learning.Demo.controller.admin;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO;
+import com.quiz.learning.Demo.domain.restResponse.ApiMessage;
 import com.quiz.learning.Demo.service.admin.AdminResultService;
 
 import java.util.List;
@@ -24,16 +25,19 @@ public class AdminResultController {
     }
 
     @GetMapping("/admin/results/fetch")
+    @ApiMessage("fetch all results")
     public ResponseEntity<List<FetchAdminDTO.FetchResultDTO>> fetch() {
         return ResponseEntity.status(HttpStatus.OK).body(this.resultService.handleFetchAllResults());
     }
 
     @GetMapping("/admin/results/fetch/{id}")
+    @ApiMessage("fetch a result")
     public ResponseEntity<FetchAdminDTO.FetchResultDTO> fetchOne(@PathVariable("id") Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(this.resultService.handleFetchOneResult(id));
     }
 
     @GetMapping("/admin/results/user/fetch/{id}")
+    @ApiMessage("fetch all results by user_id")
     public ResponseEntity<List<FetchAdminDTO.FetchResultDTO>> getMethodName(@PathVariable("id") Long userId) {
         return ResponseEntity.status(HttpStatus.OK).body(this.resultService.handleFetchResultByUserId(userId));
     }

@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.quiz.learning.Demo.domain.request.admin.option.CreateOptionRequest;
 import com.quiz.learning.Demo.domain.request.admin.option.UpdateOptionRequest;
 import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO;
+import com.quiz.learning.Demo.domain.restResponse.ApiMessage;
 import com.quiz.learning.Demo.service.admin.AdminOptionService;
 import com.quiz.learning.Demo.util.error.DuplicatedObjectException;
 
@@ -29,27 +30,33 @@ public class AdminOptionController {
     }
 
     @GetMapping("/admin/options/fetch")
+    @ApiMessage("fetch all options")
     public ResponseEntity<List<FetchAdminDTO.FetchOptionDTO>> fetch() {
         return ResponseEntity.status(HttpStatus.OK).body(this.optionService.handleFetchAllOptions());
     }
 
     @GetMapping("/admin/options/fetch/{id}")
+    @ApiMessage("fetch an option")
     public ResponseEntity<FetchAdminDTO.FetchOptionDTO> fetchOne(@PathVariable("id") Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(this.optionService.handleFetchOneOption(id));
     }
 
     @PostMapping("/admin/options/create")
+    @ApiMessage("create an option")
     public ResponseEntity<FetchAdminDTO.FetchOptionDTO> create(@RequestBody CreateOptionRequest newOption) {
         return ResponseEntity.status(HttpStatus.OK).body(this.optionService.handleCreateOption(newOption));
     }
 
     @PutMapping("/admin/options/update")
+    @ApiMessage("update an option")
     public ResponseEntity<FetchAdminDTO.FetchOptionDTO> update(@RequestBody UpdateOptionRequest updatedOption) {
         return ResponseEntity.status(HttpStatus.OK).body(this.optionService.handleUpdateOption(updatedOption));
     }
 
     @GetMapping("/admin/options/delete/{id}")
+    @ApiMessage("delete an option")
     public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
+        this.optionService.handleDeleteOption(id);
         return ResponseEntity.status(HttpStatus.OK).body(null);
     }
 

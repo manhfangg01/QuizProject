@@ -37,32 +37,32 @@ public class AdminQuizController {
 
     // Admin API
     @GetMapping("admin/quizzies/fetch")
-    @ApiMessage("Truy vấn tất cả Quizzies")
+    @ApiMessage("fetch all quizzies")
     public ResponseEntity<List<FetchAdminDTO.FetchQuizDTO>> fetchAll() {
         return ResponseEntity.ok().body(this.quizService.handleFetchAllQuizzies());
     }
 
     @GetMapping("admin/quizzies/fetch/{id}")
-    @ApiMessage("Truy vấn 1 Quiz")
+    @ApiMessage("fetch a quiz")
     public ResponseEntity<FetchAdminDTO.FetchQuizDTO> fetchOne(@PathVariable("id") Long id) {
         return ResponseEntity.ok().body(this.quizService.handleFetchQuizById(id));
     }
 
     @PostMapping("admin/quizzies/create")
-    @ApiMessage("Tạo 1 Quiz")
+    @ApiMessage("create a question")
     public ResponseEntity<FetchAdminDTO.FetchQuizDTO> create(@RequestBody CreateQuizRequest quiz) {
         return ResponseEntity.ok().body(this.quizService.handleCreateQuiz(quiz));
     }
 
     @PutMapping("admin/quizzies/update")
-    @ApiMessage("Cập nhật 1 Quiz")
+    @ApiMessage("update a quiz")
     public ResponseEntity<FetchAdminDTO.FetchQuizDTO> updateQuiz(@RequestBody UpdateQuizRequest updatedQuiz) {
 
         return ResponseEntity.ok().body(this.quizService.handleUpdateQuiz(updatedQuiz));
     }
 
     @DeleteMapping("admin/quizzies/delete/{id}")
-    @ApiMessage("Xóa 1 Quiz")
+    @ApiMessage("delete a quiz")
     public ResponseEntity<Void> deleteQuiz(@PathVariable("id") Long id) {
         this.quizService.handleDeleteQuiz(id);
         return ResponseEntity.ok().body(null);

@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.quiz.learning.Demo.domain.request.admin.question.CreateQuestionRequest;
 import com.quiz.learning.Demo.domain.request.admin.question.UpdateQuestionRequest;
 import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO;
+import com.quiz.learning.Demo.domain.restResponse.ApiMessage;
 import com.quiz.learning.Demo.service.admin.AdminQuestionService;
 import java.util.List;
 
@@ -28,27 +29,32 @@ public class AdminQuestionController {
     }
 
     @GetMapping("/admin/questions/fetch")
+    @ApiMessage("fetch all questions")
     public ResponseEntity<List<FetchAdminDTO.FetchQuestionDTO>> fetchAllQuestions() {
         return ResponseEntity.status(HttpStatus.OK).body(this.questionService.handleFetchAllQuestions());
     }
 
     @GetMapping("/admin/questions/fetch/{id}")
+    @ApiMessage("fetch a question")
     public ResponseEntity<FetchAdminDTO.FetchQuestionDTO> fetchOne(@PathVariable("id") Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(this.questionService.handleFetchOneQuestion(id));
     }
 
     @PostMapping("/admin/questions/create")
+    @ApiMessage("create a question")
     public ResponseEntity<FetchAdminDTO.FetchQuestionDTO> create(@RequestBody CreateQuestionRequest ques) {
         return ResponseEntity.status(HttpStatus.OK).body(this.questionService.handleCreateQuestion(ques));
     }
 
     @PutMapping("/admin/questions/update")
+    @ApiMessage("update a question")
     public ResponseEntity<FetchAdminDTO.FetchQuestionDTO> update(@RequestBody UpdateQuestionRequest updatedQues) {
         return ResponseEntity.status(HttpStatus.OK).body(this.questionService.handleUpdateQuestion(updatedQues));
 
     }
 
     @DeleteMapping("/admin/questions/delete/{id}")
+    @ApiMessage("delete a question")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         this.questionService.handleDeleteQuestion(id);
         return ResponseEntity.status(HttpStatus.OK).body(null);

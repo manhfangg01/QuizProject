@@ -2,6 +2,7 @@ package com.quiz.learning.Demo.domain.response.admin;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.quiz.learning.Demo.util.constant.DifficultyLevel;
@@ -63,6 +64,25 @@ public class FetchAdminDTO {
         private int score;
         @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
         private Instant submittedAt;
+    }
+
+    @Getter
+    @Setter
+    public static class FetchUserDTO {
+        private Long id;
+        private String fullName;
+        private String email;
+
+        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
+        private Instant createdAt;
+
+        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
+        private Instant updatedAt;
+
+        private String createdBy;
+        private String updatedBy;
+
+        private Set<String> roles; // chỉ trả về tên vai trò
     }
 
 }
