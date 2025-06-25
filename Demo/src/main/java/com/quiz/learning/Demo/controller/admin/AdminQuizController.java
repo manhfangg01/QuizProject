@@ -44,28 +44,26 @@ public class AdminQuizController {
 
     @GetMapping("admin/quizzies/fetch/{id}")
     @ApiMessage("Truy vấn 1 Quiz")
-    public ResponseEntity<FetchAdminDTO.FetchQuizDTO> fetchOne(@PathVariable("id") long id) throws ObjectNotFound {
+    public ResponseEntity<FetchAdminDTO.FetchQuizDTO> fetchOne(@PathVariable("id") long id) {
         return ResponseEntity.ok().body(this.quizService.handleFetchQuizById(id));
     }
 
     @PostMapping("admin/quizzies/create")
     @ApiMessage("Tạo 1 Quiz")
-    public ResponseEntity<FetchAdminDTO.FetchQuizDTO> create(@RequestBody CreateQuizRequest quiz)
-            throws NullObjectException, DuplicatedObjectException {
+    public ResponseEntity<FetchAdminDTO.FetchQuizDTO> create(@RequestBody CreateQuizRequest quiz) {
         return ResponseEntity.ok().body(this.quizService.handleCreateQuiz(quiz));
     }
 
     @PutMapping("admin/quizzies/update")
     @ApiMessage("Cập nhật 1 Quiz")
-    public ResponseEntity<FetchAdminDTO.FetchQuizDTO> updateQuiz(@RequestBody UpdateQuizRequest updatedQuiz)
-            throws ObjectNotFound, DuplicatedObjectException {
+    public ResponseEntity<FetchAdminDTO.FetchQuizDTO> updateQuiz(@RequestBody UpdateQuizRequest updatedQuiz) {
 
         return ResponseEntity.ok().body(this.quizService.handleUpdateQuiz(updatedQuiz));
     }
 
     @DeleteMapping("admin/quizzies/delete/{id}")
     @ApiMessage("Xóa 1 Quiz")
-    public ResponseEntity<Void> deleteQuiz(@PathVariable("id") long id) throws ObjectNotFound {
+    public ResponseEntity<Void> deleteQuiz(@PathVariable("id") long id) {
         this.quizService.handleDeleteQuiz(id);
         return ResponseEntity.ok().body(null);
     }

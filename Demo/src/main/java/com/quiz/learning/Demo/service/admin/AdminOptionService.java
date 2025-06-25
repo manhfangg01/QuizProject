@@ -63,8 +63,7 @@ public class AdminOptionService {
         return this.convertToDTO(checkOption.get());
     }
 
-    public FetchAdminDTO.FetchOptionDTO handleCreateOption(CreateOptionRequest newOption)
-            throws DuplicatedObjectException {
+    public FetchAdminDTO.FetchOptionDTO handleCreateOption(CreateOptionRequest newOption) {
         if (this.optionRepository.findByContext(newOption.getContext()).isPresent()) {
             throw new DuplicatedObjectException("There is an option has this context");
         }

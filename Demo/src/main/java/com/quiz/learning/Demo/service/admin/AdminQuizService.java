@@ -71,7 +71,7 @@ public class AdminQuizService {
         return quizDTOs;
     }
 
-    public FetchAdminDTO.FetchQuizDTO handleFetchQuizById(long id) throws ObjectNotFound {
+    public FetchAdminDTO.FetchQuizDTO handleFetchQuizById(long id) {
         Optional<Quiz> checkQuiz = this.quizRepository.findById(id);
         if (checkQuiz.isEmpty()) {
             throw new ObjectNotFound("Quiz Not Found");
@@ -87,8 +87,7 @@ public class AdminQuizService {
                 .collect(Collectors.toList());
     }
 
-    public FetchAdminDTO.FetchQuizDTO handleCreateQuiz(CreateQuizRequest createdQuiz)
-            throws NullObjectException, DuplicatedObjectException {
+    public FetchAdminDTO.FetchQuizDTO handleCreateQuiz(CreateQuizRequest createdQuiz) {
         if (createdQuiz == null) {
             throw new NullObjectException("Quiz is null");
         }
@@ -114,8 +113,7 @@ public class AdminQuizService {
         return convertToDTO(saved);
     }
 
-    public FetchAdminDTO.FetchQuizDTO handleUpdateQuiz(UpdateQuizRequest request)
-            throws ObjectNotFound, DuplicatedObjectException {
+    public FetchAdminDTO.FetchQuizDTO handleUpdateQuiz(UpdateQuizRequest request) {
         Quiz quiz = quizRepository.findById(request.getQuizId())
                 .orElseThrow(() -> new ObjectNotFound("Quiz with id " + request.getQuizId() + " not found"));
 
@@ -138,7 +136,7 @@ public class AdminQuizService {
         return convertToDTO(quizRepository.save(quiz));
     }
 
-    public void handleDeleteQuiz(long id) throws ObjectNotFound {
+    public void handleDeleteQuiz(long id) {
         Optional<Quiz> checkQuiz = this.quizRepository.findById(id);
         if (checkQuiz.isEmpty()) {
             throw new ObjectNotFound("Quiz Not Found");

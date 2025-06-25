@@ -42,25 +42,23 @@ public class AdminQuestionController {
     }
 
     @GetMapping("/admin/questions/fetch/{id}")
-    public ResponseEntity<FetchAdminDTO.FetchQuestionDTO> fetchOne(@PathVariable("id") long id) throws ObjectNotFound {
+    public ResponseEntity<FetchAdminDTO.FetchQuestionDTO> fetchOne(@PathVariable("id") long id) {
         return ResponseEntity.status(HttpStatus.OK).body(this.questionService.handleFetchOneQuestion(id));
     }
 
     @PostMapping("/admin/questions/create")
-    public ResponseEntity<FetchAdminDTO.FetchQuestionDTO> create(@RequestBody CreateQuestionRequest ques)
-            throws NullObjectException, DuplicatedObjectException {
+    public ResponseEntity<FetchAdminDTO.FetchQuestionDTO> create(@RequestBody CreateQuestionRequest ques) {
         return ResponseEntity.status(HttpStatus.OK).body(this.questionService.handleCreateQuestion(ques));
     }
 
     @PutMapping("/admin/questions/update")
-    public ResponseEntity<FetchAdminDTO.FetchQuestionDTO> update(@RequestBody UpdateQuestionRequest updatedQues)
-            throws ObjectNotFound, DuplicatedObjectException {
+    public ResponseEntity<FetchAdminDTO.FetchQuestionDTO> update(@RequestBody UpdateQuestionRequest updatedQues) {
         return ResponseEntity.status(HttpStatus.OK).body(this.questionService.handleUpdateQuestion(updatedQues));
 
     }
 
     @DeleteMapping("/admin/questions/delete/{id}")
-    public ResponseEntity<Void> delete(@PathVariable long id) throws ObjectNotFound {
+    public ResponseEntity<Void> delete(@PathVariable long id) {
         this.questionService.handleDeleteQuestion(id);
         return ResponseEntity.status(HttpStatus.OK).body(null);
     }

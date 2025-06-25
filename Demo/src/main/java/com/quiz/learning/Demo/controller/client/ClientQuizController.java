@@ -30,14 +30,12 @@ public class ClientQuizController {
 
     @GetMapping("/client/quizzies/display/{id}")
     @ApiMessage("Hiển thị làm bài Quiz")
-    public ResponseEntity<DisplayClientDTO.QuizPlayDTO> ClientdisplayQuiz(@PathVariable("id") long id)
-            throws ObjectNotFound {
+    public ResponseEntity<DisplayClientDTO.QuizPlayDTO> ClientdisplayQuiz(@PathVariable("id") long id) {
         return ResponseEntity.ok().body(this.quizService.handleClientDisplayQuiz(id));
     }
 
     @GetMapping("/client/quizzies/fetch/{id}")
-    public ResponseEntity<FetchClientDTO.QuizClientDTO> ClientfetchOne(@PathVariable("id") long id)
-            throws ObjectNotFound {
+    public ResponseEntity<FetchClientDTO.QuizClientDTO> ClientfetchOne(@PathVariable("id") long id) {
         return ResponseEntity.ok().body(this.quizService.handleFetchQuizById(id));
     }
 

@@ -60,7 +60,7 @@ public class AdminQuestionService {
                 }).collect(Collectors.toList());
     }
 
-    public FetchAdminDTO.FetchQuestionDTO handleFetchOneQuestion(long id) throws ObjectNotFound {
+    public FetchAdminDTO.FetchQuestionDTO handleFetchOneQuestion(long id) {
         Optional<Question> checkQuestion = this.questionRepository.findById(id);
         if (checkQuestion.isEmpty()) {
             throw new ObjectNotFound("Question not found");
@@ -68,8 +68,7 @@ public class AdminQuestionService {
         return convertToDTO(checkQuestion.get());
     }
 
-    public FetchAdminDTO.FetchQuestionDTO handleCreateQuestion(CreateQuestionRequest newQuestion)
-            throws NullObjectException, DuplicatedObjectException {
+    public FetchAdminDTO.FetchQuestionDTO handleCreateQuestion(CreateQuestionRequest newQuestion) {
 
         if (newQuestion == null) {
             throw new NullObjectException("New Question is Null");
@@ -101,8 +100,7 @@ public class AdminQuestionService {
         return convertToDTO(saved);
     }
 
-    public FetchAdminDTO.FetchQuestionDTO handleUpdateQuestion(UpdateQuestionRequest updatedQuestion)
-            throws ObjectNotFound, DuplicatedObjectException {
+    public FetchAdminDTO.FetchQuestionDTO handleUpdateQuestion(UpdateQuestionRequest updatedQuestion) {
         Optional<Question> checkQuestion = this.questionRepository.findById(updatedQuestion.getId());
         if (checkQuestion.isEmpty()) {
             throw new ObjectNotFound("Question not found");
@@ -131,7 +129,7 @@ public class AdminQuestionService {
         return convertToDTO(saved);
     }
 
-    public void handleDeleteQuestion(long id) throws ObjectNotFound {
+    public void handleDeleteQuestion(long id) {
         Optional<Question> checkQuestion = this.questionRepository.findById(id);
         if (checkQuestion.isEmpty()) {
             throw new ObjectNotFound("Question not found");

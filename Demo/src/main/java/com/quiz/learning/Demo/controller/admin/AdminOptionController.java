@@ -39,8 +39,7 @@ public class AdminOptionController {
     }
 
     @PostMapping("/admin/options/create")
-    public ResponseEntity<FetchAdminDTO.FetchOptionDTO> create(@RequestBody CreateOptionRequest newOption)
-            throws DuplicatedObjectException {
+    public ResponseEntity<FetchAdminDTO.FetchOptionDTO> create(@RequestBody CreateOptionRequest newOption) {
         return ResponseEntity.status(HttpStatus.OK).body(this.optionService.handleCreateOption(newOption));
     }
 
