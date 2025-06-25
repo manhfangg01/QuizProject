@@ -36,7 +36,8 @@ public class ClientQuizController {
     }
 
     @GetMapping("/client/quizzies/fetch/{id}")
-    public ResponseEntity<Quiz> ClientfetchOne(@PathVariable("id") long id) throws ObjectNotFound {
+    public ResponseEntity<FetchClientDTO.QuizClientDTO> ClientfetchOne(@PathVariable("id") long id)
+            throws ObjectNotFound {
         return ResponseEntity.ok().body(this.quizService.handleFetchQuizById(id));
     }
 

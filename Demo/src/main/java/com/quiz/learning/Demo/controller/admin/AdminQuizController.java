@@ -6,6 +6,9 @@ import java.util.Optional;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.quiz.learning.Demo.domain.Quiz;
+import com.quiz.learning.Demo.domain.request.admin.quiz.CreateQuizRequest;
+import com.quiz.learning.Demo.domain.request.admin.quiz.UpdateQuizRequest;
+import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO;
 import com.quiz.learning.Demo.domain.response.client.DisplayClientDTO;
 import com.quiz.learning.Demo.domain.response.client.FetchClientDTO;
 import com.quiz.learning.Demo.domain.restResponse.ApiMessage;
@@ -35,25 +38,26 @@ public class AdminQuizController {
     // Admin API
     @GetMapping("admin/quizzies/fetch")
     @ApiMessage("Truy vấn tất cả Quizzies")
-    public ResponseEntity<List<Quiz>> fetchAll() {
+    public ResponseEntity<List<FetchAdminDTO.FetchQuizDTO>> fetchAll() {
         return ResponseEntity.ok().body(this.quizService.handleFetchAllQuizzies());
     }
 
     @GetMapping("admin/quizzies/fetch/{id}")
     @ApiMessage("Truy vấn 1 Quiz")
-    public ResponseEntity<Quiz> fetchOne(@PathVariable("id") long id) throws ObjectNotFound {
+    public ResponseEntity<FetchAdminDTO.FetchQuizDTO> fetchOne(@PathVariable("id") long id) throws ObjectNotFound {
         return ResponseEntity.ok().body(this.quizService.handleFetchQuizById(id));
     }
 
     @PostMapping("admin/quizzies/create")
     @ApiMessage("Tạo 1 Quiz")
-    public ResponseEntity<Quiz> create(@RequestBody Quiz quiz) throws NullObjectException, DuplicatedObjectException {
+    public ResponseEntity<FetchAdminDTO.FetchQuizDTO> create(@RequestBody CreateQuizRequest quiz)
+            throws NullObjectException, DuplicatedObjectException {
         return ResponseEntity.ok().body(this.quizService.handleCreateQuiz(quiz));
     }
 
     @PutMapping("admin/quizzies/update")
     @ApiMessage("Cập nhật 1 Quiz")
-    public ResponseEntity<Quiz> updateQuiz(@RequestBody Quiz updatedQuiz)
+    public ResponseEntity<FetchAdminDTO.FetchQuizDTO> updateQuiz(@RequestBody UpdateQuizRequest updatedQuiz)
             throws ObjectNotFound, DuplicatedObjectException {
 
         return ResponseEntity.ok().body(this.quizService.handleUpdateQuiz(updatedQuiz));

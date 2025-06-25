@@ -2,12 +2,18 @@ package com.quiz.learning.Demo.service.admin;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
+import org.hibernate.ObjectNotFoundException;
 import org.springframework.stereotype.Service;
 
+import com.quiz.learning.Demo.domain.Question;
 import com.quiz.learning.Demo.domain.Quiz;
+import com.quiz.learning.Demo.domain.request.admin.quiz.CreateQuizRequest;
+import com.quiz.learning.Demo.domain.request.admin.quiz.UpdateQuizRequest;
 import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO;
+import com.quiz.learning.Demo.repository.QuestionRepository;
 import com.quiz.learning.Demo.repository.QuizRepository;
 import com.quiz.learning.Demo.util.error.DuplicatedObjectException;
 import com.quiz.learning.Demo.util.error.NullObjectException;
@@ -18,12 +24,14 @@ public class AdminQuizService {
     private final QuizRepository quizRepository;
     private final AdminQuestionService adminQuestionService;
     private final AdminResultService adminResultService;
+    private final QuestionRepository questionRepository;
 
     public AdminQuizService(QuizRepository quizRepository, AdminQuestionService adminQuestionService,
-            AdminResultService adminResultService) {
+            AdminResultService adminResultService, QuestionRepository questionRepository) {
         this.quizRepository = quizRepository;
         this.adminQuestionService = adminQuestionService;
         this.adminResultService = adminResultService;
+        this.questionRepository = questionRepository;
     }
 
     public FetchAdminDTO.FetchQuizDTO convertToDTO(Quiz quiz) {
@@ -52,48 +60,82 @@ public class AdminQuizService {
         return dto;
     }
 
-    public List<Quiz> handleFetchAllQuizzies() {
-        return this.quizRepository.findAll();
+    public List<FetchAdminDTO.FetchQuizDTO> handleFetchAllQuizzies() {
+        List<Quiz> quizzies = this.quizRepository.findAll();
+        List<FetchAdminDTO.FetchQuizDTO> quizDTOs = quizzies.stream()
+                .map(quiz -> {
+                    return this.convertToDTO(quiz);
+                })
+                .collect(Collectors.toList());
+
+        return quizDTOs;
     }
 
-    public Quiz handleFetchQuizById(long id) throws ObjectNotFound {
+    public FetchAdminDTO.FetchQuizDTO handleFetchQuizById(long id) throws ObjectNotFound {
         Optional<Quiz> checkQuiz = this.quizRepository.findById(id);
         if (checkQuiz.isEmpty()) {
             throw new ObjectNotFound("Quiz Not Found");
         }
-        return checkQuiz.get();
+        return convertToDTO(checkQuiz.get());
     }
 
-    public Quiz handleCreateQuiz(Quiz quiz) throws NullObjectException, DuplicatedObjectException {
-        if (quiz == null) {
-            throw new NullObjectException("Quiz Is Null");
-        }
-        if (this.quizRepository.findByTitle(quiz.getTitle()).isPresent()) {
-            throw new DuplicatedObjectException("Quiz's name is duplicated");
-        }
-        return this.quizRepository.save(quiz);
+    private List<Question> fetchQuestionsByIds(List<Long> ids) {
+        return ids.stream()
+                .map(id -> {
+                    return questionRepository.findById(id).isPresent() ? questionRepository.findById(id).get() : null;
+                })
+                .collect(Collectors.toList());
     }
 
-    private Quiz setProperties(Quiz quiz1, Quiz quiz2) {
-        quiz1.setTitle(quiz2.getTitle());
-        quiz1.setSubjectName(quiz2.getSubjectName());
-        quiz1.setQuestions(quiz2.getQuestions());
-        quiz1.setDifficulty(quiz2.getDifficulty());
-        quiz1.setTotalParticipants(quiz2.getTotalParticipants());
-        return quiz1;
+    public FetchAdminDTO.FetchQuizDTO handleCreateQuiz(CreateQuizRequest createdQuiz)
+            throws NullObjectException, DuplicatedObjectException {
+        if (createdQuiz == null) {
+            throw new NullObjectException("Quiz is null");
+        }
+
+        if (quizRepository.findByTitle(createdQuiz.getTitle()).isPresent()) {
+            throw new DuplicatedObjectException("Quiz's title is duplicated");
+        }
+
+        if (createdQuiz.getQuestions() == null || createdQuiz.getQuestions().isEmpty()) {
+            throw new NullObjectException("Quiz must contain at least one question");
+        }
+
+        Quiz quiz = new Quiz();
+        quiz.setActive(createdQuiz.isActive());
+        quiz.setDifficulty(createdQuiz.getDifficulty());
+        quiz.setQuestions(fetchQuestionsByIds(createdQuiz.getQuestions()));
+        quiz.setSubjectName(createdQuiz.getSubjectName());
+        quiz.setTimeLimit(createdQuiz.getTimeLimit());
+        quiz.setTitle(createdQuiz.getTitle());
+        quiz.setTotalParticipants(0);
+
+        Quiz saved = quizRepository.save(quiz);
+        return convertToDTO(saved);
     }
 
-    public Quiz handleUpdateQuiz(Quiz updatedQuiz) throws ObjectNotFound, DuplicatedObjectException {
-        Optional<Quiz> checkQuiz = this.quizRepository.findById(updatedQuiz.getId());
-        if (checkQuiz.isEmpty()) {
-            throw new ObjectNotFound("Quiz Not Found");
+    public FetchAdminDTO.FetchQuizDTO handleUpdateQuiz(UpdateQuizRequest request)
+            throws ObjectNotFound, DuplicatedObjectException {
+        Quiz quiz = quizRepository.findById(request.getQuizId())
+                .orElseThrow(() -> new ObjectNotFound("Quiz with id " + request.getQuizId() + " not found"));
+
+        // Check trùng title (nếu title bị đổi)
+        if (!quiz.getTitle().equals(request.getTitle())
+                && quizRepository.findByTitle(request.getTitle()).isPresent()) {
+            throw new DuplicatedObjectException("Title is duplicated");
         }
-        if (this.quizRepository.findByTitle(updatedQuiz.getTitle()).isPresent()) {
-            if (!updatedQuiz.getTitle().equalsIgnoreCase(checkQuiz.get().getTitle())) {
-                throw new DuplicatedObjectException("Quiz's name is duplicated");
-            }
-        }
-        return this.quizRepository.save(this.setProperties(checkQuiz.get(), updatedQuiz));
+
+        quiz.setTitle(request.getTitle());
+        quiz.setSubjectName(request.getSubjectName());
+        quiz.setTimeLimit(request.getTimeLimit());
+        quiz.setActive(request.isActive());
+        quiz.setDifficulty(request.getDifficulty());
+
+        // Lấy danh sách câu hỏi mới
+        List<Question> updatedQuestions = fetchQuestionsByIds(request.getQuestionIds());
+        quiz.setQuestions(updatedQuestions);
+
+        return convertToDTO(quizRepository.save(quiz));
     }
 
     public void handleDeleteQuiz(long id) throws ObjectNotFound {

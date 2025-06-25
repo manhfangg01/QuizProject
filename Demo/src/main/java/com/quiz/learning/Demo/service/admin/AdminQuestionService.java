@@ -3,14 +3,20 @@ package com.quiz.learning.Demo.service.admin;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
+import com.quiz.learning.Demo.domain.Option;
 import com.quiz.learning.Demo.domain.Question;
 import com.quiz.learning.Demo.domain.Quiz;
+import com.quiz.learning.Demo.domain.request.admin.question.CreateQuestionRequest;
+import com.quiz.learning.Demo.domain.request.admin.question.UpdateQuestionRequest;
 import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO;
+import com.quiz.learning.Demo.repository.OptionRepository;
 import com.quiz.learning.Demo.repository.QuestionRepository;
+import com.quiz.learning.Demo.repository.QuizRepository;
 import com.quiz.learning.Demo.util.error.DuplicatedObjectException;
 import com.quiz.learning.Demo.util.error.NullObjectException;
 import com.quiz.learning.Demo.util.error.ObjectNotFound;
@@ -19,10 +25,13 @@ import com.quiz.learning.Demo.util.error.ObjectNotFound;
 public class AdminQuestionService {
     private final QuestionRepository questionRepository;
     private final AdminOptionService adminOptionService;
+    private final QuizRepository quizRepository;
 
-    public AdminQuestionService(QuestionRepository questionRepository, AdminOptionService adminOptionService) {
+    public AdminQuestionService(QuestionRepository questionRepository, AdminOptionService adminOptionService,
+            QuizRepository quizRepository) {
         this.questionRepository = questionRepository;
         this.adminOptionService = adminOptionService;
+        this.quizRepository = quizRepository;
     }
 
     public FetchAdminDTO.FetchQuestionDTO convertToDTO(Question question) {
@@ -43,46 +52,83 @@ public class AdminQuestionService {
         return dto;
     }
 
-    public List<Question> handleFetchAllQuestions() {
-        return this.questionRepository.findAll();
+    public List<FetchAdminDTO.FetchQuestionDTO> handleFetchAllQuestions() {
+        return this.questionRepository.findAll()
+                .stream()
+                .map(ques -> {
+                    return this.convertToDTO(ques);
+                }).collect(Collectors.toList());
     }
 
-    public Question handleFetchOneQuestion(long id) throws ObjectNotFound {
+    public FetchAdminDTO.FetchQuestionDTO handleFetchOneQuestion(long id) throws ObjectNotFound {
         Optional<Question> checkQuestion = this.questionRepository.findById(id);
         if (checkQuestion.isEmpty()) {
             throw new ObjectNotFound("Question not found");
         }
-        return checkQuestion.get();
+        return convertToDTO(checkQuestion.get());
     }
 
-    public Question handleCreateQuestion(Question newQuestion) throws NullObjectException, DuplicatedObjectException {
+    public FetchAdminDTO.FetchQuestionDTO handleCreateQuestion(CreateQuestionRequest newQuestion)
+            throws NullObjectException, DuplicatedObjectException {
+
         if (newQuestion == null) {
             throw new NullObjectException("New Question is Null");
         }
+
         if (this.questionRepository.findByContext(newQuestion.getContext()).isPresent()) {
-            throw new DuplicatedObjectException("Question with the similar context is found");
+            throw new DuplicatedObjectException("Question with similar context is found");
         }
-        return this.questionRepository.save(newQuestion);
+
+        // Tạo question
+        Question question = new Question();
+        question.setContext(newQuestion.getContext());
+
+        // Map từ CreateOptionRequest -> Option
+        List<Option> options = newQuestion.getOptions().stream()
+                .map(optReq -> {
+                    Option option = new Option();
+                    option.setContext(optReq.getContext());
+                    option.setCorrect(optReq.isCorrect());
+                    option.setQuestion(question); // gán quan hệ ngược
+                    return option;
+                })
+                .collect(Collectors.toList());
+
+        question.setOptions(options);
+
+        // Lưu và trả về DTO
+        Question saved = questionRepository.save(question);
+        return convertToDTO(saved);
     }
 
-    private Question setProperties(Question ques1, Question ques2) {
-        ques1.setContext(ques2.getContext());
-        ques1.setOptions(ques2.getOptions());
-        ques1.setQuizzies(ques2.getQuizzies());
-        return ques1;
-    }
-
-    public Question handleUpdateQuestion(Question updatedQuestion) throws ObjectNotFound, DuplicatedObjectException {
+    public FetchAdminDTO.FetchQuestionDTO handleUpdateQuestion(UpdateQuestionRequest updatedQuestion)
+            throws ObjectNotFound, DuplicatedObjectException {
         Optional<Question> checkQuestion = this.questionRepository.findById(updatedQuestion.getId());
         if (checkQuestion.isEmpty()) {
             throw new ObjectNotFound("Question not found");
         }
         Question realQuestion = checkQuestion.get();
         if (this.questionRepository.findByContext(updatedQuestion.getContext()).isPresent()) {
-            if (updatedQuestion.getContext() != realQuestion.getContext())
+            if (updatedQuestion.getContext().equalsIgnoreCase(realQuestion.getContext()))
                 throw new DuplicatedObjectException("Question with the similar context is found");
         }
-        return this.questionRepository.save(setProperties(realQuestion, updatedQuestion));
+        Question question = new Question();
+        question.setContext(updatedQuestion.getContext());
+        // Map từ CreateOptionRequest -> Option
+        List<Option> options = updatedQuestion.getOptions().stream()
+                .map(optReq -> {
+                    Option option = new Option();
+                    option.setContext(optReq.getContext());
+                    option.setCorrect(optReq.isCorrect());
+                    option.setQuestion(question); // gán quan hệ ngược
+                    return option;
+                })
+                .collect(Collectors.toList());
+
+        question.setOptions(options);
+        // Lưu và trả về DTO
+        Question saved = questionRepository.save(question);
+        return convertToDTO(saved);
     }
 
     public void handleDeleteQuestion(long id) throws ObjectNotFound {
@@ -90,7 +136,14 @@ public class AdminQuestionService {
         if (checkQuestion.isEmpty()) {
             throw new ObjectNotFound("Question not found");
         }
-        this.questionRepository.deleteById(id);
+
+        Question question = checkQuestion.get();
+
+        for (Quiz quiz : question.getQuizzies()) {
+            quiz.getQuestions().remove(question);
+            quizRepository.save(quiz); // cập nhật thay đổi vào DB
+        }
+        questionRepository.delete(question);
     }
 
 }

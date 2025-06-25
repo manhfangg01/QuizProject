@@ -21,12 +21,23 @@ public class ClientQuizService {
         this.quizRepository = quizRepository;
     }
 
-    public Quiz handleFetchQuizById(long id) throws ObjectNotFound {
+    public FetchClientDTO.QuizClientDTO convertToDTO(Quiz quiz) {
+        FetchClientDTO.QuizClientDTO quizDTO = new FetchClientDTO.QuizClientDTO();
+        quizDTO.setId(quiz.getId());
+        quizDTO.setNumberOfQuestion(quiz.getQuestions() != null ? quiz.getQuestions().size() : 0);
+        quizDTO.setActive(quiz.isActive());
+        quizDTO.setDifficulty(quiz.getDifficulty());
+        quizDTO.setTimeLimit(quiz.getTimeLimit());
+        quizDTO.setTitle(quiz.getTitle());
+        return quizDTO;
+    }
+
+    public FetchClientDTO.QuizClientDTO handleFetchQuizById(long id) throws ObjectNotFound {
         Optional<Quiz> checkQuiz = this.quizRepository.findById(id);
         if (checkQuiz.isEmpty()) {
             throw new ObjectNotFound("Quiz Not Found");
         }
-        return checkQuiz.get();
+        return this.convertToDTO(checkQuiz.get());
     }
 
     public DisplayClientDTO.QuizPlayDTO handleClientDisplayQuiz(long id) throws ObjectNotFound {
@@ -68,22 +79,12 @@ public class ClientQuizService {
 
     public List<FetchClientDTO.QuizClientDTO> handleClientFetchQuizzies() {
         List<Quiz> allQuizzies = this.quizRepository.findAll();
-        if (allQuizzies.size() == 0) {
+        if (allQuizzies.isEmpty()) {
             return null;
         }
-        List<FetchClientDTO.QuizClientDTO> quizzies = allQuizzies.stream().map(quiz -> {
-            FetchClientDTO.QuizClientDTO quizziesDTO = new FetchClientDTO.QuizClientDTO();
-            quizziesDTO.setId(quiz.getId());
-            quizziesDTO.setNumberOfQuestion(quiz.getQuestions() != null ? quiz.getQuestions().size() : 0);
-            quizziesDTO.setActive(quiz.isActive());
-            quizziesDTO.setDifficulty(quiz.getDifficulty());
-            quizziesDTO.setTimeLimit(quiz.getTimeLimit());
-            quizziesDTO.setTitle(quiz.getTitle());
-            return quizziesDTO; // 👈 BẮT BUỘC PHẢI CÓ RETURN
-        }).collect(Collectors.toList());
-
-        return quizzies;
-
+        return allQuizzies.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
 
 }
