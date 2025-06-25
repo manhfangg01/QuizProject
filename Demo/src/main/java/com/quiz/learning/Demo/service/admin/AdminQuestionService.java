@@ -143,6 +143,7 @@ public class AdminQuestionService {
             quiz.getQuestions().remove(question);
             quizRepository.save(quiz); // cập nhật thay đổi vào DB
         }
+
         questionRepository.delete(question);
     }
 
