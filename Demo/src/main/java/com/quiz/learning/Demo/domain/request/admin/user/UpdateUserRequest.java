@@ -17,12 +17,6 @@ public class UpdateUserRequest {
     @NotBlank(message = "Họ tên không được để trống")
     private String fullName;
 
-    @Email(message = "Email không hợp lệ")
-    @NotBlank(message = "Email không được để trống")
-    private String email;
-
-    private String password; // optional – nếu cập nhật
-
-    private Set<Long> roleIds; // cập nhật vai trò
+    private Long roleId; // cập nhật vai trò
 
 }

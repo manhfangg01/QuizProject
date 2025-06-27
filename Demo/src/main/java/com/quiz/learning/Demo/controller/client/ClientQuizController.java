@@ -7,12 +7,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.quiz.learning.Demo.domain.Quiz;
 import com.quiz.learning.Demo.domain.response.client.DisplayClientDTO;
 import com.quiz.learning.Demo.domain.response.client.FetchClientDTO;
 import com.quiz.learning.Demo.domain.restResponse.ApiMessage;
 import com.quiz.learning.Demo.service.client.ClientQuizService;
-import com.quiz.learning.Demo.util.error.ObjectNotFound;
 
 @RestController
 public class ClientQuizController {

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import com.quiz.learning.Demo.domain.Result;
 import com.quiz.learning.Demo.domain.Role;
 import com.quiz.learning.Demo.domain.User;
+import com.quiz.learning.Demo.domain.auth.LoginRequest;
 import com.quiz.learning.Demo.domain.request.admin.user.CreateUserRequest;
 import com.quiz.learning.Demo.domain.request.admin.user.UpdateUserRequest;
 import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO;
@@ -26,12 +27,14 @@ public class AdminUserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final ResultRepository resultRepository;
+    private final AdminRoleService adminRoleService;
 
     public AdminUserService(UserRepository userRepository, PasswordEncoder passwordEncoder,
-            ResultRepository resultRepository) {
+            ResultRepository resultRepository, AdminRoleService adminRoleService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.resultRepository = resultRepository;
+        this.adminRoleService = adminRoleService;
     }
 
     public FetchAdminDTO.FetchUserDTO convertToDTO(User user) {
@@ -43,15 +46,8 @@ public class AdminUserService {
         dto.setUpdatedAt(user.getUpdatedAt());
         dto.setCreatedBy(user.getCreatedBy());
         dto.setUpdatedBy(user.getUpdatedBy());
+        dto.setRole(this.adminRoleService.handleFetchRoleById(user.getRole().getId()));
 
-        // Lấy danh sách tên role
-        if (user.getRoles() != null) {
-            Set<String> roleNames = user.getRoles()
-                    .stream()
-                    .map(Role::getName) // giả sử Role có getName()
-                    .collect(Collectors.toSet());
-            dto.setRoles(roleNames);
-        }
         return dto;
     }
 
@@ -80,7 +76,7 @@ public class AdminUserService {
         user.setCreatedAt(Instant.now());
         user.setCreatedBy("hardcode");
         user.setPassword(passwordEncoder.encode(newUser.getPassword()));
-        user.setRoles(null);
+        user.setRole(this.adminRoleService.handleFetchRoleById(newUser.getRoleId()));
         return this.convertToDTO(this.userRepository.save(user));
     }
 
@@ -97,7 +93,7 @@ public class AdminUserService {
         }
 
         realUser.setFullName(updatedUser.getFullName());
-        realUser.setRoles(null);
+        realUser.setRole(this.adminRoleService.handleFetchRoleById(updatedUser.getRoleId()));
         realUser.setUpdatedAt(Instant.now());
         realUser.setUpdatedBy("HardCode");
         return this.convertToDTO(this.userRepository.save(realUser));
@@ -115,6 +111,20 @@ public class AdminUserService {
             }
         }
         this.userRepository.delete(realUser);
+    }
+
+    public Optional<User> handleFetchUserByUsername(String email) {
+        return this.userRepository.findByEmail(email);
+    }
+
+    public void updateUserRefreshToken(LoginRequest loginRequest, String token) {
+        Optional<User> checkUser = this.userRepository.findByEmail(loginRequest.getUsername());
+        if (checkUser.isEmpty()) {
+            throw new ObjectNotFound("User with provided email not existed");
+        }
+        User realUser = checkUser.get();
+        realUser.setRefreshToken(token);
+
     }
 
 }

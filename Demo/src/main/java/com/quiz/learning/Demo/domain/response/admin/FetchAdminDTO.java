@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.quiz.learning.Demo.domain.Role;
 import com.quiz.learning.Demo.util.constant.DifficultyLevel;
 
 import jakarta.persistence.EnumType;
@@ -82,7 +83,7 @@ public class FetchAdminDTO {
         private String createdBy;
         private String updatedBy;
 
-        private Set<String> roles; // chỉ trả về tên vai trò
+        private Role role; // chỉ trả về tên vai trò
     }
 
 }

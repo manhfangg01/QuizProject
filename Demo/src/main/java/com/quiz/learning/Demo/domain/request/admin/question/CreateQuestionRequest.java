@@ -5,8 +5,6 @@ import lombok.Setter;
 
 import java.util.List;
 
-import com.quiz.learning.Demo.domain.request.admin.option.CreateOptionRequest;
-
 @Getter
 @Setter
 public class CreateQuestionRequest {
