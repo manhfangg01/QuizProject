@@ -6,7 +6,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class UpdateOptionRequest {
-    private Long id;
+    private Long optionId;
     private String context;
     private Boolean isCorrect;
 }

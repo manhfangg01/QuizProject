@@ -11,5 +11,5 @@ import com.quiz.learning.Demo.domain.request.admin.option.CreateOptionRequest;
 @Setter
 public class CreateQuestionRequest {
     private String context;
-    private List<CreateOptionRequest> options;
+    private List<Long> options;
 }

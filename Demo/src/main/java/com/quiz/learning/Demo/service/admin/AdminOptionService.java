@@ -69,9 +69,9 @@ public class AdminOptionService {
     }
 
     public FetchAdminDTO.FetchOptionDTO handleUpdateOption(UpdateOptionRequest updatedOption) {
-        Optional<Option> checkOption = this.optionRepository.findById(updatedOption.getId());
+        Optional<Option> checkOption = this.optionRepository.findById(updatedOption.getOptionId());
         if (checkOption.isEmpty()) {
-            throw new ObjectNotFound("There is no option that has id " + updatedOption.getId());
+            throw new ObjectNotFound("There is no option that has id " + updatedOption.getOptionId());
         }
         Option realOption = checkOption.get();
         if (!realOption.getContext().equalsIgnoreCase(updatedOption.getContext())) {
