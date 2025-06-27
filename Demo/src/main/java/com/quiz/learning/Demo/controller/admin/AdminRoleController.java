@@ -25,7 +25,7 @@ public class AdminRoleController {
 
     @GetMapping("/admin/roles/fetch")
     @ApiMessage("fetch all roles")
-    public ResponseEntity<List<Role>> getMethodName(@RequestParam String param) {
+    public ResponseEntity<List<Role>> fetch() {
         return ResponseEntity.status(HttpStatus.OK).body(this.adminRoleService.handleFetchAllRoles());
     }
 

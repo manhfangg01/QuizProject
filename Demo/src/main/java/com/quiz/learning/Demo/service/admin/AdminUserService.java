@@ -85,9 +85,9 @@ public class AdminUserService {
     }
 
     public FetchAdminDTO.FetchUserDTO handleUpdateUser(UpdateUserRequest updatedUser) {
-        Optional<User> checkUser = this.userRepository.findById(updatedUser.getId());
+        Optional<User> checkUser = this.userRepository.findById(updatedUser.getUserId());
         if (checkUser.isEmpty()) {
-            throw new ObjectNotFound("There is no user has id: " + updatedUser.getId());
+            throw new ObjectNotFound("There is no user has id: " + updatedUser.getUserId());
         }
         User realUser = checkUser.get();
         if (!realUser.getFullName().equalsIgnoreCase(updatedUser.getFullName())) {

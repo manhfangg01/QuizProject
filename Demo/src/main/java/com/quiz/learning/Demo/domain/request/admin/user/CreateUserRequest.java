@@ -13,7 +13,7 @@ public class CreateUserRequest {
     @NotBlank(message = "Họ tên không được để trống")
     private String fullName;
 
-    @Email(message = "Email không hợp lệ")
+    @Email(message = "Định dạng email không hợp lệ")
     @NotBlank(message = "Email không được để trống")
     private String email;
 

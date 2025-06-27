@@ -12,7 +12,7 @@ import lombok.Setter;
 @Setter
 public class UpdateUserRequest {
     @NotNull(message = "ID người dùng không được để trống")
-    private Long id;
+    private Long userId;
 
     @NotBlank(message = "Họ tên không được để trống")
     private String fullName;
