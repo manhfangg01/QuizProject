@@ -1,5 +1,6 @@
 package com.quiz.learning.Demo.service.admin;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,28 +45,37 @@ public class AdminQuizService {
         dto.setDifficulty(quiz.getDifficulty());
 
         // ✅ convert list question
-        List<FetchAdminDTO.FetchQuestionDTO> questionDTOs = quiz.getQuestions()
-                .stream()
-                .map(adminQuestionService::convertToDTO)
-                .collect(Collectors.toList());
+
+        List<FetchAdminDTO.FetchQuestionDTO> questionDTOs = quiz.getQuestions() == null ? Collections.emptyList()
+                : quiz
+                        .getQuestions()
+                        .stream()
+                        .map(adminQuestionService::convertToDTO)
+                        .collect(Collectors.toList());
         dto.setQuestions(questionDTOs);
 
-        List<FetchAdminDTO.FetchResultDTO> resultDTOs = quiz.getResults()
-                .stream()
-                .map(adminResultService::convertToDTO)
-                .collect(Collectors.toList());
-        dto.setResults(resultDTOs);
+        if (quiz.getResults() != null) {
+            List<FetchAdminDTO.FetchResultDTO> resultDTOs = quiz.getResults() == null ? Collections.emptyList()
+                    : quiz
+                            .getResults()
+                            .stream()
+                            .map(adminResultService::convertToDTO)
+                            .collect(Collectors.toList());
+            dto.setResults(resultDTOs);
+        }
 
         return dto;
     }
 
-    public List<FetchAdminDTO.FetchQuizDTO> handleFetchAllQuizzies() {
-        List<Quiz> quizzies = this.quizRepository.findAll();
-        List<FetchAdminDTO.FetchQuizDTO> quizDTOs = quizzies.stream()
-                .map(quiz -> {
-                    return this.convertToDTO(quiz);
-                })
-                .collect(Collectors.toList());
+    public List<FetchAdminDTO.FetchQuizDTO> handleFetchAllquizzes() {
+        List<Quiz> quizzes = this.quizRepository.findAll();
+        List<FetchAdminDTO.FetchQuizDTO> quizDTOs = quizzes == null ? Collections.emptyList()
+                : quizzes
+                        .stream()
+                        .map(quiz -> {
+                            return this.convertToDTO(quiz);
+                        })
+                        .collect(Collectors.toList());
 
         return quizDTOs;
     }
@@ -79,11 +89,14 @@ public class AdminQuizService {
     }
 
     private List<Question> fetchQuestionsByIds(List<Long> ids) {
-        return ids.stream()
-                .map(id -> {
-                    return questionRepository.findById(id).isPresent() ? questionRepository.findById(id).get() : null;
-                })
-                .collect(Collectors.toList());
+        return ids == null ? Collections.emptyList()
+                : ids
+                        .stream()
+                        .map(id -> {
+                            return questionRepository.findById(id).isPresent() ? questionRepository.findById(id).get()
+                                    : null;
+                        })
+                        .collect(Collectors.toList());
     }
 
     public FetchAdminDTO.FetchQuizDTO handleCreateQuiz(CreateQuizRequest createdQuiz) {
@@ -129,7 +142,7 @@ public class AdminQuizService {
         quiz.setDifficulty(request.getDifficulty());
 
         // Lấy danh sách câu hỏi mới
-        List<Question> updatedQuestions = fetchQuestionsByIds(request.getQuestionIds());
+        List<Question> updatedQuestions = fetchQuestionsByIds(request.getQuestions());
         quiz.setQuestions(updatedQuestions);
 
         return convertToDTO(quizRepository.save(quiz));

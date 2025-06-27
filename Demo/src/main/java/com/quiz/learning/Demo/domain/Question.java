@@ -30,6 +30,6 @@ public class Question {
     private List<Option> options;
 
     @ManyToMany(mappedBy = "questions")
-    private List<Quiz> quizzies;
+    private List<Quiz> quizzes;
 
 }

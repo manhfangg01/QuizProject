@@ -22,19 +22,19 @@ public class ClientQuizController {
         this.quizService = quizService;
     }
 
-    @GetMapping("/client/quizzies/fetch")
-    @ApiMessage("Truy cập các Quizzies công khai")
-    public ResponseEntity<List<FetchClientDTO.QuizClientDTO>> ClientfetchQuizzies() {
-        return ResponseEntity.ok().body(this.quizService.handleClientFetchQuizzies());
+    @GetMapping("/client/quizzes/fetch")
+    @ApiMessage("Truy cập các quizzes công khai")
+    public ResponseEntity<List<FetchClientDTO.QuizClientDTO>> Clientfetchquizzes() {
+        return ResponseEntity.ok().body(this.quizService.handleClientFetchquizzes());
     }
 
-    @GetMapping("/client/quizzies/display/{id}")
+    @GetMapping("/client/quizzes/display/{id}")
     @ApiMessage("Hiển thị làm bài Quiz")
     public ResponseEntity<DisplayClientDTO.QuizPlayDTO> ClientdisplayQuiz(@PathVariable("id") Long id) {
         return ResponseEntity.ok().body(this.quizService.handleClientDisplayQuiz(id));
     }
 
-    @GetMapping("/client/quizzies/fetch/{id}")
+    @GetMapping("/client/quizzes/fetch/{id}")
     public ResponseEntity<FetchClientDTO.QuizClientDTO> ClientfetchOne(@PathVariable("id") Long id) {
         return ResponseEntity.ok().body(this.quizService.handleFetchQuizById(id));
     }

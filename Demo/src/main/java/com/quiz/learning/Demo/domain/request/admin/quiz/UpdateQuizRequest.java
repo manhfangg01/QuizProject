@@ -16,5 +16,5 @@ public class UpdateQuizRequest {
     private Long timeLimit; // Giới hạn thời gian
     private Boolean isActive; // Trạng thái (mở/bị ẩn)
     private DifficultyLevel difficulty; // Độ khó (Easy, Medium, Hard - bạn có thể dùng Enum)
-    private List<Long> questionIds; // Danh sách các ID câu hỏi
+    private List<Long> questions; // Danh sách các ID câu hỏi
 }

@@ -27,32 +27,32 @@ public class AdminQuizController {
     }
 
     // Admin API
-    @GetMapping("admin/quizzies/fetch")
-    @ApiMessage("fetch all quizzies")
+    @GetMapping("admin/quizzes/fetch")
+    @ApiMessage("fetch all quizzes")
     public ResponseEntity<List<FetchAdminDTO.FetchQuizDTO>> fetchAll() {
-        return ResponseEntity.ok().body(this.quizService.handleFetchAllQuizzies());
+        return ResponseEntity.ok().body(this.quizService.handleFetchAllquizzes());
     }
 
-    @GetMapping("admin/quizzies/fetch/{id}")
+    @GetMapping("admin/quizzes/fetch/{id}")
     @ApiMessage("fetch a quiz")
     public ResponseEntity<FetchAdminDTO.FetchQuizDTO> fetchOne(@PathVariable("id") Long id) {
         return ResponseEntity.ok().body(this.quizService.handleFetchQuizById(id));
     }
 
-    @PostMapping("admin/quizzies/create")
+    @PostMapping("admin/quizzes/create")
     @ApiMessage("create a question")
     public ResponseEntity<FetchAdminDTO.FetchQuizDTO> create(@RequestBody CreateQuizRequest quiz) {
         return ResponseEntity.ok().body(this.quizService.handleCreateQuiz(quiz));
     }
 
-    @PutMapping("admin/quizzies/update")
+    @PutMapping("admin/quizzes/update")
     @ApiMessage("update a quiz")
     public ResponseEntity<FetchAdminDTO.FetchQuizDTO> updateQuiz(@RequestBody UpdateQuizRequest updatedQuiz) {
 
         return ResponseEntity.ok().body(this.quizService.handleUpdateQuiz(updatedQuiz));
     }
 
-    @DeleteMapping("admin/quizzies/delete/{id}")
+    @DeleteMapping("admin/quizzes/delete/{id}")
     @ApiMessage("delete a quiz")
     public ResponseEntity<Void> deleteQuiz(@PathVariable("id") Long id) {
         this.quizService.handleDeleteQuiz(id);

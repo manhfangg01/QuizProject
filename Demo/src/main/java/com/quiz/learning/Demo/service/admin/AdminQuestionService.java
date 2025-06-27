@@ -36,26 +36,26 @@ public class AdminQuestionService {
         FetchAdminDTO.FetchQuestionDTO dto = new FetchAdminDTO.FetchQuestionDTO();
         dto.setQuestionId(question.getId());
         dto.setContext(question.getContext());
+        List<Option> options = question.getOptions();
 
-        if (question.getOptions() == null) {
-            question.setOptions(Collections.emptyList());
-        } else {
-            List<FetchAdminDTO.FetchOptionDTO> optionDTOs = question.getOptions()
-                    .stream()
-                    .map(adminOptionService::convertToDTO)
-                    .collect(Collectors.toList());
-            dto.setOptions(optionDTOs);
-        }
+        List<FetchAdminDTO.FetchOptionDTO> optionDTOs = options == null ? Collections.emptyList()
+                : options
+                        .stream()
+                        .map(adminOptionService::convertToDTO)
+                        .collect(Collectors.toList());
+        dto.setOptions(optionDTOs);
 
         return dto;
     }
 
     public List<FetchAdminDTO.FetchQuestionDTO> handleFetchAllQuestions() {
-        return this.questionRepository.findAll()
-                .stream()
-                .map(ques -> {
-                    return this.convertToDTO(ques);
-                }).collect(Collectors.toList());
+        List<Question> questions = this.questionRepository.findAll();
+        return questions == null ? Collections.emptyList()
+                : questions
+                        .stream()
+                        .map(ques -> {
+                            return this.convertToDTO(ques);
+                        }).collect(Collectors.toList());
     }
 
     public FetchAdminDTO.FetchQuestionDTO handleFetchOneQuestion(Long id) {
@@ -81,15 +81,17 @@ public class AdminQuestionService {
         question.setContext(newQuestion.getContext());
 
         // Map từ CreateOptionRequest -> Option
-        List<Option> options = newQuestion.getOptions().stream()
-                .map(optReq -> {
-                    Option option = new Option();
-                    option.setContext(optReq.getContext());
-                    option.setIsCorrect(optReq.getIsCorrect());
-                    option.setQuestion(question); // gán quan hệ ngược
-                    return option;
-                })
-                .collect(Collectors.toList());
+        List<Option> options = newQuestion.getOptions() == null ? Collections.emptyList()
+                : newQuestion.getOptions()
+                        .stream()
+                        .map(optReq -> {
+                            Option option = new Option();
+                            option.setContext(optReq.getContext());
+                            option.setIsCorrect(optReq.getIsCorrect());
+                            option.setQuestion(question); // gán quan hệ ngược
+                            return option;
+                        })
+                        .collect(Collectors.toList());
 
         question.setOptions(options);
 
@@ -111,15 +113,18 @@ public class AdminQuestionService {
         Question question = new Question();
         question.setContext(updatedQuestion.getContext());
         // Map từ CreateOptionRequest -> Option
-        List<Option> options = updatedQuestion.getOptions().stream()
-                .map(optReq -> {
-                    Option option = new Option();
-                    option.setContext(optReq.getContext());
-                    option.setIsCorrect(optReq.getIsCorrect());
-                    option.setQuestion(question); // gán quan hệ ngược
-                    return option;
-                })
-                .collect(Collectors.toList());
+        List<Option> options = updatedQuestion.getOptions() == null ? Collections.emptyList()
+                : updatedQuestion
+                        .getOptions()
+                        .stream()
+                        .map(optReq -> {
+                            Option option = new Option();
+                            option.setContext(optReq.getContext());
+                            option.setIsCorrect(optReq.getIsCorrect());
+                            option.setQuestion(question); // gán quan hệ ngược
+                            return option;
+                        })
+                        .collect(Collectors.toList());
 
         question.setOptions(options);
         // Lưu và trả về DTO
@@ -135,7 +140,7 @@ public class AdminQuestionService {
 
         Question question = checkQuestion.get();
 
-        for (Quiz quiz : question.getQuizzies()) {
+        for (Quiz quiz : question.getQuizzes()) {
             quiz.getQuestions().remove(question);
             quizRepository.save(quiz); // cập nhật thay đổi vào DB
         }

@@ -35,14 +35,19 @@ public class AdminOptionService {
         FetchAdminDTO.FetchOptionDTO dto = new FetchAdminDTO.FetchOptionDTO();
         dto.setContext(option.getContext());
         dto.setId(option.getId());
-        // Convert answers nếu có DTO cho nó
+        dto.setIsCorrect(option.getIsCorrect());
         return dto;
     }
 
     public List<FetchAdminDTO.FetchOptionDTO> handleFetchAllOptions() {
-        return this.optionRepository.findAll().stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
+        List<Option> options = this.optionRepository.findAll();
+
+        return options == null ? Collections.emptyList()
+                : options
+                        .stream()
+                        .map(this::convertToDTO)
+                        .collect(Collectors.toList());
+
     }
 
     public FetchAdminDTO.FetchOptionDTO handleFetchOneOption(Long id) {

@@ -1,6 +1,7 @@
 package com.quiz.learning.Demo.service.client;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -56,35 +57,40 @@ public class ClientQuizService {
         List<DisplayClientDTO.QuestionDTO> listQuestionPlay = new ArrayList<>();
 
         if (realQuiz.getQuestions() != null) {
-            listQuestionPlay = realQuiz.getQuestions().stream().map(question -> {
-                DisplayClientDTO.QuestionDTO questionDTO = new DisplayClientDTO.QuestionDTO();
-                questionDTO.setQuestionId(question.getId());
-                questionDTO.setContent(question.getContext());
+            listQuestionPlay = realQuiz.getQuestions() == null ? Collections.emptyList()
+                    : realQuiz.getQuestions().stream().map(question -> {
+                        DisplayClientDTO.QuestionDTO questionDTO = new DisplayClientDTO.QuestionDTO();
+                        questionDTO.setQuestionId(question.getId());
+                        questionDTO.setContent(question.getContext());
 
-                List<DisplayClientDTO.OptionDTO> optionDTOs = question.getOptions().stream().map(option -> {
-                    DisplayClientDTO.OptionDTO optionDTO = new DisplayClientDTO.OptionDTO();
-                    optionDTO.setOptionId(option.getId());
-                    optionDTO.setContent(option.getContext());
-                    return optionDTO;
-                }).collect(Collectors.toList());
+                        List<DisplayClientDTO.OptionDTO> optionDTOs = question.getOptions() == null
+                                ? Collections.emptyList()
+                                : question
+                                        .getOptions().stream().map(option -> {
+                                            DisplayClientDTO.OptionDTO optionDTO = new DisplayClientDTO.OptionDTO();
+                                            optionDTO.setOptionId(option.getId());
+                                            optionDTO.setContent(option.getContext());
+                                            return optionDTO;
+                                        }).collect(Collectors.toList());
 
-                questionDTO.setOptions(optionDTOs);
-                return questionDTO;
-            }).collect(Collectors.toList());
+                        questionDTO.setOptions(optionDTOs);
+                        return questionDTO;
+                    }).collect(Collectors.toList());
         }
 
         quizPlayDTO.setQuestions(listQuestionPlay);
         return quizPlayDTO;
     }
 
-    public List<FetchClientDTO.QuizClientDTO> handleClientFetchQuizzies() {
-        List<Quiz> allQuizzies = this.quizRepository.findAll();
-        if (allQuizzies.isEmpty()) {
+    public List<FetchClientDTO.QuizClientDTO> handleClientFetchquizzes() {
+        List<Quiz> allquizzes = this.quizRepository.findAll();
+        if (allquizzes.isEmpty()) {
             return null;
         }
-        return allQuizzies.stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
+        return allquizzes == null ? Collections.emptyList()
+                : allquizzes.stream()
+                        .map(this::convertToDTO)
+                        .collect(Collectors.toList());
     }
 
 }

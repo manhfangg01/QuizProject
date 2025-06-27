@@ -1,5 +1,6 @@
 package com.quiz.learning.Demo.service.admin;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -38,10 +39,12 @@ public class AdminResultService {
     }
 
     public List<FetchAdminDTO.FetchResultDTO> handleFetchAllResults() {
-        return this.resultRepository.findAll()
-                .stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
+        List<Result> results = this.resultRepository.findAll();
+        return results == null ? Collections.emptyList()
+                : results
+                        .stream()
+                        .map(this::convertToDTO)
+                        .collect(Collectors.toList());
     }
 
     public List<FetchAdminDTO.FetchResultDTO> handleFetchResultsByQuizId(Long id) {
@@ -52,7 +55,8 @@ public class AdminResultService {
         Quiz realQuiz = checkQuiz.get();
         List<Result> results = realQuiz.getResults();
 
-        return results == null ? null : results.stream().map(this::convertToDTO).collect(Collectors.toList());
+        return results == null ? Collections.emptyList()
+                : results.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
     public List<FetchAdminDTO.FetchResultDTO> handleFetchResultsByUserId(Long userId) {
@@ -63,7 +67,8 @@ public class AdminResultService {
         User realUser = checkUser.get();
         List<Result> results = realUser.getResults();
 
-        return results == null ? null : results.stream().map(this::convertToDTO).collect(Collectors.toList());
+        return results == null ? Collections.emptyList()
+                : results.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
 }
