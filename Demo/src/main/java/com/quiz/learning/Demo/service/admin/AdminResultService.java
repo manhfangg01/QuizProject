@@ -21,12 +21,14 @@ public class AdminResultService {
     private final ResultRepository resultRepository;
     private final UserRepository userRepository;
     private final QuizRepository quizRepository;
+    private final AdminAnswerService adminAnswerService;
 
     public AdminResultService(ResultRepository resultRepository, UserRepository userRepository,
-            QuizRepository quizRepository) {
+            QuizRepository quizRepository, AdminAnswerService adminAnswerService) {
         this.resultRepository = resultRepository;
         this.userRepository = userRepository;
         this.quizRepository = quizRepository;
+        this.adminAnswerService = adminAnswerService;
     }
 
     public FetchAdminDTO.FetchResultDTO convertToDTO(Result result) {
@@ -34,7 +36,10 @@ public class AdminResultService {
         dto.setId(result.getId());
         dto.setScore(result.getScore());
         dto.setSubmittedAt(result.getSubmittedAt());
-        // dto.setUserId(result.getUser());
+        dto.setUserId(result.getUser() == null ? null : result.getUser().getId());
+        dto.setQuizId(result.getQuiz() == null ? null : result.getQuiz().getId());
+        dto.setAnswers(result.getAnswers() == null ? Collections.emptyList()
+                : result.getAnswers().stream().map(adminAnswerService::convertToDTO).collect(Collectors.toList()));
         return dto;
     }
 
