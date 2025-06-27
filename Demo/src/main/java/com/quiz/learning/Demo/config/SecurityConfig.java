@@ -52,21 +52,13 @@ public class SecurityConfig {
                 "/storage/**" };
         http
                 .csrf(c -> c.disable())
-                .authorizeHttpRequests(
-                        authz ->
-                        // prettier-ignore
-                        authz
-                                .requestMatchers(whiteList).permitAll()
-                                .anyRequest().authenticated()
-
-                )
-                .oauth2ResourceServer((oauth2) -> oauth2.jwt(Customizer.withDefaults())
-                        .authenticationEntryPoint(customAuthExceptionHandler))
-                .exceptionHandling(
-                        exceptions -> exceptions
-                                .authenticationEntryPoint(new BearerTokenAuthenticationEntryPoint()) // 401
-                                .accessDeniedHandler(new BearerTokenAccessDeniedHandler())) // 403
-
+                .authorizeHttpRequests(authz -> authz
+                        .requestMatchers(whiteList).permitAll()
+                        .anyRequest().authenticated())
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint(customAuthExceptionHandler)
+                        .accessDeniedHandler(new BearerTokenAccessDeniedHandler()))
+                .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
                 .formLogin(f -> f.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 

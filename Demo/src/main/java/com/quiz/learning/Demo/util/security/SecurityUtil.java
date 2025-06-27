@@ -64,7 +64,7 @@ public class SecurityUtil {
     }
 
     public Jwt checkValidRefreshToken(String refreshToken) { // Check Validity of refreshToken to avoid fake
-                                                             // refreshToken
+        // refreshToken
         NimbusJwtDecoder jwtDecoder = NimbusJwtDecoder.withSecretKey(
                 getSecretKey()).macAlgorithm(SecurityUtil.JWT_ALGORITHM).build();
         try {
@@ -75,16 +75,16 @@ public class SecurityUtil {
         }
     }
 
-    public String createAccessToken(LoginRequest loginRequest) {
+    public String createAccessToken(String username) {
         Instant now = Instant.now();
         Instant validity = now.plus(accessTokenExpiration, ChronoUnit.SECONDS);
 
-        User loginUser = this.userRepository.findByEmail(loginRequest.getUsername()).get();
+        User loginUser = this.userRepository.findByEmail(username).get();
 
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuedAt(now)
                 .expiresAt(validity)
-                .subject(loginRequest.getUsername())
+                .subject(username)
                 .claim("userId", loginUser.getId())
                 .claim("email", loginUser.getEmail())
                 .claim("fullName", loginUser.getFullName())
@@ -95,16 +95,16 @@ public class SecurityUtil {
         return this.jwtEncoder.encode(JwtEncoderParameters.from(jwsHeader, claims)).getTokenValue();
     }
 
-    public String createRefreshToken(LoginRequest loginRequest) {
+    public String createRefreshToken(String username) {
         Instant now = Instant.now();
         Instant validity = now.plus(refreshTokenExpiration, ChronoUnit.SECONDS);
 
-        User loginUser = this.userRepository.findByEmail(loginRequest.getUsername()).get();
+        User loginUser = this.userRepository.findByEmail(username).get();
 
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuedAt(now)
                 .expiresAt(validity)
-                .subject(loginRequest.getUsername())
+                .subject(username)
                 .claim("userId", loginUser.getId())
                 .claim("email", loginUser.getEmail())
                 .claim("fullName", loginUser.getFullName())

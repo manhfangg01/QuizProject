@@ -117,14 +117,14 @@ public class AdminUserService {
         return this.userRepository.findByEmail(email);
     }
 
-    public void updateUserRefreshToken(LoginRequest loginRequest, String token) {
-        Optional<User> checkUser = this.userRepository.findByEmail(loginRequest.getUsername());
+    public void updateUserRefreshToken(String username, String token) {
+        Optional<User> checkUser = this.userRepository.findByEmail(username);
         if (checkUser.isEmpty()) {
             throw new ObjectNotFound("User with provided email not existed");
         }
         User realUser = checkUser.get();
         realUser.setRefreshToken(token);
-
+        this.userRepository.save(realUser);
     }
 
 }

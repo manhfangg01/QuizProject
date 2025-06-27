@@ -6,6 +6,7 @@ import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -38,6 +39,7 @@ public class User {
     private String updatedBy;
     private String email;
     private String password;
+    @Column(columnDefinition = "MEDIUMTEXT")
     private String refreshToken;
 
     @OneToMany(mappedBy = "user")

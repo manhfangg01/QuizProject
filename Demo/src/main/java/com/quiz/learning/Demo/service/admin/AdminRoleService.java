@@ -29,4 +29,12 @@ public class AdminRoleService {
         return checkRole.get();
     }
 
+    public Role handleFetchRoleByName(String name) {
+        Optional<Role> checkRole = this.roleRepository.findByName(name);
+        if (checkRole.isEmpty()) {
+            throw new ObjectNotFound("Role not found");
+        }
+        return checkRole.get();
+    }
+
 }
