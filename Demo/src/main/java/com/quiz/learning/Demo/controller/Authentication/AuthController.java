@@ -2,15 +2,12 @@ package com.quiz.learning.Demo.controller.authentication;
 
 import org.springframework.web.bind.annotation.RestController;
 
-import org.springframework.security.oauth2.jwt.Jwt;
-
 import com.quiz.learning.Demo.domain.auth.LoginRequest;
 import com.quiz.learning.Demo.domain.auth.LoginResponse;
 import com.quiz.learning.Demo.domain.auth.RegisterRequest;
 import com.quiz.learning.Demo.domain.auth.RegisterResponse;
 import com.quiz.learning.Demo.domain.restResponse.ApiMessage;
 import com.quiz.learning.Demo.service.auth.AuthService;
-import com.quiz.learning.Demo.util.error.ResourceNotExisted;
 import com.quiz.learning.Demo.util.security.SecurityUtil;
 
 import jakarta.validation.Valid;
@@ -29,7 +26,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/api/auth")

@@ -3,20 +3,14 @@ package com.quiz.learning.Demo.service.auth;
 import java.time.Instant;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseCookie;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PostMapping;
-
 import com.quiz.learning.Demo.domain.User;
 import com.quiz.learning.Demo.domain.auth.LoginRequest;
 import com.quiz.learning.Demo.domain.auth.LoginResponse;
 import com.quiz.learning.Demo.domain.auth.RegisterRequest;
 import com.quiz.learning.Demo.domain.auth.RegisterResponse;
-import com.quiz.learning.Demo.domain.restResponse.ApiMessage;
 import com.quiz.learning.Demo.repository.UserRepository;
 import com.quiz.learning.Demo.service.admin.AdminRoleService;
 import com.quiz.learning.Demo.service.admin.AdminUserService;

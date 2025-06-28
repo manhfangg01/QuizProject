@@ -1,4 +1,6 @@
 use quizdb;
+select *
+from users;
 
 INSERT INTO users (full_name, email, password, created_at, updated_at, created_by, updated_by)
 VALUES
@@ -76,6 +78,11 @@ VALUES
 (2, 1000, 1, 2, 60, NOW(), 6, 10),
 (3, 1000, 2, 1, 90, NOW(), 9, 10),
 (4, 1000, 2, 3, 70, NOW(), 7, 10);
+
+insert into roles(description, is_active,name)
+values
+("Has all authorities in system",true, "ADMIN"),
+("Has some authorities in system",true, "USER");
 
 
 

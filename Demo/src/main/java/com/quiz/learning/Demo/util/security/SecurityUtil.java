@@ -1,12 +1,7 @@
 package com.quiz.learning.Demo.util.security;
 
-import java.lang.reflect.Array;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 
 import javax.crypto.SecretKey;
@@ -27,13 +22,9 @@ import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.stereotype.Service;
 
 import com.nimbusds.jose.util.Base64;
-import com.quiz.learning.Demo.domain.Role;
 import com.quiz.learning.Demo.domain.User;
-import com.quiz.learning.Demo.domain.auth.LoginRequest;
-import com.quiz.learning.Demo.domain.auth.LoginResponse;
 import com.quiz.learning.Demo.repository.UserRepository;
 import com.quiz.learning.Demo.service.admin.AdminRoleService;
-import com.quiz.learning.Demo.service.admin.AdminUserService;
 
 @Service
 public class SecurityUtil {
