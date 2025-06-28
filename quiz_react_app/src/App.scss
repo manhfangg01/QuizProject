@@ -7,3 +7,14 @@ body {
   'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
   sans-serif;
 }
+.app-container{
+  .header-container{
+    .navbar-nav{
+      .nav-link{
+        &.active{     // Do class active cùng cấp với nav-link
+          color: rebeccapurple;
+        }
+      }
+    }
+  }
+}

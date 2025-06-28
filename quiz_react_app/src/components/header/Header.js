@@ -2,7 +2,7 @@ import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
-import { Link } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 
 const Header =() => {
   return (
@@ -13,9 +13,10 @@ const Header =() => {
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
             {/* Thẻ link của thư viện đặc biệt hơn thẻ a của HTML là khi nhấn vào link sẽ không bị refresh */}
-            <Link to="/" className='nav-link'>Home</Link>
-            <Link to="/admins" className='nav-link'>Admin</Link>
-            <Link to="/users" className='nav-link'>User</Link>
+            {/* Thẻ NavLink của thư viện reactRouterDom tự động tích hợp lớp Active khi chuyển trang */}
+            <NavLink to="/" className='nav-link'>Home</NavLink>   
+            <NavLink to="/admins" className='nav-link'>Admin</NavLink>
+            <NavLink to="/users" className='nav-link'>User</NavLink>
             {/* <Nav.Link href="/">Home</Nav.Link>
             <Nav.Link href="/users">Users</Nav.Link>
             <Nav.Link href="/admins">Admin</Nav.Link> */}
