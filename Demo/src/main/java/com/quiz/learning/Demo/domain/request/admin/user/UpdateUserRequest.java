@@ -5,6 +5,7 @@ import java.util.Set;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,8 +16,9 @@ public class UpdateUserRequest {
     private Long userId;
 
     @NotBlank(message = "Họ tên không được để trống")
+    @Size(min = 3, max = 100, message = "Họ tên phải có độ dài từ 3 đến 100 ký tự")
     private String fullName;
 
+    @NotNull(message = "Vai trò không được để trống")
     private Long roleId; // cập nhật vai trò
-
 }

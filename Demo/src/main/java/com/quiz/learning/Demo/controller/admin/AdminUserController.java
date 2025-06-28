@@ -13,6 +13,8 @@ import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO;
 import com.quiz.learning.Demo.domain.restResponse.ApiMessage;
 import com.quiz.learning.Demo.service.admin.AdminUserService;
 
+import jakarta.validation.Valid;
+
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -43,13 +45,13 @@ public class AdminUserController {
 
     @PostMapping("/admin/users/create")
     @ApiMessage("create a user")
-    public ResponseEntity<FetchAdminDTO.FetchUserDTO> create(@RequestBody CreateUserRequest newUser) {
+    public ResponseEntity<FetchAdminDTO.FetchUserDTO> create(@Valid @RequestBody CreateUserRequest newUser) {
         return ResponseEntity.status(HttpStatus.OK).body(this.userService.handleCreateUser(newUser));
     }
 
     @PutMapping("/admin/users/update")
     @ApiMessage("update a user")
-    public ResponseEntity<FetchAdminDTO.FetchUserDTO> update(@RequestBody UpdateUserRequest updatedUser) {
+    public ResponseEntity<FetchAdminDTO.FetchUserDTO> update(@Valid @RequestBody UpdateUserRequest updatedUser) {
         return ResponseEntity.status(HttpStatus.OK).body(this.userService.handleUpdateUser(updatedUser));
     }
 

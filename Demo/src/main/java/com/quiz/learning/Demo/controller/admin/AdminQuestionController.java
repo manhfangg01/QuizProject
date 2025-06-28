@@ -7,6 +7,9 @@ import com.quiz.learning.Demo.domain.request.admin.question.UpdateQuestionReques
 import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO;
 import com.quiz.learning.Demo.domain.restResponse.ApiMessage;
 import com.quiz.learning.Demo.service.admin.AdminQuestionService;
+
+import jakarta.validation.Valid;
+
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -42,7 +45,7 @@ public class AdminQuestionController {
 
     @PostMapping("/admin/questions/create")
     @ApiMessage("create a question")
-    public ResponseEntity<FetchAdminDTO.FetchQuestionDTO> create(@RequestBody CreateQuestionRequest ques) {
+    public ResponseEntity<FetchAdminDTO.FetchQuestionDTO> create(@Valid @RequestBody CreateQuestionRequest ques) {
         return ResponseEntity.status(HttpStatus.OK).body(this.questionService.handleCreateQuestion(ques));
     }
 

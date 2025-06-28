@@ -8,6 +8,9 @@ import com.quiz.learning.Demo.domain.request.admin.quiz.UpdateQuizRequest;
 import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO;
 import com.quiz.learning.Demo.domain.restResponse.ApiMessage;
 import com.quiz.learning.Demo.service.admin.AdminQuizService;
+
+import jakarta.validation.Valid;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,13 +44,13 @@ public class AdminQuizController {
 
     @PostMapping("admin/quizzes/create")
     @ApiMessage("create a question")
-    public ResponseEntity<FetchAdminDTO.FetchQuizDTO> create(@RequestBody CreateQuizRequest quiz) {
+    public ResponseEntity<FetchAdminDTO.FetchQuizDTO> create(@Valid @RequestBody CreateQuizRequest quiz) {
         return ResponseEntity.ok().body(this.quizService.handleCreateQuiz(quiz));
     }
 
     @PutMapping("admin/quizzes/update")
     @ApiMessage("update a quiz")
-    public ResponseEntity<FetchAdminDTO.FetchQuizDTO> updateQuiz(@RequestBody UpdateQuizRequest updatedQuiz) {
+    public ResponseEntity<FetchAdminDTO.FetchQuizDTO> updateQuiz(@Valid @RequestBody UpdateQuizRequest updatedQuiz) {
 
         return ResponseEntity.ok().body(this.quizService.handleUpdateQuiz(updatedQuiz));
     }
