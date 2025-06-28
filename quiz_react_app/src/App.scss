@@ -18,3 +18,22 @@ body {
     }
   }
 }
+
+// video{
+//   position:fixed;
+//   bottom: 0;
+//   width: 100vw;
+// }
+
+
+
+video{
+  position: fixed;
+  bottom: 0;
+  width: 100vw;
+}
+
+.navbar{
+  z-index: 10;
+  opacity: 0.7;
+}
