@@ -1,6 +1,6 @@
 const Home =(props) =>{
     return (
-        <div>User component</div>
+        <div className="homepage-container">Home component</div>
     )
 }
 export default Home;

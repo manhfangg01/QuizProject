@@ -7,6 +7,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import {BrowserRouter, Route, Routes} from 'react-router-dom';
 import Admin from './components/admin/Admin';
 import User from './components/user/User';
+import Home from './components/home/Home';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -16,6 +17,7 @@ root.render(
         <Route path="/" element={<App />} >
           <Route path="/admins" element={<Admin />} />
           <Route path="/users" element={<User />} />
+          <Route index element={<Home />} />      
         </Route>
        
       </Routes>
