@@ -1,6 +1,8 @@
 import { Fragment } from "react";
 import { ProSidebar, Menu, MenuItem, SubMenu, SidebarHeader, SidebarFooter, SidebarContent } from "react-pro-sidebar";
-import { FaTachometerAlt, FaGem, FaList, FaGithub, FaRegLaughWink, FaHeart } from "react-icons/fa";
+import { FaReact, FaList, FaRegQuestionCircle, FaBandcamp, FaUserGraduate, FaBook } from "react-icons/fa";
+
+import { MdDashboard, MdQuiz } from "react-icons/md";
 import sidebarBg from "../../assets/bg2.png";
 import "react-pro-sidebar/dist/css/styles.css";
 
@@ -21,54 +23,28 @@ const SideBar = ({ image, collapsed, rtl, toggled, handleToggleSidebar }) => {
               whiteSpace: "nowrap",
             }}
           >
-            Hoi Dan It
+            <FaReact color={"00bfff"} size={"2.5rem"} />
+            <span style={{ visibility: collapsed ? "hidden" : "visible" }}>Hoi Dan It</span>
           </div>
         </SidebarHeader>
 
         <SidebarContent>
           <Menu iconShape="circle">
-            <MenuItem icon={<FaTachometerAlt />} suffix={<span className="badge red"></span>}></MenuItem>
-            <MenuItem icon={<FaGem />}></MenuItem>
+            <MenuItem icon={<MdDashboard />}>Dashboard</MenuItem>
           </Menu>
           <Menu iconShape="circle">
-            <SubMenu suffix={<span className="badge yellow">3</span>} icon={<FaRegLaughWink />}>
-              <MenuItem>SubMenu 1</MenuItem>
-              <MenuItem>SubMenu 2</MenuItem>
-              <MenuItem>SubMenu 3</MenuItem>
-            </SubMenu>
-            <SubMenu prefix={<span className="badge gray">3</span>} icon={<FaHeart />}>
-              <MenuItem>SubMenu 1</MenuItem>
-              <MenuItem>SubMenu 2</MenuItem>
-              <MenuItem>SubMenu 3</MenuItem>
-            </SubMenu>
-            <SubMenu icon={<FaList />}>
-              <MenuItem>SubMenu 1 </MenuItem>
-              <MenuItem>SubMenu 2 </MenuItem>
-              <SubMenu title={`$SubMenu 3`}>
-                <MenuItem>SubMenu 3.1 </MenuItem>
-                <MenuItem>SubMenu 3.2 </MenuItem>
-                <SubMenu title={`$SubMenu 3.3`}>
-                  <MenuItem>SubMenu 3.3.1 </MenuItem>
-                  <MenuItem>SubMenu 3.3.2 </MenuItem>
-                  <MenuItem>SubMenu 3.3.3 </MenuItem>
-                </SubMenu>
-              </SubMenu>
+            <SubMenu icon={<FaList />} title={"Features"}>
+              <MenuItem icon={<MdQuiz />}>Quizzes</MenuItem>
+              <MenuItem icon={<FaRegQuestionCircle />}>Questions</MenuItem>
+              <MenuItem icon={<FaBook />}>Options</MenuItem>
+              <MenuItem icon={<FaBandcamp />}>Results</MenuItem>
+              <MenuItem icon={<FaUserGraduate />}>Users</MenuItem>
             </SubMenu>
           </Menu>
         </SidebarContent>
 
         <SidebarFooter style={{ textAlign: "center" }}>
-          <div
-            className="sidebar-btn-wrapper"
-            style={{
-              padding: "20px 24px",
-            }}
-          >
-            <a href="https://github.com/azouaoui-med/react-pro-sidebar" target="_blank" className="sidebar-btn" rel="noopener noreferrer">
-              <FaGithub />
-              <span style={{ whiteSpace: "nowrap", textOverflow: "ellipsis", overflow: "hidden" }}></span>
-            </a>
-          </div>
+          <div style={{ padding: "10px 0", fontSize: "12px", color: "#ccc" }}>© 2025 ManhFangg Academy</div>
         </SidebarFooter>
       </ProSidebar>
     </Fragment>
