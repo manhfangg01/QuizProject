@@ -7,6 +7,9 @@ import com.quiz.learning.Demo.domain.request.admin.option.UpdateOptionRequest;
 import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO;
 import com.quiz.learning.Demo.domain.restResponse.ApiMessage;
 import com.quiz.learning.Demo.service.admin.AdminOptionService;
+
+import jakarta.validation.Valid;
+
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -42,13 +45,13 @@ public class AdminOptionController {
 
     @PostMapping("/admin/options/create")
     @ApiMessage("create an option")
-    public ResponseEntity<FetchAdminDTO.FetchOptionDTO> create(@RequestBody CreateOptionRequest newOption) {
+    public ResponseEntity<FetchAdminDTO.FetchOptionDTO> create(@Valid @RequestBody CreateOptionRequest newOption) {
         return ResponseEntity.status(HttpStatus.OK).body(this.optionService.handleCreateOption(newOption));
     }
 
     @PutMapping("/admin/options/update")
     @ApiMessage("update an option")
-    public ResponseEntity<FetchAdminDTO.FetchOptionDTO> update(@RequestBody UpdateOptionRequest updatedOption) {
+    public ResponseEntity<FetchAdminDTO.FetchOptionDTO> update(@Valid @RequestBody UpdateOptionRequest updatedOption) {
         return ResponseEntity.status(HttpStatus.OK).body(this.optionService.handleUpdateOption(updatedOption));
     }
 

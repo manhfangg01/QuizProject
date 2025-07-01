@@ -1,13 +1,14 @@
 package com.quiz.learning.Demo.domain;
 
-import java.util.Set;
+import java.util.List;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
@@ -26,6 +27,8 @@ public class Role {
     private Boolean isActive;
 
     // Mối quan hệ: Một vai trò có thể được gán cho nhiều user
-    @ManyToMany(mappedBy = "roles")
-    private Set<User> users;
+
+    @OneToMany(mappedBy = "role")
+    @JsonIgnore
+    private List<User> users;
 }
