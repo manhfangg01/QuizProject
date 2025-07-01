@@ -10,7 +10,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class RegisterResponse {
+public class SignupResponse {
     private Long userId;
     private String email;
     private String fullName;

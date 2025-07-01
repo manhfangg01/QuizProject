@@ -8,7 +8,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class RegisterRequest {
+public class SignupRequest {
 
     @NotBlank(message = "Tên đầy đủ không được để trống")
     private String fullName;

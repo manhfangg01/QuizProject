@@ -22,13 +22,15 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     private final CustomAuthExceptionHandler customAuthExceptionHandler;
+    private final CorsConfig corsConfig;
 
     public static final MacAlgorithm JWT_ALGORITHM = MacAlgorithm.HS512;
     @Value("${Base64-Secret}")
     private String secretKey;
 
-    public SecurityConfig(CustomAuthExceptionHandler customAuthExceptionHandler) {
+    public SecurityConfig(CustomAuthExceptionHandler customAuthExceptionHandler, CorsConfig corsConfig) {
         this.customAuthExceptionHandler = customAuthExceptionHandler;
+        this.corsConfig = corsConfig;
     }
 
     @Bean
@@ -44,10 +46,11 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         String[] whiteList = { "/",
-                "/api/auth/login", "/api/auth/refresh", "/api/auth/register",
+                "/api/auth/login", "/api/auth/refresh", "/api/auth/signup",
                 "/storage/**" };
         http
                 .csrf(c -> c.disable())
+                .cors(c -> c.configurationSource(corsConfig.corsConfigurationSource()))
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers(whiteList).permitAll()
                         .anyRequest().authenticated())

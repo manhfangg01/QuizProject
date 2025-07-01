@@ -9,8 +9,8 @@ import org.springframework.stereotype.Service;
 import com.quiz.learning.Demo.domain.User;
 import com.quiz.learning.Demo.domain.auth.LoginRequest;
 import com.quiz.learning.Demo.domain.auth.LoginResponse;
-import com.quiz.learning.Demo.domain.auth.RegisterRequest;
-import com.quiz.learning.Demo.domain.auth.RegisterResponse;
+import com.quiz.learning.Demo.domain.auth.SignupRequest;
+import com.quiz.learning.Demo.domain.auth.SignupResponse;
 import com.quiz.learning.Demo.repository.UserRepository;
 import com.quiz.learning.Demo.service.admin.AdminRoleService;
 import com.quiz.learning.Demo.service.admin.AdminUserService;
@@ -69,34 +69,34 @@ public class AuthService {
         return loginResponse;
     }
 
-    public RegisterResponse handleRegister(RegisterRequest registerRequest) {
-        if (!registerRequest.getCheckedPassword().equals(registerRequest.getPassword())) {
+    public SignupResponse handleSignUp(SignupRequest signupRequest) {
+        if (!signupRequest.getCheckedPassword().equals(signupRequest.getPassword())) {
             throw new WrongCheckPassword("CheckedPassword is not correct");
         }
 
-        Optional<User> checkUser = this.userRepository.findByFullName(registerRequest.getFullName());
+        Optional<User> checkUser = this.userRepository.findByFullName(signupRequest.getFullName());
         if (checkUser.isPresent()) {
             throw new DuplicatedObjectException("This user is already existed");
         }
 
         User newUser = new User();
-        newUser.setEmail(registerRequest.getEmail());
-        newUser.setFullName(registerRequest.getFullName());
-        newUser.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
+        newUser.setEmail(signupRequest.getEmail());
+        newUser.setFullName(signupRequest.getFullName());
+        newUser.setPassword(passwordEncoder.encode(signupRequest.getPassword()));
         newUser.setCreatedAt(Instant.now());
-        newUser.setCreatedBy(registerRequest.getEmail());
+        newUser.setCreatedBy(signupRequest.getEmail());
         newUser.setRole(this.adminRoleService.handleFetchRoleByName("USER"));
 
         User savedUser = this.userRepository.save(newUser);
 
-        RegisterResponse registerResponse = new RegisterResponse();
-        registerResponse.setUserId(savedUser.getId());
-        registerResponse.setEmail(savedUser.getEmail());
-        registerResponse.setFullName(savedUser.getFullName());
-        registerResponse.setRole(savedUser.getRole().getName());
-        registerResponse.setCreatedAt(savedUser.getCreatedAt());
+        SignupResponse signupResponse = new SignupResponse();
+        signupResponse.setUserId(savedUser.getId());
+        signupResponse.setEmail(savedUser.getEmail());
+        signupResponse.setFullName(savedUser.getFullName());
+        signupResponse.setRole(savedUser.getRole().getName());
+        signupResponse.setCreatedAt(savedUser.getCreatedAt());
 
-        return registerResponse;
+        return signupResponse;
     }
 
     public LoginResponse.UserLogin handleGetAccountInfor() {

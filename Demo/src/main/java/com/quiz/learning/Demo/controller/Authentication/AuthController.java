@@ -4,8 +4,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.quiz.learning.Demo.domain.auth.LoginRequest;
 import com.quiz.learning.Demo.domain.auth.LoginResponse;
-import com.quiz.learning.Demo.domain.auth.RegisterRequest;
-import com.quiz.learning.Demo.domain.auth.RegisterResponse;
+import com.quiz.learning.Demo.domain.auth.SignupRequest;
+import com.quiz.learning.Demo.domain.auth.SignupResponse;
 import com.quiz.learning.Demo.domain.restResponse.ApiMessage;
 import com.quiz.learning.Demo.service.auth.AuthService;
 import com.quiz.learning.Demo.util.security.SecurityUtil;
@@ -46,10 +46,10 @@ public class AuthController {
         @Value("${RefreshToken-Validity-In-Seconds}")
         private long refreshTokenExpiration;
 
-        @PostMapping("/register")
-        @ApiMessage("register account")
-        public ResponseEntity<RegisterResponse> register(@Valid @RequestBody RegisterRequest registerRequest) {
-                return ResponseEntity.status(HttpStatus.OK).body(this.authService.handleRegister(registerRequest));
+        @PostMapping("/signup")
+        @ApiMessage("Sign up an account")
+        public ResponseEntity<SignupResponse> signup(@Valid @RequestBody SignupRequest signupRequest) {
+                return ResponseEntity.status(HttpStatus.OK).body(this.authService.handleSignUp(signupRequest));
         }
 
         @PostMapping("/login")
