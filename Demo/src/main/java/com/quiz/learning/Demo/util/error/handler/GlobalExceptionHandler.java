@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import com.quiz.learning.Demo.domain.restResponse.RestResponse;
 import com.quiz.learning.Demo.util.error.DuplicatedObjectException;
 import com.quiz.learning.Demo.util.error.InvalidToken;
+import com.quiz.learning.Demo.util.error.InvalidUploadedFile;
 import com.quiz.learning.Demo.util.error.NullObjectException;
 import com.quiz.learning.Demo.util.error.ObjectNotFound;
 import com.quiz.learning.Demo.util.error.ResourceNotExisted;
@@ -84,5 +85,15 @@ public class GlobalExceptionHandler {
             errors.put(field, message);
         });
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+    }
+
+    // hanlde exceptions from Uploading file
+    @ExceptionHandler(InvalidUploadedFile.class)
+    public ResponseEntity<RestResponse<Object>> handleUploadingException(InvalidUploadedFile ex) {
+        RestResponse<Object> res = new RestResponse<Object>();
+        res.setStatusCode(HttpStatus.BAD_REQUEST.value());
+        res.setError(ex.getMessage());
+        res.setMessage("Invalid file extension");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
     }
 }

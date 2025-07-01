@@ -83,7 +83,10 @@ public class FetchAdminDTO {
         private String createdBy;
         private String updatedBy;
 
-        private Role role; // chỉ trả về tên vai trò
+        private String role; // chỉ trả về tên vai trò
+
+        private String UserAvatarUrls;
+
     }
 
 }

@@ -37,6 +37,7 @@ public class User {
     private String password;
     @Column(columnDefinition = "MEDIUMTEXT")
     private String refreshToken;
+    private String UserAvatarUrls;
 
     @OneToMany(mappedBy = "user")
     private List<Result> results;

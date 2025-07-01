@@ -27,5 +27,4 @@ public class CreateUserRequest {
 
     @NotNull(message = "Vai trò không được để trống")
     private Long roleId;
-
 }
