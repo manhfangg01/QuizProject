@@ -2,6 +2,7 @@ import { useState } from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import { LuImagePlus } from "react-icons/lu";
+import axios from "axios";
 
 function CreateUserModal() {
   const [show, setShow] = useState(false);
@@ -13,13 +14,48 @@ function CreateUserModal() {
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [role, setRole] = useState("USER");
-  const [image, setImage] = useState("");
   const [previewAvatar, setPreviewAvatar] = useState("");
+
+  const [imageFile, setImageFile] = useState(null); // file thực
+
+  // Trong component
+  const handleSubmit = async () => {
+    try {
+      const formData = new FormData();
+
+      // Gộp dữ liệu JSON thành 1 blob rồi đính kèm như 1 phần tử file
+      const userJson = JSON.stringify({
+        email,
+        password,
+        fullName,
+        role,
+      });
+
+      const jsonBlob = new Blob([userJson], {
+        type: "application/json",
+      });
+
+      formData.append("newUser", jsonBlob); // trùng tên @RequestBody trong controller
+      formData.append("UserAvatar", imageFile); // trùng tên @RequestParam trong controller
+
+      const res = await axios.post("http://localhost:8080/api/admin/users/create", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      console.log("Tạo user thành công:", res.data);
+      handleClose(); // đóng modal nếu cần
+    } catch (err) {
+      console.error("Lỗi tạo user:", err);
+    }
+  };
 
   const handleUploadImage = (event) => {
     if (event.target && event.target.files && event.target.files[0]) {
-      setPreviewAvatar(URL.createObjectURL(event.target.files[0]));
-      setImage(URL.createObjectURL(event.target.files[0]));
+      const file = event.target.files[0];
+      setPreviewAvatar(URL.createObjectURL(file)); // chỉ để hiển thị
+      setImageFile(file); // để gửi lên server
     }
   };
 
@@ -95,7 +131,7 @@ function CreateUserModal() {
           <Button variant="secondary" onClick={handleClose}>
             Close
           </Button>
-          <Button variant="primary" onClick={handleClose}>
+          <Button variant="primary" onClick={handleSubmit}>
             Save
           </Button>
         </Modal.Footer>

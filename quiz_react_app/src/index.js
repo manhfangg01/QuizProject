@@ -14,6 +14,8 @@ import ManageQuizzes from "../src/components/admin/content/ManageQuizzes";
 import ManageQuestions from "../src/components/admin/content/ManageQuestions";
 import ManageResults from "../src/components/admin/content/ManageResults";
 import Dashboard from "./components/admin/dashboard/Dashboard";
+import Login from "./components/auth/Login";
+import Signup from "./components/auth/Signup";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -33,6 +35,8 @@ root.render(
           <Route path="manage-questions" element={<ManageQuestions />} />
           <Route path="manage-results" element={<ManageResults />} />
         </Route>
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>

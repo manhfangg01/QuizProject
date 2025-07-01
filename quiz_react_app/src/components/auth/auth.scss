@@ -1,0 +1,7 @@
+/* Tắt hiệu ứng phóng to khi click vào nút */
+button:active,
+a:active,
+.mdb-btn:active {
+  transform: none !important;
+  box-shadow: none !important;
+}
