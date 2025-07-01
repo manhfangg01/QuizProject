@@ -1,0 +1,33 @@
+.manage-user-container {
+  .users-content {
+  }
+}
+.label-uploading {
+  .form-label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 20px;
+    border-radius: 10px;
+    background: rgb(187, 183, 183);
+    width: fit-content;
+    padding: 5px 10px;
+    margin: 0;
+
+    &:hover {
+      background: rgb(223, 220, 220);
+    }
+  }
+}
+.modal-add-user {
+  border: 3px dashed #ccc;
+  height: 200px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #ccc;
+  .img-preview {
+    height: 100%;
+    width: 30%;
+  }
+}
