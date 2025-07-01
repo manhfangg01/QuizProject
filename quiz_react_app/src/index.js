@@ -8,6 +8,12 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Admin from "./components/admin/Admin";
 import User from "./components/user/User";
 import Home from "./components/home/Home";
+import ManageUsers from "../src/components/admin/content/ManageUsers";
+import ManageOptions from "../src/components/admin/content/ManageOptions";
+import ManageQuizzes from "../src/components/admin/content/ManageQuizzes";
+import ManageQuestions from "../src/components/admin/content/ManageQuestions";
+import ManageResults from "../src/components/admin/content/ManageResults";
+import Dashboard from "./components/admin/dashboard/Dashboard";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -15,10 +21,18 @@ root.render(
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<App />}>
-          <Route path="/users" element={<User />} />
+          <Route path="users" element={<User />} />
           <Route index element={<Home />} />
         </Route>
-        <Route path="/admins" element={<Admin />} />
+
+        <Route path="/admins" element={<Admin />}>
+          <Route index element={<Dashboard />} />
+          <Route path="manage-users" element={<ManageUsers />} />
+          <Route path="manage-options" element={<ManageOptions />} />
+          <Route path="manage-quizzes" element={<ManageQuizzes />} />
+          <Route path="manage-questions" element={<ManageQuestions />} />
+          <Route path="manage-results" element={<ManageResults />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   </React.StrictMode>
