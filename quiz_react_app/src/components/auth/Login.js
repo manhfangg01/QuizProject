@@ -1,9 +1,34 @@
 import { FaFacebookF, FaGoogle, FaGithub } from "react-icons/fa";
 import { Form, Button, Card, Container, Row, Col } from "react-bootstrap";
-import { Link } from "react-router-dom"; // Nếu dùng React Router
+import { Link, useNavigate } from "react-router-dom"; // Nếu dùng React Router
 import "./auth.scss";
+import { useState } from "react";
+import axios from "axios";
 
 const Login = () => {
+  const navigate = useNavigate(); // hook chuyển trang
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const handleOnSubmit = async (event) => {
+    event.preventDefault(); // chặn reload mặc định
+
+    try {
+      const res = await axios.post("http://localhost:8080/api/auth/login", {
+        username,
+        password,
+      });
+
+      // 🔄 Nếu đăng nhập thành công (có thể kiểm tra res.status hoặc dữ liệu token...)
+      if (res.status === 200) {
+        const token = res.data.data.accessToken;
+        localStorage.setItem("accessToken", token);
+        setTimeout(() => navigate("/"), 100); // delay nhẹ để đảm bảo token đã được lưu
+      }
+    } catch (error) {
+      console.error("Login failed:", error);
+      // Có thể show lỗi bằng toast / alert ở đây
+    }
+  };
   return (
     <Container fluid className="d-flex vh-100 justify-content-center align-items-center bg-light">
       <Row className="w-100 justify-content-center">
@@ -14,12 +39,28 @@ const Login = () => {
               <Form>
                 <Form.Group className="mb-3" controlId="formBasicEmail">
                   <Form.Label>Email address</Form.Label>
-                  <Form.Control type="email" placeholder="Enter email" size="lg" />
+                  <Form.Control
+                    type="email"
+                    placeholder="Enter email"
+                    size="lg"
+                    value={username}
+                    onChange={(event) => {
+                      setUsername(event.target.value);
+                    }}
+                  />
                 </Form.Group>
 
                 <Form.Group className="mb-1" controlId="formBasicPassword">
                   <Form.Label>Password</Form.Label>
-                  <Form.Control type="password" placeholder="Password" size="lg" />
+                  <Form.Control
+                    type="password"
+                    placeholder="Password"
+                    size="lg"
+                    value={password}
+                    onChange={(event) => {
+                      setPassword(event.target.value);
+                    }}
+                  />
                 </Form.Group>
 
                 <div className="d-flex justify-content-end mb-3">
@@ -28,7 +69,15 @@ const Login = () => {
                   </Link>
                 </div>
 
-                <Button variant="primary" type="submit" size="lg" className="w-100 mb-3">
+                <Button
+                  variant="primary"
+                  type="submit"
+                  size="lg"
+                  className="w-100 mb-3"
+                  onClick={(event) => {
+                    handleOnSubmit(event);
+                  }}
+                >
                   Submit
                 </Button>
               </Form>

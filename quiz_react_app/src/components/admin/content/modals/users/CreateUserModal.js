@@ -3,6 +3,7 @@ import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import { LuImagePlus } from "react-icons/lu";
 import axios from "axios";
+import { Toast } from "react-bootstrap";
 
 function CreateUserModal() {
   const [show, setShow] = useState(false);
@@ -23,30 +24,49 @@ function CreateUserModal() {
     try {
       const formData = new FormData();
 
-      // Gộp dữ liệu JSON thành 1 blob rồi đính kèm như 1 phần tử file
-      const userJson = JSON.stringify({
+      const user = {
         email,
         password,
         fullName,
         role,
-      });
+      };
 
-      const jsonBlob = new Blob([userJson], {
+      const userBlob = new Blob([JSON.stringify(user)], {
         type: "application/json",
       });
 
-      formData.append("newUser", jsonBlob); // trùng tên @RequestBody trong controller
-      formData.append("UserAvatar", imageFile); // trùng tên @RequestParam trong controller
+      formData.append("createUserRequest", userBlob);
+
+      if (imageFile) {
+        formData.append("userAvatar", imageFile);
+      }
+
+      const token = localStorage.getItem("accessToken");
+      if (!token) {
+        alert("Chưa đăng nhập. Vui lòng đăng nhập trước khi tạo user.");
+        return;
+      }
 
       const res = await axios.post("http://localhost:8080/api/admin/users/create", formData, {
         headers: {
-          "Content-Type": "multipart/form-data",
+          // KHÔNG set Content-Type thủ công để axios tự đặt boundary
+          Authorization: `Bearer ${token}`,
         },
       });
 
-      console.log("Tạo user thành công:", res.data);
-      handleClose(); // đóng modal nếu cần
+      // Kiểm tra phản hồi thành công
+      if (res.status === 200 && res.data.statusCode === 200) {
+        console.log("✅ Tạo user thành công");
+        handleClose(); // đóng modal nếu có
+      } else {
+        console.warn("⚠️ Tạo user không thành công:", res.data);
+      }
     } catch (err) {
+      if (err.response?.status === 403) {
+        alert("❌ Bạn không có quyền thực hiện thao tác này.");
+      } else {
+        alert("Đã có lỗi xảy ra khi tạo user.");
+      }
       console.error("Lỗi tạo user:", err);
     }
   };
@@ -113,7 +133,9 @@ function CreateUserModal() {
                   setRole(event.target.value);
                 }}
               >
-                <option value={"USER"}>USER</option>
+                <option selected value={"USER"}>
+                  USER
+                </option>
                 <option value={"ADMIN"}>ADMIN</option>
               </select>
             </div>
