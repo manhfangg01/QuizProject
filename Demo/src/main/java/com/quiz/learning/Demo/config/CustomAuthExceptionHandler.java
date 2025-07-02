@@ -24,10 +24,12 @@ public class CustomAuthExceptionHandler implements AuthenticationEntryPoint, Acc
 
     // Xử lý lỗi 401 - chưa đăng nhập hoặc token sai
     @Override
-    public void commence(
-            HttpServletRequest request,
-            HttpServletResponse response,
+    public void commence(HttpServletRequest request, HttpServletResponse response,
             AuthenticationException authException) throws IOException {
+        if (response.isCommitted()) {
+            return; // response đã được ghi rồi, không nên ghi đè nữa
+        }
+
         RestResponse<Object> errorResponse = new RestResponse<>();
         errorResponse.setStatusCode(HttpStatus.UNAUTHORIZED.value());
         errorResponse.setError("Unauthorized");
@@ -36,16 +38,16 @@ public class CustomAuthExceptionHandler implements AuthenticationEntryPoint, Acc
         response.setCharacterEncoding("UTF-8");
         response.setContentType("application/json; charset=UTF-8");
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
-        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
     }
 
     // Xử lý lỗi 403 - đã đăng nhập nhưng không đủ quyền
     @Override
-    public void handle(
-            HttpServletRequest request,
-            HttpServletResponse response,
+    public void handle(HttpServletRequest request, HttpServletResponse response,
             AccessDeniedException accessDeniedException) throws IOException {
+        if (response.isCommitted()) {
+            return; // đã ghi xong response rồi
+        }
 
         RestResponse<Object> errorResponse = new RestResponse<>();
         errorResponse.setStatusCode(HttpStatus.FORBIDDEN.value());
@@ -56,4 +58,5 @@ public class CustomAuthExceptionHandler implements AuthenticationEntryPoint, Acc
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
     }
+
 }

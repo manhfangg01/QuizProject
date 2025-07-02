@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -47,8 +48,9 @@ public class AdminUserController {
 
     @PostMapping("/admin/users/create")
     @ApiMessage("create a user")
-    public ResponseEntity<FetchAdminDTO.FetchUserDTO> create(@Valid @RequestBody CreateUserRequest newUser,
-            @RequestParam("UserAvatar") MultipartFile userAvatar) {
+    public ResponseEntity<FetchAdminDTO.FetchUserDTO> create(
+            @Valid @RequestPart("createUserRequest") CreateUserRequest newUser,
+            @RequestPart(value = "userAvatar", required = false) MultipartFile userAvatar) {
         return ResponseEntity.status(HttpStatus.OK).body(this.userService.handleCreateUser(newUser, userAvatar));
     }
 

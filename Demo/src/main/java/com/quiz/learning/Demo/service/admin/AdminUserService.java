@@ -73,7 +73,7 @@ public class AdminUserService {
         try {
             if (userAvatar != null && !userAvatar.isEmpty()) {
                 String fileName = userAvatar.getOriginalFilename();
-                List<String> allowedExtensions = Arrays.asList("pdf", "jpg", "jpeg", "png", "doc", "docx");
+                List<String> allowedExtensions = Arrays.asList("pdf", "jpg", "jpeg", "png", "doc", "docx", "webp");
                 boolean isValid = allowedExtensions.stream().anyMatch(item -> fileName.toLowerCase().endsWith(item));
                 if (!isValid) {
                     throw new InvalidUploadedFile(
@@ -104,7 +104,7 @@ public class AdminUserService {
         user.setCreatedAt(Instant.now());
         user.setCreatedBy(SecurityUtil.getCurrentUserLogin().get());
         user.setPassword(passwordEncoder.encode(newUser.getPassword()));
-        user.setRole(this.adminRoleService.handleFetchRoleById(newUser.getRoleId()));
+        user.setRole(this.adminRoleService.handleFetchRoleByName(newUser.getRole()));
         this.handleAssginingUserAvatar(user, userAvatar);
         return this.convertToDTO(this.userRepository.save(user));
     }
@@ -122,7 +122,7 @@ public class AdminUserService {
         }
 
         realUser.setFullName(updatedUser.getFullName());
-        realUser.setRole(this.adminRoleService.handleFetchRoleById(updatedUser.getRoleId()));
+        realUser.setRole(this.adminRoleService.handleFetchRoleByName(updatedUser.getRole()));
         realUser.setUpdatedAt(Instant.now());
         realUser.setUpdatedBy(SecurityUtil.getCurrentUserLogin().get());
         if (userAvatar != null) {

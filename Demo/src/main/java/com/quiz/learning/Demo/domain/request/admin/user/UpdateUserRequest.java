@@ -20,5 +20,5 @@ public class UpdateUserRequest {
     private String fullName;
 
     @NotNull(message = "Vai trò không được để trống")
-    private Long roleId; // cập nhật vai trò
+    private String role; // cập nhật vai trò
 }

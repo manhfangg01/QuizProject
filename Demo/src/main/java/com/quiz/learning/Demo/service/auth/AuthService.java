@@ -70,7 +70,7 @@ public class AuthService {
     }
 
     public SignupResponse handleSignUp(SignupRequest signupRequest) {
-        if (!signupRequest.getCheckedPassword().equals(signupRequest.getPassword())) {
+        if (!signupRequest.getConfirmPassword().equals(signupRequest.getPassword())) {
             throw new WrongCheckPassword("CheckedPassword is not correct");
         }
 

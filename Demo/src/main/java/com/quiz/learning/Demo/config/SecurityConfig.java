@@ -45,18 +45,20 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        String[] whiteList = { "/",
-                "/api/auth/login", "/api/auth/refresh", "/api/auth/signup",
-                "/storage/**" };
+        String[] whiteList = {
+                "/", "/api/auth/login", "/api/auth/refresh", "/api/auth/signup",
+                "/storage/**"
+        };
+
         http
-                .csrf(c -> c.disable())
-                .cors(c -> c.configurationSource(corsConfig.corsConfigurationSource()))
-                .authorizeHttpRequests(authz -> authz
+                .csrf(csrf -> csrf.disable())
+                .cors(cors -> cors.configurationSource(corsConfig.corsConfigurationSource()))
+                .authorizeHttpRequests(auth -> auth
                         .requestMatchers(whiteList).permitAll()
                         .anyRequest().authenticated())
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint(customAuthExceptionHandler)
-                        .accessDeniedHandler(new BearerTokenAccessDeniedHandler()))
+                        .accessDeniedHandler(customAuthExceptionHandler))
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
                 .formLogin(f -> f.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));

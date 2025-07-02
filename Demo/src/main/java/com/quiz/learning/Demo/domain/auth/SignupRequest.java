@@ -22,5 +22,5 @@ public class SignupRequest {
     private String password;
 
     @NotBlank(message = "Xác nhận mật khẩu không được để trống")
-    private String checkedPassword;
+    private String confirmPassword;
 }

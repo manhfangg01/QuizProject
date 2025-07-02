@@ -26,5 +26,5 @@ public class CreateUserRequest {
     private String password;
 
     @NotNull(message = "Vai trò không được để trống")
-    private Long roleId;
+    private String role;
 }
