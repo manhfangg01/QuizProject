@@ -93,7 +93,7 @@ public class AdminUserService {
 
     public FetchAdminDTO.FetchUserDTO handleCreateUser(CreateUserRequest newUser, MultipartFile userAvatar) {
         if (this.userRepository.findByEmail(newUser.getEmail()).isPresent()) {
-            throw new DuplicatedObjectException("Duplicated Email");
+            throw new DuplicatedObjectException("Email: " + newUser.getEmail() + " is duplicated");
         }
         if (this.userRepository.findByFullName(newUser.getFullName()).isPresent()) {
             throw new DuplicatedObjectException("Duplicated UserName");

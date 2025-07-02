@@ -3,27 +3,71 @@ import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import { LuImagePlus } from "react-icons/lu";
 import axios from "axios";
-import { Toast } from "react-bootstrap";
+import { Bounce, toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-function CreateUserModal() {
-  const [show, setShow] = useState(false);
-
-  const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
-
+const CreateUserModal = (props) => {
+  const [emailError, setEmailError] = useState("");
+  const { show, setShow } = props;
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [role, setRole] = useState("USER");
   const [previewAvatar, setPreviewAvatar] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [imageFile, setImageFile] = useState(null);
 
-  const [imageFile, setImageFile] = useState(null); // file thực
+  const handleClose = () => {
+    props.setShow(false);
+    setEmail("");
+    setEmailError("");
+    setFullName("");
+    setImageFile(null);
+    setIsLoading(false);
+    setPassword("");
+    setPreviewAvatar("");
+    setRole("USER");
+  };
 
-  // Trong component
+  const validateEmail = (email) => {
+    return String(email)
+      .toLowerCase()
+      .match(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/);
+  };
+
+  const showToast = (type, message) => {
+    toast[type](message, {
+      position: "top-center",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+      transition: Bounce,
+    });
+  };
+
   const handleSubmit = async () => {
+    setEmailError("");
+    setIsLoading(true);
+
+    if (!validateEmail(email)) {
+      showToast("error", "Email không hợp lệ!");
+      setEmailError("Email không hợp lệ");
+      setIsLoading(false);
+      return;
+    }
+
+    if (!password || password.length < 6) {
+      showToast("error", "Mật khẩu phải có ít nhất 6 ký tự!");
+      setIsLoading(false);
+      return;
+    }
+
     try {
       const formData = new FormData();
-
       const user = {
         email,
         password,
@@ -43,122 +87,114 @@ function CreateUserModal() {
 
       const token = localStorage.getItem("accessToken");
       if (!token) {
-        alert("Chưa đăng nhập. Vui lòng đăng nhập trước khi tạo user.");
+        showToast("error", "Vui lòng đăng nhập trước khi thực hiện thao tác này!");
+        setIsLoading(false);
         return;
       }
 
       const res = await axios.post("http://localhost:8080/api/admin/users/create", formData, {
         headers: {
-          // KHÔNG set Content-Type thủ công để axios tự đặt boundary
           Authorization: `Bearer ${token}`,
         },
       });
 
-      // Kiểm tra phản hồi thành công
       if (res.status === 200 && res.data.statusCode === 200) {
-        console.log("✅ Tạo user thành công");
-        handleClose(); // đóng modal nếu có
+        showToast("success", "Tạo người dùng thành công!");
+        // Reset form
+        setEmail("");
+        setPassword("");
+        setFullName("");
+        setRole("USER");
+        setPreviewAvatar("");
+        setImageFile(null);
+        handleClose();
       } else {
-        console.warn("⚠️ Tạo user không thành công:", res.data);
+        showToast("warning", "Tạo người dùng không thành công!");
       }
     } catch (err) {
+      console.error("Error creating user:", err);
+
       if (err.response?.status === 403) {
-        alert("❌ Bạn không có quyền thực hiện thao tác này.");
+        showToast("error", "Bạn không có quyền thực hiện thao tác này!");
+      } else if (err.response?.data?.message) {
+        showToast("error", err.response.data.message);
       } else {
-        alert("Đã có lỗi xảy ra khi tạo user.");
+        showToast("error", "Đã có lỗi xảy ra khi tạo người dùng!");
       }
-      console.error("Lỗi tạo user:", err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleUploadImage = (event) => {
-    if (event.target && event.target.files && event.target.files[0]) {
+    if (event.target?.files?.[0]) {
       const file = event.target.files[0];
-      setPreviewAvatar(URL.createObjectURL(file)); // chỉ để hiển thị
-      setImageFile(file); // để gửi lên server
+      setPreviewAvatar(URL.createObjectURL(file));
+      setImageFile(file);
     }
   };
 
   return (
     <>
-      <Button variant="primary" onClick={handleShow}>
-        Launch demo modal
-      </Button>
-
       <Modal show={show} onHide={handleClose} size="xl" backdrop="static">
         <Modal.Header closeButton>
-          <Modal.Title>Add new user</Modal.Title>
+          <Modal.Title>Thêm người dùng mới</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <form className="row g-3">
             <div className="col-md-6">
               <label className="form-label">Email</label>
-              <input
-                type="email"
-                className="form-control"
-                value={email}
-                onChange={(event) => {
-                  setEmail(event.target.value);
-                }}
-              />
+              <input type="email" className="form-control" value={email} onChange={(e) => setEmail(e.target.value)} required />
+              {emailError && (
+                <div className="alert alert-danger py-2" role="alert">
+                  {emailError}
+                </div>
+              )}
             </div>
             <div className="col-md-6">
-              <label className="form-label">Password</label>
-              <input
-                type="password"
-                className="form-control"
-                value={password}
-                onChange={(event) => {
-                  setPassword(event.target.value);
-                }}
-              />
+              <label className="form-label">Mật khẩu</label>
+              <input type="password" className="form-control" value={password} onChange={(e) => setPassword(e.target.value)} minLength={6} required />
             </div>
             <div className="col-md-6">
-              <label className="form-label">Fullname</label>
-              <input
-                type="text"
-                className="form-control"
-                placeholder="User's fullname"
-                value={fullName}
-                onChange={(event) => {
-                  setFullName(event.target.value);
-                }}
-              />
+              <label className="form-label">Họ và tên</label>
+              <input type="text" className="form-control" placeholder="Nhập họ và tên" value={fullName} onChange={(e) => setFullName(e.target.value)} required />
             </div>
             <div className="col-md-6">
-              <label className="form-label">Role</label>
-              <select
-                className="form-select"
-                onChange={(event) => {
-                  setRole(event.target.value);
-                }}
-              >
-                <option selected value={"USER"}>
-                  USER
-                </option>
-                <option value={"ADMIN"}>ADMIN</option>
+              <label className="form-label">Vai trò</label>
+              <select className="form-select" value={role} onChange={(e) => setRole(e.target.value)}>
+                <option value="USER">Người dùng</option>
+                <option value="ADMIN">Quản trị viên</option>
               </select>
             </div>
-            <div className="col-12 label-uploading ">
-              <label className="form-label btn " htmlFor="lableUploading">
-                <LuImagePlus /> Avatar
+            <div className="col-12">
+              <label className="btn btn-outline-primary" htmlFor="avatarUpload">
+                <LuImagePlus className="me-2" />
+                Tải lên ảnh đại diện
               </label>
-              <input type="file" className="form-control" id="lableUploading" hidden onChange={(event) => handleUploadImage(event)} />
+              <input type="file" id="avatarUpload" className="d-none" accept="image/*" onChange={handleUploadImage} />
             </div>
-
-            <div className="col-md-12 modal-add-user">{!previewAvatar ? <span>Preview Image</span> : <img src={previewAvatar} alt="User avatar preview" className="img-preview"></img>}</div>
+            <div className="col-12">
+              {previewAvatar ? (
+                <img src={previewAvatar} alt="Preview" className="img-thumbnail mt-2" style={{ maxWidth: "200px", maxHeight: "200px" }} />
+              ) : (
+                <div className="text-muted mt-2">Chưa có ảnh đại diện</div>
+              )}
+            </div>
           </form>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>
-            Close
+            Đóng
           </Button>
-          <Button variant="primary" onClick={handleSubmit}>
-            Save
+          <Button variant="primary" onClick={handleSubmit} disabled={isLoading}>
+            {isLoading ? "Đang xử lý..." : "Lưu"}
           </Button>
         </Modal.Footer>
       </Modal>
+
+      <ToastContainer />
     </>
   );
-}
+};
+
 export default CreateUserModal;

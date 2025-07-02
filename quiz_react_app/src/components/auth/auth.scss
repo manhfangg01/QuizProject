@@ -5,3 +5,8 @@ a:active,
   transform: none !important;
   box-shadow: none !important;
 }
+
+/* Thêm vào auth.scss nếu cần */
+.Toastify__toast-container {
+  z-index: 9999;
+}

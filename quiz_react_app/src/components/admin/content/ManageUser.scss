@@ -1,5 +1,18 @@
-.manage-user-container {
+.manage-users-container {
+  padding: 10px;
   .users-content {
+    .btn-add-new {
+      .btn {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+    }
+  }
+  .title {
+    font-weight: 700;
+    font-size: 20px;
+    padding: 10px;
   }
 }
 .label-uploading {

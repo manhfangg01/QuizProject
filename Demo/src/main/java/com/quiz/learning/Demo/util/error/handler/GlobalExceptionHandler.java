@@ -22,56 +22,57 @@ import com.quiz.learning.Demo.util.error.WrongCheckPassword;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     @ExceptionHandler(value = DuplicatedObjectException.class)
-    public ResponseEntity<RestResponse<Object>> handleDuplication(DuplicatedObjectException idException) {
+    public ResponseEntity<RestResponse<Object>> handleDuplication(DuplicatedObjectException duplicatedObjectException) {
         RestResponse<Object> res = new RestResponse<Object>();
         res.setStatusCode(HttpStatus.BAD_REQUEST.value());
-        res.setError(idException.getMessage());
-        res.setMessage("DuplicatedObjectException");
+        res.setError(duplicatedObjectException.getMessage());
+        res.setMessage(duplicatedObjectException.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
     }
 
     @ExceptionHandler(value = NullObjectException.class)
-    public ResponseEntity<RestResponse<Object>> handleNullPointer(NullObjectException idException) {
+    public ResponseEntity<RestResponse<Object>> handleNullPointer(NullObjectException nullObjectException) {
         RestResponse<Object> res = new RestResponse<Object>();
         res.setStatusCode(HttpStatus.BAD_REQUEST.value());
-        res.setError(idException.getMessage());
-        res.setMessage("NullObjectException");
+        res.setError(nullObjectException.getMessage());
+        res.setMessage(nullObjectException.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
     }
 
     @ExceptionHandler(value = ObjectNotFound.class)
-    public ResponseEntity<RestResponse<Object>> handleNotExistent(ObjectNotFound idException) {
+    public ResponseEntity<RestResponse<Object>> handleNotExistent(ObjectNotFound objectNotFoundException) {
         RestResponse<Object> res = new RestResponse<Object>();
         res.setStatusCode(HttpStatus.BAD_REQUEST.value());
-        res.setError(idException.getMessage());
-        res.setMessage("ObjectNotFound");
+        res.setError(objectNotFoundException.getMessage());
+        res.setMessage(objectNotFoundException.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
     }
 
     @ExceptionHandler(value = WrongCheckPassword.class)
-    public ResponseEntity<RestResponse<Object>> handleWrongCheckingPass(WrongCheckPassword idException) {
+    public ResponseEntity<RestResponse<Object>> handleWrongCheckingPass(
+            WrongCheckPassword wrongCheckPasswordException) {
         RestResponse<Object> res = new RestResponse<Object>();
         res.setStatusCode(HttpStatus.BAD_REQUEST.value());
-        res.setError(idException.getMessage());
-        res.setMessage("WrongCheckPassword");
+        res.setError(wrongCheckPasswordException.getMessage());
+        res.setMessage(wrongCheckPasswordException.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
     }
 
     @ExceptionHandler(value = ResourceNotExisted.class)
-    public ResponseEntity<RestResponse<Object>> handleResourceNotFound(ResourceNotExisted idException) {
+    public ResponseEntity<RestResponse<Object>> handleResourceNotFound(ResourceNotExisted resourceNotExistedException) {
         RestResponse<Object> res = new RestResponse<Object>();
         res.setStatusCode(HttpStatus.BAD_REQUEST.value());
-        res.setError(idException.getMessage());
-        res.setMessage("ResourceNotExisted");
+        res.setError(resourceNotExistedException.getMessage());
+        res.setMessage(resourceNotExistedException.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
     }
 
     @ExceptionHandler(value = InvalidToken.class)
-    public ResponseEntity<RestResponse<Object>> handleInvalidToken(InvalidToken idException) {
+    public ResponseEntity<RestResponse<Object>> handleInvalidToken(InvalidToken invalidTokenException) {
         RestResponse<Object> res = new RestResponse<Object>();
         res.setStatusCode(HttpStatus.BAD_REQUEST.value());
-        res.setError(idException.getMessage());
-        res.setMessage("InvalidToken");
+        res.setError(invalidTokenException.getMessage());
+        res.setMessage(invalidTokenException.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
     }
 
@@ -93,7 +94,7 @@ public class GlobalExceptionHandler {
         RestResponse<Object> res = new RestResponse<Object>();
         res.setStatusCode(HttpStatus.BAD_REQUEST.value());
         res.setError(ex.getMessage());
-        res.setMessage("Invalid file extension");
+        res.setMessage(ex.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
     }
 }
