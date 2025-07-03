@@ -4,8 +4,10 @@ import { Link, useNavigate } from "react-router-dom";
 import "./auth.scss";
 import { useState } from "react";
 import axios from "axios";
-import { Bounce, toast, ToastContainer } from "react-toastify";
+import { Bounce, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
+import { postSignUp } from "../../services/AuthServices";
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -17,6 +19,7 @@ const Signup = () => {
   });
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -24,10 +27,23 @@ const Signup = () => {
       ...prev,
       [name]: value,
     }));
-    // Clear error when user types
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: "" }));
     }
+  };
+
+  const showToast = (type, message) => {
+    toast[type](message, {
+      position: "top-center",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+      transition: Bounce,
+    });
   };
 
   const validateForm = () => {
@@ -65,46 +81,26 @@ const Signup = () => {
     setIsLoading(true);
 
     try {
-      const res = await axios.post("http://localhost:8080/api/auth/signup", {
-        fullName: formData.fullName,
-        email: formData.email,
-        password: formData.password,
-      });
+      const res = await postSignUp(formData.fullName, formData.email, formData.password, formData.confirmPassword);
 
-      if (res.status === 200) {
-        toast.success("🎉 Đăng ký thành công! Vui lòng đăng nhập", {
-          position: "top-center",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
-          transition: Bounce,
-          onClose: () => navigate("/login"),
-        });
+      console.log(res); // res chỉ là `data` do interceptor đã rút gọn
+
+      if (res.statusCode === 200 || res.statusCode === 201) {
+        showToast("success", "Đăng kí người dùng thành công !");
+        navigate("/login");
+      } else {
+        // fallback nếu backend không trả statusCode rõ ràng
+        showToast("error", res.message || "Có lỗi xảy ra.");
       }
     } catch (error) {
       const errorMessage = error.response?.data?.message || "Đăng ký thất bại. Vui lòng thử lại!";
-      toast.error(errorMessage, {
-        position: "top-center",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-        transition: Bounce,
-      });
+      showToast("error", errorMessage);
     } finally {
       setIsLoading(false);
     }
   };
-
   return (
-    <Container fluid className="d-flex vh-100 justify-content-center align-items-center bg-light">
+    <Container fluid className="d-flex  justify-content-center align-items-center bg-light" style={{ paddingTop: "5px" }}>
       <Row className="w-100 justify-content-center">
         <Col xs={11} sm={8} md={6} lg={4}>
           <Card className="p-4 shadow-lg rounded-4">
@@ -123,18 +119,36 @@ const Signup = () => {
                   <Form.Control.Feedback type="invalid">{errors.email}</Form.Control.Feedback>
                 </Form.Group>
 
-                <Form.Group className="mb-3" controlId="formPassword">
+                <Form.Group className="mb-3 position-relative" controlId="formPassword">
                   <Form.Label>Mật khẩu</Form.Label>
-                  <Form.Control type="password" name="password" placeholder="Nhập mật khẩu" size="lg" value={formData.password} onChange={handleInputChange} isInvalid={!!errors.password} />
+                  <Form.Control
+                    type={showPassword ? "text" : "password"}
+                    name="password"
+                    placeholder="Nhập mật khẩu"
+                    size="lg"
+                    value={formData.password}
+                    onChange={handleInputChange}
+                    isInvalid={!!errors.password}
+                  />
                   <Form.Control.Feedback type="invalid">{errors.password}</Form.Control.Feedback>
+                  {formData.password &&
+                    !errors.password &&
+                    (showPassword ? (
+                      <FaRegEyeSlash
+                        onClick={() => setShowPassword(false)}
+                        style={{ position: "absolute", top: "70%", right: "15px", transform: "translateY(-50%)", cursor: "pointer", fontSize: "25px" }}
+                      />
+                    ) : (
+                      <FaRegEye onClick={() => setShowPassword(true)} style={{ position: "absolute", top: "70%", right: "15px", transform: "translateY(-50%)", cursor: "pointer", fontSize: "25px" }} />
+                    ))}
                 </Form.Group>
 
-                <Form.Group className="mb-4" controlId="formConfirmPassword">
-                  <Form.Label>Xác nhận mật khẩu</Form.Label>
+                <Form.Group className="mb-3 position-relative" controlId="formConfirmPassword">
+                  <Form.Label>Xác nhận Mật khẩu</Form.Label>
                   <Form.Control
                     type="password"
                     name="confirmPassword"
-                    placeholder="Nhập lại mật khẩu"
+                    placeholder="Xác nhận lại mật khẩu"
                     size="lg"
                     value={formData.confirmPassword}
                     onChange={handleInputChange}
@@ -172,20 +186,6 @@ const Signup = () => {
           </Card>
         </Col>
       </Row>
-
-      <ToastContainer
-        position="top-center"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick={true}
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-        transition={Bounce}
-      />
     </Container>
   );
 };

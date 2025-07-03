@@ -2,9 +2,9 @@ import { useState } from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import { LuImagePlus } from "react-icons/lu";
-import axios from "axios";
 import { Bounce, toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { postCreateNewUser } from "../../../../../services/UserServices";
 
 const CreateUserModal = (props) => {
   const [emailError, setEmailError] = useState("");
@@ -53,9 +53,10 @@ const CreateUserModal = (props) => {
     setEmailError("");
     setIsLoading(true);
 
+    // Validate input (không dùng throw new Error)
     if (!validateEmail(email)) {
+      setEmailError("Email không hợp lệ!");
       showToast("error", "Email không hợp lệ!");
-      setEmailError("Email không hợp lệ");
       setIsLoading(false);
       return;
     }
@@ -67,47 +68,14 @@ const CreateUserModal = (props) => {
     }
 
     try {
-      const formData = new FormData();
-      const user = {
-        email,
-        password,
-        fullName,
-        role,
-      };
+      // Call API
+      const res = await postCreateNewUser(email, password, fullName, role, imageFile);
+      console.log(res);
 
-      const userBlob = new Blob([JSON.stringify(user)], {
-        type: "application/json",
-      });
-
-      formData.append("createUserRequest", userBlob);
-
-      if (imageFile) {
-        formData.append("userAvatar", imageFile);
-      }
-
-      const token = localStorage.getItem("accessToken");
-      if (!token) {
-        showToast("error", "Vui lòng đăng nhập trước khi thực hiện thao tác này!");
-        setIsLoading(false);
-        return;
-      }
-
-      const res = await axios.post("http://localhost:8080/api/admin/users/create", formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (res.status === 200 && res.data.statusCode === 200) {
+      // Handle response
+      if (res.statusCode === 200 && res.data.statusCode === 200) {
         showToast("success", "Tạo người dùng thành công!");
-        // Reset form
-        setEmail("");
-        setPassword("");
-        setFullName("");
-        setRole("USER");
-        setPreviewAvatar("");
-        setImageFile(null);
-        handleClose();
+        handleClose(); // Đã có reset form trong handleClose
       } else {
         showToast("warning", "Tạo người dùng không thành công!");
       }
@@ -191,8 +159,6 @@ const CreateUserModal = (props) => {
           </Button>
         </Modal.Footer>
       </Modal>
-
-      <ToastContainer />
     </>
   );
 };

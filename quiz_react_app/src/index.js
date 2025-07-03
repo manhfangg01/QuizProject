@@ -25,6 +25,8 @@ root.render(
         <Route path="/" element={<App />}>
           <Route path="users" element={<User />} />
           <Route index element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
         </Route>
 
         <Route path="/admins" element={<Admin />}>
@@ -35,8 +37,6 @@ root.render(
           <Route path="manage-questions" element={<ManageQuestions />} />
           <Route path="manage-results" element={<ManageResults />} />
         </Route>
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>
