@@ -11,6 +11,7 @@ import com.quiz.learning.Demo.service.auth.ForgotPasswordService;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -23,12 +24,14 @@ public class ForgotPassword {
         this.forgotPasswordService = forgotPasswordService;
     }
 
-    @PostMapping("/request-otp")
+    @Transactional
+    @PostMapping("/request-reset-link")
     public ResponseEntity<EmailCheckingResponse> checkEmail(@RequestBody EmailCheckingRequest emailCheckingRequest) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(this.forgotPasswordService.handleCheckEmail(emailCheckingRequest));
     }
 
+    @Transactional
     @PostMapping("/reset-password")
     public ResponseEntity<ResetPasswordResponse> postMethodName(
             @RequestBody ResetPasswordRequest resetPasswordRequest) {

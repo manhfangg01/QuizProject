@@ -7,7 +7,7 @@ public class ForgotPasswordRequest {
     @Getter
     @Setter
     public static class EmailCheckingRequest {
-        private String email;
+        private String username;
     }
 
     @Getter

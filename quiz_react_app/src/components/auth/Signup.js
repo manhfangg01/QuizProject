@@ -3,7 +3,6 @@ import { Form, Button, Card, Container, Row, Col } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import "./auth.scss";
 import { useState } from "react";
-import axios from "axios";
 import { Bounce, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";

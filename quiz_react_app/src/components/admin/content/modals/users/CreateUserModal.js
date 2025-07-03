@@ -73,7 +73,7 @@ const CreateUserModal = (props) => {
       console.log(res);
 
       // Handle response
-      if (res.statusCode === 200 && res.data.statusCode === 200) {
+      if (res.statusCode === 200 || res.statusCode === 201) {
         showToast("success", "Tạo người dùng thành công!");
         handleClose(); // Đã có reset form trong handleClose
       } else {

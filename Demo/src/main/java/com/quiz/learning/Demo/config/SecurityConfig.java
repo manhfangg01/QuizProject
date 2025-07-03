@@ -13,7 +13,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
-import org.springframework.security.oauth2.server.resource.web.access.BearerTokenAccessDeniedHandler;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
@@ -46,7 +45,8 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         String[] whiteList = {
-                "/", "/api/auth/login", "/api/auth/refresh", "/api/auth/signup",
+                "/", "/api/auth/login", "/api/auth/refresh", "/api/auth/signup", "/api/auth/request-reset-link",
+                "/api/auth/reset-password",
                 "/storage/**"
         };
 

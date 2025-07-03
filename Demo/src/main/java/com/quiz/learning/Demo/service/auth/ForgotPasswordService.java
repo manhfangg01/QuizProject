@@ -17,6 +17,7 @@ import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.quiz.learning.Demo.domain.User;
 import com.quiz.learning.Demo.domain.auth.forgotPassword.PasswordResetToken;
@@ -77,7 +78,7 @@ public class ForgotPasswordService {
     }
 
     public void handleSendEmailWithResetLink(String username, String resetToken) {
-        String resetLink = "https://localhost:3000/reset-password?token=" + resetToken;
+        String resetLink = "http://localhost:3000/reset-password?token=" + resetToken;
 
         String content = "<p>Vui lòng click vào đường dẫn để đổi mật khẩu: <strong>" + resetLink + "</strong></p>"
                 + "<p>Đường liên kết có hiệu lực trong 15 phút.</p>";
@@ -85,6 +86,7 @@ public class ForgotPasswordService {
         try {
             MimeMessage message = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true);
+
             helper.setTo(username);
             helper.setSubject("Phản hồi yêu cầu đổi mật khẩu");
             helper.setText(content, true);
@@ -96,7 +98,7 @@ public class ForgotPasswordService {
     }
 
     public EmailCheckingResponse handleCheckEmail(EmailCheckingRequest emailCheckingRequest) {
-        String email = emailCheckingRequest.getEmail();
+        String email = emailCheckingRequest.getUsername();
 
         // Luôn khởi tạo response mặc định
         // Luôn khởi tạo một response mặc định hacker không dò được email đã tồn tại =>
@@ -133,6 +135,7 @@ public class ForgotPasswordService {
 
         // 2. Kiểm tra token còn tồn tại trong DB (nếu bạn lưu vào bảng
         // PasswordResetToken)
+
         Optional<PasswordResetToken> tokenOptional = passwordResetTokenRepository.findByResetToken(token);
         if (tokenOptional.isEmpty()) {
             throw new InvalidResetTokenException("Token đã được sử dụng hoặc không hợp lệ");

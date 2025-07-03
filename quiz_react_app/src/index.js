@@ -16,6 +16,8 @@ import ManageResults from "../src/components/admin/content/ManageResults";
 import Dashboard from "./components/admin/dashboard/Dashboard";
 import Login from "./components/auth/Login";
 import Signup from "./components/auth/Signup";
+import CheckingEmail from "./components/auth/forgot-password/CheckingEmail";
+import ResetPassword from "./components/auth/forgot-password/ResetPassword";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -25,8 +27,10 @@ root.render(
         <Route path="/" element={<App />}>
           <Route path="users" element={<User />} />
           <Route index element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
+          <Route path="login" element={<Login />} />
+          <Route path="signup" element={<Signup />} />
+          <Route path="forgot-password" element={<CheckingEmail />} />
+          <Route path="reset-password" element={<ResetPassword />} />
         </Route>
 
         <Route path="/admins" element={<Admin />}>
