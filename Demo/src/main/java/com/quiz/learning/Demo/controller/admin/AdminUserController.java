@@ -15,6 +15,7 @@ import com.quiz.learning.Demo.domain.request.admin.user.UpdateUserRequest;
 import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO;
 import com.quiz.learning.Demo.domain.restResponse.ApiMessage;
 import com.quiz.learning.Demo.service.admin.AdminUserService;
+import com.quiz.learning.Demo.service.admin.relationServices.AdminResultRelationUser;
 
 import jakarta.validation.Valid;
 
@@ -29,9 +30,11 @@ import org.springframework.web.bind.annotation.PutMapping;
 @RequestMapping("/api")
 public class AdminUserController {
     private final AdminUserService userService;
+    private final AdminResultRelationUser adminResultRelationUser;
 
-    public AdminUserController(AdminUserService userService) {
+    public AdminUserController(AdminUserService userService, AdminResultRelationUser adminResultRelationUser) {
         this.userService = userService;
+        this.adminResultRelationUser = adminResultRelationUser;
     }
 
     @GetMapping("/admin/users/fetch")
@@ -64,7 +67,7 @@ public class AdminUserController {
     @DeleteMapping("/admin/users/delete/{id}")
     @ApiMessage("delete a user")
     public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
-        this.userService.handleDeleteUser(id);
+        this.adminResultRelationUser.handleDeleteUser(id);
         return ResponseEntity.status(HttpStatus.OK).body(null);
     }
 

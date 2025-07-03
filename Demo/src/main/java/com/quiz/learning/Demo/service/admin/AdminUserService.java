@@ -17,7 +17,6 @@ import com.quiz.learning.Demo.domain.request.admin.user.CreateUserRequest;
 import com.quiz.learning.Demo.domain.request.admin.user.UpdateUserRequest;
 import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO;
 import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO.FetchUserDTO;
-import com.quiz.learning.Demo.repository.ResultRepository;
 import com.quiz.learning.Demo.repository.UserRepository;
 import com.quiz.learning.Demo.service.azure.AzureBlobService;
 import com.quiz.learning.Demo.util.error.DuplicatedObjectException;
@@ -29,18 +28,38 @@ import com.quiz.learning.Demo.util.security.SecurityUtil;
 public class AdminUserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final ResultRepository resultRepository;
+
     private final AdminRoleService adminRoleService;
     private final AzureBlobService azureBlobService;
 
     public AdminUserService(UserRepository userRepository, PasswordEncoder passwordEncoder,
-            ResultRepository resultRepository, AdminRoleService adminRoleService, AzureBlobService azureBlobService) {
+            AdminRoleService adminRoleService,
+            AzureBlobService azureBlobService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
-        this.resultRepository = resultRepository;
         this.adminRoleService = adminRoleService;
         this.azureBlobService = azureBlobService;
 
+    }
+
+    public User handleGetUser(Long id) {
+        Optional<User> checkUser = this.userRepository.findById(id);
+        if (checkUser.isEmpty()) {
+            throw new ObjectNotFound("User with id: " + id + " is not existed");
+        }
+        return checkUser.get();
+    }
+
+    public void handleSaveUser(User user) {
+        this.userRepository.save(user);
+    }
+
+    public User handleGetUserByEmail(String email) {
+        Optional<User> checkUser = this.userRepository.findByEmail(email);
+        if (checkUser.isEmpty()) {
+            throw new ObjectNotFound("User with id: " + email + " is not existed");
+        }
+        return checkUser.get();
     }
 
     public FetchAdminDTO.FetchUserDTO convertToDTO(User user) {
@@ -138,27 +157,6 @@ public class AdminUserService {
             }
         }
         return this.convertToDTO(this.userRepository.save(realUser));
-    }
-
-    public void handleDeleteUser(Long id) {
-        Optional<User> checkUser = this.userRepository.findById(id);
-        if (checkUser.isEmpty()) {
-            throw new ObjectNotFound("There is no user has id: " + id);
-        }
-        User realUser = checkUser.get();
-        if (realUser.getResults() != null) {
-            for (Result result : realUser.getResults()) {
-                this.resultRepository.delete(result);
-            }
-        }
-
-        if (realUser.getUserAvatarUrls() != null && !realUser.getUserAvatarUrls().isEmpty()) {
-            String blobName = azureBlobService.getBlobNameFromUrl(realUser.getUserAvatarUrls());
-            if (blobName != null) {
-                azureBlobService.deleteFile(blobName);
-            }
-        }
-        this.userRepository.delete(realUser);
     }
 
     public Optional<User> handleFetchUserByUsername(String email) {

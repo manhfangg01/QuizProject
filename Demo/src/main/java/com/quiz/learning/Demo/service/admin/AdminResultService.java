@@ -13,22 +13,29 @@ import com.quiz.learning.Demo.domain.User;
 import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO;
 import com.quiz.learning.Demo.repository.QuizRepository;
 import com.quiz.learning.Demo.repository.ResultRepository;
-import com.quiz.learning.Demo.repository.UserRepository;
 import com.quiz.learning.Demo.util.error.ObjectNotFound;
 
 @Service
 public class AdminResultService {
     private final ResultRepository resultRepository;
-    private final UserRepository userRepository;
+    private final AdminUserService adminUserService;
     private final QuizRepository quizRepository;
     private final AdminAnswerService adminAnswerService;
 
-    public AdminResultService(ResultRepository resultRepository, UserRepository userRepository,
+    public AdminResultService(ResultRepository resultRepository, AdminUserService adminUserService,
             QuizRepository quizRepository, AdminAnswerService adminAnswerService) {
         this.resultRepository = resultRepository;
-        this.userRepository = userRepository;
         this.quizRepository = quizRepository;
+        this.adminUserService = adminUserService;
         this.adminAnswerService = adminAnswerService;
+    }
+
+    public Result handleGetResult(Long id) {
+        Optional<Result> checkResult = this.resultRepository.findById(id);
+        if (checkResult.isEmpty()) {
+            throw new ObjectNotFound("Result with id: " + id + " is not existed");
+        }
+        return checkResult.get();
     }
 
     public FetchAdminDTO.FetchResultDTO convertToDTO(Result result) {
@@ -55,7 +62,7 @@ public class AdminResultService {
     public List<FetchAdminDTO.FetchResultDTO> handleFetchResultsByQuizId(Long id) {
         Optional<Quiz> checkQuiz = this.quizRepository.findById(id);
         if (checkQuiz.isEmpty()) {
-            throw new ObjectNotFound("There is no quiz has id " + id);
+            throw new ObjectNotFound("Quiz with id: " + id + " is not existed");
         }
         Quiz realQuiz = checkQuiz.get();
         List<Result> results = realQuiz.getResults();
@@ -65,15 +72,16 @@ public class AdminResultService {
     }
 
     public List<FetchAdminDTO.FetchResultDTO> handleFetchResultsByUserId(Long userId) {
-        Optional<User> checkUser = this.userRepository.findById(userId);
-        if (checkUser.isEmpty()) {
-            throw new ObjectNotFound("There is no user has id " + userId);
-        }
-        User realUser = checkUser.get();
+
+        User realUser = this.adminUserService.handleGetUser(userId);
         List<Result> results = realUser.getResults();
 
         return results == null ? Collections.emptyList()
                 : results.stream().map(this::convertToDTO).collect(Collectors.toList());
+    }
+
+    public void handleDeleteResult(Result result) {
+        this.resultRepository.delete(result);
     }
 
 }

@@ -13,7 +13,6 @@ import com.quiz.learning.Demo.domain.Quiz;
 import com.quiz.learning.Demo.domain.request.admin.quiz.CreateQuizRequest;
 import com.quiz.learning.Demo.domain.request.admin.quiz.UpdateQuizRequest;
 import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO;
-import com.quiz.learning.Demo.repository.QuestionRepository;
 import com.quiz.learning.Demo.repository.QuizRepository;
 import com.quiz.learning.Demo.util.error.DuplicatedObjectException;
 import com.quiz.learning.Demo.util.error.NullObjectException;
@@ -24,14 +23,25 @@ public class AdminQuizService {
     private final QuizRepository quizRepository;
     private final AdminQuestionService adminQuestionService;
     private final AdminResultService adminResultService;
-    private final QuestionRepository questionRepository;
 
     public AdminQuizService(QuizRepository quizRepository, AdminQuestionService adminQuestionService,
-            AdminResultService adminResultService, QuestionRepository questionRepository) {
+            AdminResultService adminResultService) {
         this.quizRepository = quizRepository;
         this.adminQuestionService = adminQuestionService;
         this.adminResultService = adminResultService;
-        this.questionRepository = questionRepository;
+
+    }
+
+    public Quiz handleGetQuiz(Long id) {
+        Optional<Quiz> checkQuiz = this.quizRepository.findById(id);
+        if (checkQuiz.isEmpty()) {
+            throw new ObjectNotFound("Quiz with id: " + id + " is not existed");
+        }
+        return checkQuiz.get();
+    }
+
+    public void handleSaveQuiz(Quiz quiz) {
+        this.quizRepository.save(quiz);
     }
 
     public FetchAdminDTO.FetchQuizDTO convertToDTO(Quiz quiz) {
@@ -93,8 +103,7 @@ public class AdminQuizService {
                 : ids
                         .stream()
                         .map(id -> {
-                            return questionRepository.findById(id).isPresent() ? questionRepository.findById(id).get()
-                                    : null;
+                            return this.adminQuestionService.handleGetQuestion(id);
                         })
                         .collect(Collectors.toList());
     }

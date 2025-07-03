@@ -7,6 +7,7 @@ import com.quiz.learning.Demo.domain.request.admin.question.UpdateQuestionReques
 import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO;
 import com.quiz.learning.Demo.domain.restResponse.ApiMessage;
 import com.quiz.learning.Demo.service.admin.AdminQuestionService;
+import com.quiz.learning.Demo.service.admin.relationServices.AdminQuestionRelationQuiz;
 
 import jakarta.validation.Valid;
 
@@ -26,9 +27,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 @RequestMapping("/api")
 public class AdminQuestionController {
     private final AdminQuestionService questionService;
+    private final AdminQuestionRelationQuiz adminQuestionRelationQuiz;
 
-    public AdminQuestionController(AdminQuestionService questionService) {
+    public AdminQuestionController(AdminQuestionService questionService,
+            AdminQuestionRelationQuiz adminQuestionRelationQuiz) {
         this.questionService = questionService;
+        this.adminQuestionRelationQuiz = adminQuestionRelationQuiz;
     }
 
     @GetMapping("/admin/questions/fetch")
@@ -59,7 +63,7 @@ public class AdminQuestionController {
     @DeleteMapping("/admin/questions/delete/{id}")
     @ApiMessage("delete a question")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        this.questionService.handleDeleteQuestion(id);
+        this.adminQuestionRelationQuiz.handleDeleteQuestion(id);
         return ResponseEntity.status(HttpStatus.OK).body(null);
     }
 

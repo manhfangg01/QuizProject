@@ -13,7 +13,6 @@ import com.quiz.learning.Demo.domain.Question;
 import com.quiz.learning.Demo.domain.request.admin.option.CreateOptionRequest;
 import com.quiz.learning.Demo.domain.request.admin.option.UpdateOptionRequest;
 import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO;
-import com.quiz.learning.Demo.repository.AnswerRepository;
 import com.quiz.learning.Demo.repository.OptionRepository;
 import com.quiz.learning.Demo.util.error.DuplicatedObjectException;
 import com.quiz.learning.Demo.util.error.ObjectNotFound;
@@ -22,13 +21,19 @@ import com.quiz.learning.Demo.util.error.ObjectNotFound;
 public class AdminOptionService {
     private final OptionRepository optionRepository;
     private final AdminAnswerService adminAnswerService;
-    private final AnswerRepository answerRepository;
 
-    public AdminOptionService(OptionRepository optionRepository, AdminAnswerService adminAnswerService,
-            AnswerRepository answerRepository) {
+    public AdminOptionService(OptionRepository optionRepository, AdminAnswerService adminAnswerService) {
         this.optionRepository = optionRepository;
         this.adminAnswerService = adminAnswerService;
-        this.answerRepository = answerRepository;
+
+    }
+
+    public Option handleGetOption(Long id) {
+        Optional<Option> checkOption = this.optionRepository.findById(id);
+        if (checkOption.isEmpty()) {
+            throw new ObjectNotFound("Option with id: " + id + " is not existed");
+        }
+        return checkOption.get();
     }
 
     public FetchAdminDTO.FetchOptionDTO convertToDTO(Option option) {
@@ -95,9 +100,10 @@ public class AdminOptionService {
         if (question != null) {
             question.getOptions().remove(realOption);
         }
-
-        for (Answer ans : realOption.getAnswers()) {
-            this.answerRepository.delete(ans);
+        if (realOption.getAnswers() != null) {
+            for (Answer ans : realOption.getAnswers()) {
+                this.adminAnswerService.handleDeleteAnswer(ans);
+            }
         }
         optionRepository.delete(realOption);
 

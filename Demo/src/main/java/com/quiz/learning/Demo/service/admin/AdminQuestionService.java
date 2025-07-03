@@ -13,9 +13,7 @@ import com.quiz.learning.Demo.domain.Quiz;
 import com.quiz.learning.Demo.domain.request.admin.question.CreateQuestionRequest;
 import com.quiz.learning.Demo.domain.request.admin.question.UpdateQuestionRequest;
 import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO;
-import com.quiz.learning.Demo.repository.OptionRepository;
 import com.quiz.learning.Demo.repository.QuestionRepository;
-import com.quiz.learning.Demo.repository.QuizRepository;
 import com.quiz.learning.Demo.util.error.DuplicatedObjectException;
 import com.quiz.learning.Demo.util.error.NullObjectException;
 import com.quiz.learning.Demo.util.error.ObjectNotFound;
@@ -24,15 +22,18 @@ import com.quiz.learning.Demo.util.error.ObjectNotFound;
 public class AdminQuestionService {
     private final QuestionRepository questionRepository;
     private final AdminOptionService adminOptionService;
-    private final QuizRepository quizRepository;
-    private final OptionRepository optionRepository;
 
-    public AdminQuestionService(QuestionRepository questionRepository, AdminOptionService adminOptionService,
-            QuizRepository quizRepository, OptionRepository optionRepository) {
+    public AdminQuestionService(QuestionRepository questionRepository, AdminOptionService adminOptionService) {
         this.questionRepository = questionRepository;
         this.adminOptionService = adminOptionService;
-        this.quizRepository = quizRepository;
-        this.optionRepository = optionRepository;
+    }
+
+    public Question handleGetQuestion(Long id) {
+        Optional<Question> checkQuestion = this.questionRepository.findById(id);
+        if (checkQuestion.isEmpty()) {
+            throw new ObjectNotFound("Question with id: " + id + " is not existed");
+        }
+        return checkQuestion.get();
     }
 
     public FetchAdminDTO.FetchQuestionDTO convertToDTO(Question question) {
@@ -74,8 +75,7 @@ public class AdminQuestionService {
                 : ids
                         .stream()
                         .map(id -> {
-                            return optionRepository.findById(id).isPresent() ? optionRepository.findById(id).get()
-                                    : null;
+                            return adminOptionService.handleGetOption(id);
                         })
                         .collect(Collectors.toList());
     }
@@ -118,22 +118,6 @@ public class AdminQuestionService {
         // Lưu và trả về DTO
         Question saved = questionRepository.save(question);
         return convertToDTO(saved);
-    }
-
-    public void handleDeleteQuestion(Long id) {
-        Optional<Question> checkQuestion = this.questionRepository.findById(id);
-        if (checkQuestion.isEmpty()) {
-            throw new ObjectNotFound("Question not found");
-        }
-
-        Question question = checkQuestion.get();
-
-        for (Quiz quiz : question.getQuizzes()) {
-            quiz.getQuestions().remove(question);
-            quizRepository.save(quiz); // cập nhật thay đổi vào DB
-        }
-
-        questionRepository.delete(question);
     }
 
 }

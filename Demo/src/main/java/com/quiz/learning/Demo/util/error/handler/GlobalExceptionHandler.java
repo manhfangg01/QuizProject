@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.quiz.learning.Demo.domain.restResponse.RestResponse;
 import com.quiz.learning.Demo.util.error.DuplicatedObjectException;
+import com.quiz.learning.Demo.util.error.EmailSendingException;
+import com.quiz.learning.Demo.util.error.InvalidResetTokenException;
 import com.quiz.learning.Demo.util.error.InvalidToken;
 import com.quiz.learning.Demo.util.error.InvalidUploadedFile;
 import com.quiz.learning.Demo.util.error.NullObjectException;
@@ -91,6 +93,26 @@ public class GlobalExceptionHandler {
     // hanlde exceptions from Uploading file
     @ExceptionHandler(InvalidUploadedFile.class)
     public ResponseEntity<RestResponse<Object>> handleUploadingException(InvalidUploadedFile ex) {
+        RestResponse<Object> res = new RestResponse<Object>();
+        res.setStatusCode(HttpStatus.BAD_REQUEST.value());
+        res.setError(ex.getMessage());
+        res.setMessage(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
+    }
+
+    // hanlde exceptions from sending email
+    @ExceptionHandler(EmailSendingException.class)
+    public ResponseEntity<RestResponse<Object>> handleEmailSendingException(EmailSendingException ex) {
+        RestResponse<Object> res = new RestResponse<Object>();
+        res.setStatusCode(HttpStatus.BAD_REQUEST.value());
+        res.setError(ex.getMessage());
+        res.setMessage(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
+    }
+
+    // hanlde exceptions from reseting password
+    @ExceptionHandler(InvalidResetTokenException.class)
+    public ResponseEntity<RestResponse<Object>> handleInvalidResetTokenException(InvalidResetTokenException ex) {
         RestResponse<Object> res = new RestResponse<Object>();
         res.setStatusCode(HttpStatus.BAD_REQUEST.value());
         res.setError(ex.getMessage());
