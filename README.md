@@ -1,0 +1,1 @@
+- Backend: Lần sau làm dự án thì dùng Cascade chứ đừng có đi xóa thủ công bằng Repository nha con 
