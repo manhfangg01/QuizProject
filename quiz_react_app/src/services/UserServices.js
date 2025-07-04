@@ -33,4 +33,18 @@ const postCreateNewUser = async (email, password, fullName, role, imageFile) => 
   return response;
 };
 
-export { postCreateNewUser };
+const getAllUsersService = async () => {
+  const token = localStorage.getItem("accessToken");
+  if (!token) {
+    throw new Error("Vui lòng đăng nhập trước khi thực hiện thao tác này!");
+  }
+  const response = await axiosCustom.get("/api/admin/users/fetch", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return response;
+};
+
+export { postCreateNewUser, getAllUsersService };

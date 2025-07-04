@@ -19,7 +19,6 @@ const postLogin = async (username, password) => {
 
   return response;
 };
-export { postLogin };
 
 // forgot-password
 
@@ -30,7 +29,6 @@ const postCheckEmail = async (username) => {
 
   return response;
 };
-export { postCheckEmail };
 
 const PostResetPassword = async (resetToken, newPassword) => {
   const response = await axiosCustom.post("http://localhost:8080/api/auth/reset-password", {
@@ -40,4 +38,4 @@ const PostResetPassword = async (resetToken, newPassword) => {
 
   return response;
 };
-export { PostResetPassword };
+export { PostResetPassword, postLogin, postCheckEmail };

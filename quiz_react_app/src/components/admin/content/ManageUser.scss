@@ -1,18 +1,28 @@
 .manage-users-container {
   padding: 10px;
-  .users-content {
+  .title-and-btn {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    .title {
+      font-weight: 700;
+      font-size: 50px;
+      padding: 10px;
+    }
     .btn-add-new {
       .btn {
+        height: 50%;
+        font-size: 16px;
+        padding: 8px 16px;
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 6px;
+        margin-right: 35px;
       }
     }
   }
-  .title {
-    font-weight: 700;
-    font-size: 20px;
-    padding: 10px;
+
+  .users-content {
   }
 }
 .label-uploading {

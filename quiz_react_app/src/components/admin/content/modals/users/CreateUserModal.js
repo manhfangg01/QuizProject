@@ -16,6 +16,7 @@ const CreateUserModal = (props) => {
   const [previewAvatar, setPreviewAvatar] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [imageFile, setImageFile] = useState(null);
+  const onCreateUser = props.onCreateUser;
 
   const handleClose = () => {
     props.setShow(false);
@@ -75,6 +76,7 @@ const CreateUserModal = (props) => {
       // Handle response
       if (res.statusCode === 200 || res.statusCode === 201) {
         showToast("success", "Tạo người dùng thành công!");
+        onCreateUser();
         handleClose(); // Đã có reset form trong handleClose
       } else {
         showToast("warning", "Tạo người dùng không thành công!");
