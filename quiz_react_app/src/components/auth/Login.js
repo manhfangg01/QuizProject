@@ -6,7 +6,7 @@ import { useState } from "react";
 import axios from "axios";
 import { Bounce, ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { postLogin } from "../../services/AuthServices";
+import { callLogin } from "../../services/AuthServices";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -68,7 +68,7 @@ const Login = () => {
     setIsLoading(true);
 
     try {
-      const res = await postLogin(formData.username, formData.password);
+      const res = await callLogin(formData.username, formData.password);
 
       console.log(res); // res chỉ là `data` do interceptor đã rút gọn
       if (res.statusCode === 200) {

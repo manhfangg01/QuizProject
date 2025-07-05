@@ -6,7 +6,7 @@ import { useState } from "react";
 import { Bounce, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
-import { postSignUp } from "../../services/AuthServices";
+import { callRegister } from "../../services/AuthServices";
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -80,7 +80,7 @@ const Signup = () => {
     setIsLoading(true);
 
     try {
-      const res = await postSignUp(formData.fullName, formData.email, formData.password, formData.confirmPassword);
+      const res = await callRegister(formData.fullName, formData.email, formData.password, formData.confirmPassword);
 
       console.log(res); // res chỉ là `data` do interceptor đã rút gọn
 

@@ -1,6 +1,7 @@
-import axiosCustom from "../utils/axiosCustomize";
+import { use } from "react";
+import axiosInstance from "../utils/axiosCustomize";
 
-const postCreateNewUser = async (email, password, fullName, role, imageFile) => {
+export const postCreateNewUser = async (email, password, fullName, role, imageFile) => {
   const formData = new FormData();
   const user = {
     email,
@@ -8,43 +9,43 @@ const postCreateNewUser = async (email, password, fullName, role, imageFile) => 
     fullName,
     role,
   };
+  const userBlob = new Blob([JSON.stringify(user)], {
+    type: "application/json",
+  });
+  formData.append("createUserRequest", userBlob);
+  if (imageFile) {
+    formData.append("userAvatar", imageFile);
+  }
+  const response = await axiosInstance.post("/api/admin/users/create", formData); // không cần gửi đi bearer token thủ công nữa custom đã tự gắn rồi
+  return response;
+};
+
+export const putUpdateUser = async (userId, fullName, role, imageFile) => {
+  const formData = new FormData();
+
+  const user = {
+    userId,
+    fullName,
+    role,
+  };
+
+  console.log(">>Debug", user);
 
   const userBlob = new Blob([JSON.stringify(user)], {
     type: "application/json",
   });
 
-  formData.append("createUserRequest", userBlob);
+  formData.append("updateUserRequest", userBlob);
 
   if (imageFile) {
     formData.append("userAvatar", imageFile);
   }
-
-  const token = localStorage.getItem("accessToken");
-  if (!token) {
-    throw new Error("Vui lòng đăng nhập trước khi thực hiện thao tác này!");
-  }
-
-  const response = await axiosCustom.post("/api/admin/users/create", formData, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  const response = await axiosInstance.post("/api/admin/users/update", formData);
 
   return response;
 };
 
-const getAllUsersService = async () => {
-  const token = localStorage.getItem("accessToken");
-  if (!token) {
-    throw new Error("Vui lòng đăng nhập trước khi thực hiện thao tác này!");
-  }
-  const response = await axiosCustom.get("/api/admin/users/fetch", {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
+export const getAllUsersService = async () => {
+  const response = await axiosInstance.get("/api/admin/users/fetch");
   return response;
 };
-
-export { postCreateNewUser, getAllUsersService };

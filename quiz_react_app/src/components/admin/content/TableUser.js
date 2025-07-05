@@ -14,9 +14,9 @@ const TableUser = ({ users, onEdit, onDelete, onDetail }) => {
       </thead>
       <tbody>
         {users && users.length > 0 ? (
-          users.map((user, index) => (
+          users.map((user) => (
             <tr key={user.id}>
-              <td>{index + 1}</td>
+              <td>{user.id}</td>
               <td>{user.fullName}</td>
               <td>{user.email}</td>
               <td>{user.role}</td>
@@ -27,7 +27,7 @@ const TableUser = ({ users, onEdit, onDelete, onDetail }) => {
                   justifyContent: "space-around",
                 }}
               >
-                <Button variant="warning" size="sm" className="me-2" onClick={() => onEdit(user)}>
+                <Button variant="warning" size="sm" className="me-2" onClick={() => onEdit(true, user)}>
                   Sửa
                 </Button>
                 <Button variant="danger" size="sm" className="me-2" onClick={() => onDelete(user.id)}>

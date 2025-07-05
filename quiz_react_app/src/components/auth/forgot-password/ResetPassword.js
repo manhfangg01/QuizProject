@@ -3,7 +3,7 @@ import { Bounce, toast } from "react-toastify";
 import { Container, Row, Col, Card, Form, Button } from "react-bootstrap";
 import { useSearchParams, useNavigate } from "react-router-dom"; // Thêm useNavigate
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
-import { PostResetPassword } from "../../../services/AuthServices";
+import { callResetPassword } from "../../../services/AuthServices";
 
 const ResetPassword = () => {
   const [newPassword, setNewPassword] = useState("");
@@ -53,7 +53,7 @@ const ResetPassword = () => {
     setIsLoading(true);
 
     try {
-      const res = await PostResetPassword(resetToken, newPassword);
+      const res = await callResetPassword(resetToken, newPassword);
       if (res.statusCode === 200) {
         showToast("success", res.message);
         setIsSuccess(true); // Đánh dấu thành công

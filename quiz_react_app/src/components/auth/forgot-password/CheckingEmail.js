@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Bounce, toast } from "react-toastify";
-import { postCheckEmail } from "../../../services/AuthServices";
+import { callCheckEmail } from "../../../services/AuthServices";
 import { Container, Row, Col, Card, Form, Button } from "react-bootstrap";
 import "./CheckingEmail.scss";
 
@@ -41,7 +41,7 @@ const CheckingEmail = () => {
     setIsLoading(true);
 
     try {
-      const res = await postCheckEmail(username);
+      const res = await callCheckEmail(username);
       if (res.statusCode === 200) {
         showToast("success", res.data.message);
       } else {

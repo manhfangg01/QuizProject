@@ -1,41 +1,35 @@
 import axiosCustom from "../utils/axiosCustomize";
-const postSignUp = async (fullName, email, password, confirmPassword) => {
-  const response = await axiosCustom.post("http://localhost:8080/api/auth/signup", {
-    fullName, // dùng biến được truyền vào
-    email,
-    password,
-    confirmPassword,
-  });
-
-  return response;
+export const callRegister = (fullName, email, password, confirmPassword) => {
+  return axiosCustom.post("/api/auth/signup", { fullName, email, password, confirmPassword });
 };
-export { postSignUp };
 
-const postLogin = async (username, password) => {
-  const response = await axiosCustom.post("http://localhost:8080/api/auth/login", {
-    username,
-    password,
-  });
+export const callLogin = (username, password) => {
+  return axiosCustom.post("/api/auth/login", { username, password });
+};
 
-  return response;
+export const callFetchAccount = () => {
+  return axiosCustom.get("/api/auth/account");
+};
+
+export const callRefreshToken = () => {
+  return axiosCustom.get("/api/auth/refresh");
+};
+
+export const callLogout = () => {
+  return axiosCustom.post("/api/auth/logout");
 };
 
 // forgot-password
 
-const postCheckEmail = async (username) => {
-  const response = await axiosCustom.post("http://localhost:8080/api/auth/request-reset-link", {
+export const callCheckEmail = (username) => {
+  return axiosCustom.post("http://localhost:8080/api/auth/request-reset-link", {
     username,
   });
-
-  return response;
 };
 
-const PostResetPassword = async (resetToken, newPassword) => {
-  const response = await axiosCustom.post("http://localhost:8080/api/auth/reset-password", {
+export const callResetPassword = (resetToken, newPassword) => {
+  return axiosCustom.post("http://localhost:8080/api/auth/reset-password", {
     resetToken,
     newPassword,
   });
-
-  return response;
 };
-export { PostResetPassword, postLogin, postCheckEmail };

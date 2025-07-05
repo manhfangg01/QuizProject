@@ -4,11 +4,19 @@ import "./ManageUser.scss";
 import { useEffect, useState } from "react";
 import TableUser from "./TableUser";
 import { getAllUsersService } from "../../../services/UserServices";
+import UpdateUserModal from "./modals/users/UpdateUserModal";
 const ManageUsers = (props) => {
   const [listUsers, setListUsers] = useState([]);
   const [showModalCreateUser, setShowModalCreateUser] = useState(false);
-  const handleShowHideModal = (value) => {
+  const [showModalUpdateUser, setShowModalUpdateUser] = useState(false);
+  const [userData, setUserData] = useState({});
+  const handleShowHideCreateUserModal = (value) => {
     setShowModalCreateUser(value);
+  };
+  const handleUpdateUser = (showValue, userData) => {
+    setShowModalUpdateUser(showValue);
+    setUserData(userData);
+    console.log("Debugg", userData);
   };
 
   const fetchData = async () => {
@@ -43,9 +51,10 @@ const ManageUsers = (props) => {
       </div>
       <div className="users-content">
         <div className="table-users-container">
-          <TableUser users={listUsers} />
+          <TableUser users={listUsers} onEdit={handleUpdateUser} />
         </div>
-        <CreateUserModal show={showModalCreateUser} setShow={handleShowHideModal} onCreateUser={fetchData} />
+        <CreateUserModal show={showModalCreateUser} setShow={handleShowHideCreateUserModal} onCreateUser={fetchData} />
+        <UpdateUserModal show={showModalUpdateUser} setShow={handleUpdateUser} onUpdateUser={fetchData} userData={userData} />
       </div>
     </div>
   );
