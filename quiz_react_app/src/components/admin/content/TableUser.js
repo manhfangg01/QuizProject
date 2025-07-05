@@ -1,5 +1,36 @@
 import { Table, Button } from "react-bootstrap";
+import { getUserById } from "../../../services/UserServices";
+import { Bounce, toast } from "react-toastify";
+
 const TableUser = ({ users, onEdit, onDelete, onDetail }) => {
+  const showToast = (type, message) => {
+    toast[type](message, {
+      position: "top-center",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      theme: "light",
+      transition: Bounce,
+    });
+  };
+  const handleFetchOneUser = async (userId) => {
+    if (!userId) onDetail(true, null);
+
+    try {
+      const res = await getUserById(userId);
+      if (res && (res.statusCode === 200 || res.statusCode === 204)) {
+        onDetail(true, res.data);
+      } else {
+        showToast("warning", res?.message || "Không thể hiển thị người dùng.");
+      }
+    } catch (err) {
+      console.error("Error deleting user:", err);
+      showToast("error", err?.response?.data?.message || "Đã xảy ra lỗi khi xóa!");
+    }
+  };
+
   return (
     <Table striped bordered hover responsive className="mt-3">
       <thead className="table-dark">
@@ -27,14 +58,14 @@ const TableUser = ({ users, onEdit, onDelete, onDetail }) => {
                   justifyContent: "space-around",
                 }}
               >
+                <Button variant="secondary" size="sm" onClick={() => handleFetchOneUser(user.id)}>
+                  Chi tiết
+                </Button>
                 <Button variant="warning" size="sm" className="me-2" onClick={() => onEdit(true, user)}>
                   Sửa
                 </Button>
                 <Button variant="danger" size="sm" className="me-2" onClick={() => onDelete(true, user.id)}>
                   Xóa
-                </Button>
-                <Button variant="secondary" size="sm" onClick={() => onDelete(user.id)}>
-                  Chi tiết
                 </Button>
               </td>
             </tr>

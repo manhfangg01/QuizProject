@@ -6,18 +6,23 @@ import TableUser from "./TableUser";
 import { getAllUsersService } from "../../../services/UserServices";
 import UpdateUserModal from "./modals/users/UpdateUserModal";
 import DeleteUserModal from "./modals/users/DeleteUserModal";
+import DetailUserModal from "./modals/users/DetailUserModal";
 const ManageUsers = (props) => {
   const [listUsers, setListUsers] = useState([]);
   const [showModalCreateUser, setShowModalCreateUser] = useState(false);
   const [showModalUpdateUser, setShowModalUpdateUser] = useState(false);
   const [showModalDeleteUser, setShowModalDeleteUser] = useState(false);
+  const [showModalDetailUser, setShowModalDetailUser] = useState(false);
   const [userData, setUserData] = useState({});
   const [deleteUserId, setDeleteUserId] = useState(null);
+  const [detailUserData, setDetailUserData] = useState(null);
   const handleShowHideCreateUserModal = (value) => {
     setShowModalCreateUser(value);
   };
-  const handleShowHideDeleteUserModal = (value) => {
-    setShowModalDeleteUser(value);
+  const handleDetailUser = (showValue, userData) => {
+    setShowModalDetailUser(showValue);
+    setDetailUserData(userData);
+    console.log("Debugg", userData);
   };
   const handleUpdateUser = (showValue, userData) => {
     setShowModalUpdateUser(showValue);
@@ -62,11 +67,12 @@ const ManageUsers = (props) => {
       </div>
       <div className="users-content">
         <div className="table-users-container">
-          <TableUser users={listUsers} onEdit={handleUpdateUser} onDelete={handleDeleteUser} />
+          <TableUser users={listUsers} onEdit={handleUpdateUser} onDelete={handleDeleteUser} onDetail={handleDetailUser} />
         </div>
         <CreateUserModal show={showModalCreateUser} setShow={handleShowHideCreateUserModal} onCreateUser={fetchData} />
         <UpdateUserModal show={showModalUpdateUser} setShow={handleUpdateUser} onUpdateUser={fetchData} userData={userData} />
         <DeleteUserModal show={showModalDeleteUser} setShow={handleDeleteUser} onDeleteUser={fetchData} userId={deleteUserId} />
+        <DetailUserModal show={showModalDetailUser} setShow={handleDetailUser} userData={detailUserData} />
       </div>
     </div>
   );
