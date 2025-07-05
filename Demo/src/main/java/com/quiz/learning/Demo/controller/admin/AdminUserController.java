@@ -57,11 +57,12 @@ public class AdminUserController {
         return ResponseEntity.status(HttpStatus.OK).body(this.userService.handleCreateUser(newUser, userAvatar));
     }
 
-    @PutMapping("/admin/users/update")
-    @ApiMessage("update a user")
-    public ResponseEntity<FetchAdminDTO.FetchUserDTO> update(@Valid @RequestBody UpdateUserRequest updatedUser,
-            @RequestParam("UserAvatar") MultipartFile userAvatar) {
-        return ResponseEntity.status(HttpStatus.OK).body(this.userService.handleUpdateUser(updatedUser, userAvatar));
+    @PostMapping("/admin/users/update")
+    public ResponseEntity<FetchAdminDTO.FetchUserDTO> update(
+            @RequestPart("updateUserRequest") @Valid UpdateUserRequest updatedUser,
+            @RequestPart(value = "userAvatar", required = false) MultipartFile userAvatar) {
+        return ResponseEntity.status(HttpStatus.OK).body(
+                this.userService.handleUpdateUser(updatedUser, userAvatar));
     }
 
     @DeleteMapping("/admin/users/delete/{id}")

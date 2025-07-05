@@ -134,9 +134,11 @@ public class AdminUserService {
             throw new ObjectNotFound("There is no user has id: " + updatedUser.getUserId());
         }
         User realUser = checkUser.get();
-        if (!realUser.getFullName().equalsIgnoreCase(updatedUser.getFullName())) {
-            if (this.userRepository.findByFullName(updatedUser.getFullName()).isPresent()) {
-                throw new DuplicatedObjectException("Duplicated UserName");
+        if ((realUser.getFullName() != null)) {
+            if (!realUser.getFullName().equalsIgnoreCase(updatedUser.getFullName())) {
+                if (this.userRepository.findByFullName(updatedUser.getFullName()).isPresent()) {
+                    throw new DuplicatedObjectException("Duplicated UserName");
+                }
             }
         }
 
