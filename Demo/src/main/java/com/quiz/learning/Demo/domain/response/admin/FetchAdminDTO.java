@@ -6,6 +6,7 @@ import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.quiz.learning.Demo.domain.Role;
+import com.quiz.learning.Demo.domain.metadata.Metadata;
 import com.quiz.learning.Demo.util.constant.DifficultyLevel;
 
 import jakarta.persistence.EnumType;
@@ -73,20 +74,21 @@ public class FetchAdminDTO {
         private Long id;
         private String fullName;
         private String email;
-
         @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
         private Instant createdAt;
-
         @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
         private Instant updatedAt;
-
         private String createdBy;
         private String updatedBy;
-
         private String role; // chỉ trả về tên vai trò
-
         private String UserAvatarUrls;
+    }
 
+    @Getter
+    @Setter
+    public static class FetchUserPaginationDTO {
+        private List<FetchUserDTO> users;
+        private Metadata metadata;
     }
 
 }

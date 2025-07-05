@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -12,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.quiz.learning.Demo.domain.request.admin.user.CreateUserRequest;
 import com.quiz.learning.Demo.domain.request.admin.user.UpdateUserRequest;
 import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO;
+import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO.FetchUserPaginationDTO;
 import com.quiz.learning.Demo.domain.restResponse.ApiMessage;
 import com.quiz.learning.Demo.service.admin.AdminUserService;
 import com.quiz.learning.Demo.service.admin.relationServices.AdminResultRelationUser;
@@ -36,8 +38,13 @@ public class AdminUserController {
 
     @GetMapping("/admin/users/fetch")
     @ApiMessage("fetch all users")
-    public ResponseEntity<List<FetchAdminDTO.FetchUserDTO>> fetch() {
-        return ResponseEntity.status(HttpStatus.OK).body(this.userService.handleFetchAllUsers());
+    public ResponseEntity<FetchUserPaginationDTO> fetch(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String order) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(this.userService.handleFetchAllUsers(page, size, sortBy, order));
     }
 
     @GetMapping("/admin/users/fetch/{id}")

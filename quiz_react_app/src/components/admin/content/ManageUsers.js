@@ -8,6 +8,7 @@ import UpdateUserModal from "./modals/users/UpdateUserModal";
 import DeleteUserModal from "./modals/users/DeleteUserModal";
 import DetailUserModal from "./modals/users/DetailUserModal";
 const ManageUsers = (props) => {
+  const [metadata, setMetadata] = useState({});
   const [listUsers, setListUsers] = useState([]);
   const [showModalCreateUser, setShowModalCreateUser] = useState(false);
   const [showModalUpdateUser, setShowModalUpdateUser] = useState(false);
@@ -35,13 +36,14 @@ const ManageUsers = (props) => {
     console.log("Debugg", userId);
   };
 
-  const fetchData = async () => {
+  const fetchData = async (pageNumber) => {
     try {
-      const response = await getAllUsersService();
+      const response = await getAllUsersService(pageNumber);
       // phải có await thì mới gọi ra data như interceptor đã cấu hình
-      console.log("✅ Response từ API:", response);
+      console.log(">>>>✅ Response từ API:", response);
       if (response.statusCode === 200) {
-        setListUsers(response.data);
+        setListUsers(response.data.users);
+        setMetadata(response.data.metadata);
       }
     } catch (error) {
       console.error("❌ Lỗi khi gọi API:", error);
@@ -67,7 +69,7 @@ const ManageUsers = (props) => {
       </div>
       <div className="users-content">
         <div className="table-users-container">
-          <TableUser users={listUsers} onEdit={handleUpdateUser} onDelete={handleDeleteUser} onDetail={handleDetailUser} />
+          <TableUser users={listUsers} metadata={metadata} onEdit={handleUpdateUser} onDelete={handleDeleteUser} onDetail={handleDetailUser} fetchUsers={fetchData} />
         </div>
         <CreateUserModal show={showModalCreateUser} setShow={handleShowHideCreateUserModal} onCreateUser={fetchData} />
         <UpdateUserModal show={showModalUpdateUser} setShow={handleUpdateUser} onUpdateUser={fetchData} userData={userData} />

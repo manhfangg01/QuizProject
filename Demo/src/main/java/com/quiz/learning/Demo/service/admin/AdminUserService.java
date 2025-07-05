@@ -7,15 +7,21 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.quiz.learning.Demo.domain.User;
+import com.quiz.learning.Demo.domain.metadata.Metadata;
 import com.quiz.learning.Demo.domain.request.admin.user.CreateUserRequest;
 import com.quiz.learning.Demo.domain.request.admin.user.UpdateUserRequest;
 import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO;
 import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO.FetchUserDTO;
+import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO.FetchUserPaginationDTO;
 import com.quiz.learning.Demo.repository.UserRepository;
 import com.quiz.learning.Demo.service.azure.AzureBlobService;
 import com.quiz.learning.Demo.util.error.DuplicatedObjectException;
@@ -75,8 +81,58 @@ public class AdminUserService {
         return dto;
     }
 
-    public List<FetchAdminDTO.FetchUserDTO> handleFetchAllUsers() {
-        return this.userRepository.findAll().stream().map(this::convertToDTO).collect(Collectors.toList());
+    public boolean isPrime(long n) {
+        if (n <= 1)
+            return false;
+        if (n == 2)
+            return true;
+        if (n % 2 == 0)
+            return false;
+
+        int sqrt = (int) Math.sqrt(n);
+        for (int i = 3; i <= sqrt; i += 2) {
+            if (n % i == 0)
+                return false;
+        }
+        return true;
+    }
+
+    public int maxDivisorOfNUnder10(long n) {
+        for (int i = 10; i >= 1; i--) {
+            if (n % i == 0) {
+                return i;
+            }
+        }
+        return -1; // Trường hợp bất thường, nếu n < 1
+    }
+
+    public FetchUserPaginationDTO handleFetchAllUsers(int page, int size, String sortBy, String order) {
+
+        Sort sort = order.equalsIgnoreCase("ASC") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        // Logic phân trang theo tổng số
+        long totalUsers = this.userRepository.count();
+        if (totalUsers != 0 && !isPrime(totalUsers) && totalUsers > 10) {
+            size = maxDivisorOfNUnder10(totalUsers);
+        }
+
+        Pageable pageable = PageRequest.of(page, size, sort);
+        Page<User> pageUsers = this.userRepository.findAll(pageable);
+        List<User> users = pageUsers.getContent();
+        // Gán DTO
+        FetchUserPaginationDTO dto = new FetchUserPaginationDTO();
+        Metadata metadata = new Metadata();
+        metadata.setCurrentPage(page);
+        metadata.setPageSize(size);
+        metadata.setTotalObjects(Long.valueOf(pageUsers.getTotalElements()));
+        metadata.setTotalPages(pageUsers.getTotalPages() - 1);
+        metadata.setHasNext(page < pageUsers.getTotalPages() - 1);
+        metadata.setHasPrevious(page > 1);
+
+        dto.setMetadata(metadata);
+
+        dto.setUsers(users.stream().map(this::convertToDTO).collect(Collectors.toList()));
+
+        return dto;
     }
 
     public FetchAdminDTO.FetchUserDTO handleFetchOneUser(Long id) {
