@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 import com.quiz.learning.Demo.domain.Option;
 import com.quiz.learning.Demo.domain.Question;
-import com.quiz.learning.Demo.domain.Quiz;
 import com.quiz.learning.Demo.domain.request.admin.question.CreateQuestionRequest;
 import com.quiz.learning.Demo.domain.request.admin.question.UpdateQuestionRequest;
 import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO;

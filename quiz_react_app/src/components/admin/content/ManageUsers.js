@@ -5,18 +5,29 @@ import { useEffect, useState } from "react";
 import TableUser from "./TableUser";
 import { getAllUsersService } from "../../../services/UserServices";
 import UpdateUserModal from "./modals/users/UpdateUserModal";
+import DeleteUserModal from "./modals/users/DeleteUserModal";
 const ManageUsers = (props) => {
   const [listUsers, setListUsers] = useState([]);
   const [showModalCreateUser, setShowModalCreateUser] = useState(false);
   const [showModalUpdateUser, setShowModalUpdateUser] = useState(false);
+  const [showModalDeleteUser, setShowModalDeleteUser] = useState(false);
   const [userData, setUserData] = useState({});
+  const [deleteUserId, setDeleteUserId] = useState(null);
   const handleShowHideCreateUserModal = (value) => {
     setShowModalCreateUser(value);
+  };
+  const handleShowHideDeleteUserModal = (value) => {
+    setShowModalDeleteUser(value);
   };
   const handleUpdateUser = (showValue, userData) => {
     setShowModalUpdateUser(showValue);
     setUserData(userData);
     console.log("Debugg", userData);
+  };
+  const handleDeleteUser = (showValue, userId) => {
+    setShowModalDeleteUser(showValue);
+    setDeleteUserId(userId);
+    console.log("Debugg", userId);
   };
 
   const fetchData = async () => {
@@ -51,10 +62,11 @@ const ManageUsers = (props) => {
       </div>
       <div className="users-content">
         <div className="table-users-container">
-          <TableUser users={listUsers} onEdit={handleUpdateUser} />
+          <TableUser users={listUsers} onEdit={handleUpdateUser} onDelete={handleDeleteUser} />
         </div>
         <CreateUserModal show={showModalCreateUser} setShow={handleShowHideCreateUserModal} onCreateUser={fetchData} />
         <UpdateUserModal show={showModalUpdateUser} setShow={handleUpdateUser} onUpdateUser={fetchData} userData={userData} />
+        <DeleteUserModal show={showModalDeleteUser} setShow={handleDeleteUser} onDeleteUser={fetchData} userId={deleteUserId} />
       </div>
     </div>
   );

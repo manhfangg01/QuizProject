@@ -4,7 +4,6 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,15 +16,12 @@ import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.quiz.learning.Demo.domain.User;
 import com.quiz.learning.Demo.domain.auth.forgotPassword.PasswordResetToken;
 import com.quiz.learning.Demo.domain.auth.forgotPassword.dto.ForgotPasswordRequest.EmailCheckingRequest;
 import com.quiz.learning.Demo.domain.auth.forgotPassword.dto.ForgotPasswordRequest.ResetPasswordRequest;
 import com.quiz.learning.Demo.domain.auth.forgotPassword.dto.ForgotPasswordResponse.EmailCheckingResponse;
 import com.quiz.learning.Demo.domain.auth.forgotPassword.dto.ForgotPasswordResponse.ResetPasswordResponse;
-import com.quiz.learning.Demo.domain.restResponse.RestResponse;
 import com.quiz.learning.Demo.repository.PasswordResetTokenRepository;
 import com.quiz.learning.Demo.service.admin.AdminUserService;
 import com.quiz.learning.Demo.util.error.EmailSendingException;

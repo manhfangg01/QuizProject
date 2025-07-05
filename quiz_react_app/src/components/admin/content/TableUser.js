@@ -30,7 +30,7 @@ const TableUser = ({ users, onEdit, onDelete, onDetail }) => {
                 <Button variant="warning" size="sm" className="me-2" onClick={() => onEdit(true, user)}>
                   Sửa
                 </Button>
-                <Button variant="danger" size="sm" className="me-2" onClick={() => onDelete(user.id)}>
+                <Button variant="danger" size="sm" className="me-2" onClick={() => onDelete(true, user.id)}>
                   Xóa
                 </Button>
                 <Button variant="secondary" size="sm" onClick={() => onDelete(user.id)}>

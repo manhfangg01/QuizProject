@@ -11,7 +11,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.quiz.learning.Demo.domain.Result;
 import com.quiz.learning.Demo.domain.User;
 import com.quiz.learning.Demo.domain.request.admin.user.CreateUserRequest;
 import com.quiz.learning.Demo.domain.request.admin.user.UpdateUserRequest;

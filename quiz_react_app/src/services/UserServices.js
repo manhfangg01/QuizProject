@@ -1,6 +1,11 @@
 import { use } from "react";
 import axiosInstance from "../utils/axiosCustomize";
 
+export const getAllUsersService = async () => {
+  const response = await axiosInstance.get("/api/admin/users/fetch");
+  return response;
+};
+
 export const postCreateNewUser = async (email, password, fullName, role, imageFile) => {
   const formData = new FormData();
   const user = {
@@ -45,7 +50,6 @@ export const putUpdateUser = async (userId, fullName, role, imageFile) => {
   return response;
 };
 
-export const getAllUsersService = async () => {
-  const response = await axiosInstance.get("/api/admin/users/fetch");
-  return response;
+export const deleteUserById = async (userId) => {
+  return await axiosInstance.delete(`/api/admin/users/delete/${userId}`);
 };
