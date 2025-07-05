@@ -12,6 +12,11 @@ import lombok.Setter;
 public class LoginResponse {
     @JsonProperty
     private String accessToken;
+    private Long userId;
+    private String fullName;
+    private String role;
+    private String UserAvatarUrls;
+    private String email;
     @JsonIgnore
     private UserLogin user;
 

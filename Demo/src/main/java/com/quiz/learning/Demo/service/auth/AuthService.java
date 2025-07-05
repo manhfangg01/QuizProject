@@ -65,6 +65,11 @@ public class AuthService {
         userLogin.setRole(this.adminRoleService.handleFetchRoleById(realUser.getRole().getId()).getName());
         userLogin.setUserId(realUser.getId());
         loginResponse.setUser(userLogin);
+        loginResponse.setFullName(realUser.getFullName());
+        loginResponse.setRole(realUser.getRole() != null ? realUser.getRole().getName() : "");
+        loginResponse.setUserId(realUser.getId());
+        loginResponse.setEmail(realUser.getEmail());
+        loginResponse.setUserAvatarUrls(realUser.getUserAvatarUrls() != null ? realUser.getUserAvatarUrls() : "");
         loginResponse.setAccessToken(this.handleGenerateAccessToken(loginRequest));
         return loginResponse;
     }

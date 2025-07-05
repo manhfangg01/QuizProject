@@ -74,6 +74,18 @@ const Login = () => {
       if (res.statusCode === 200) {
         const token = res.data.accessToken;
         localStorage.setItem("accessToken", token);
+        localStorage.setItem(
+          "user",
+          JSON.stringify({
+            id: res.data.userId,
+            fullName: res.data.fullName,
+            email: res.data.email,
+            avatar: res.data.userAvatarUrls,
+            role: res.data.role,
+          })
+        );
+
+        window.dispatchEvent(new Event("loginSuccess")); // Đánh dấu sự kiện login thành công để ẩn nút Login và Signup
 
         showToast("success", "Đăng nhập thành công !");
         navigate("/");

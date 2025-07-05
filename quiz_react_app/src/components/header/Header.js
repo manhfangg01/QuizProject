@@ -2,9 +2,46 @@ import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import NavDropdown from "react-bootstrap/NavDropdown";
-import { NavLink, Link } from "react-router-dom";
+import { NavLink, Link, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import defaultAvatar from "../../assets/default.jpg"; // ảnh mặc định nếu user chưa có avatar
+import { callLogout } from "../../services/AuthServices";
 
 const Header = () => {
+  const navigate = useNavigate();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userInfo, setUserInfo] = useState(null);
+
+  useEffect(() => {
+    const checkAuth = () => {
+      const token = localStorage.getItem("accessToken"); // phải đúng key bạn đang dùng
+      const userData = localStorage.getItem("user");
+
+      if (token && userData) {
+        try {
+          setUserInfo(JSON.parse(userData));
+          setIsAuthenticated(true);
+        } catch (e) {
+          console.error("User parse error:", e);
+        }
+      }
+    };
+    checkAuth();
+    // Lắng nghe sự kiện login thành công
+    window.addEventListener("loginSuccess", checkAuth);
+    // cleanup
+    return () => window.removeEventListener("loginSuccess", checkAuth);
+  }, []);
+
+  const handleLogout = () => {
+    callLogout();
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("user");
+    setIsAuthenticated(false);
+    setUserInfo(null);
+    navigate("/");
+  };
+
   return (
     <Navbar expand="lg" className="bg-body-tertiary">
       <Container>
@@ -14,8 +51,6 @@ const Header = () => {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
-            {/* Thẻ link của thư viện đặc biệt hơn thẻ a của HTML là khi nhấn vào link sẽ không bị refresh */}
-            {/* Thẻ NavLink của thư viện reactRouterDom tự động tích hợp lớp Active khi chuyển trang */}
             <NavLink to="/" className="nav-link">
               Home
             </NavLink>
@@ -25,24 +60,29 @@ const Header = () => {
             <NavLink to="/users" className="nav-link">
               User
             </NavLink>
-            {/* <Nav.Link href="/">Home</Nav.Link>
-            <Nav.Link href="/users">Users</Nav.Link>
-            <Nav.Link href="/admins">Admin</Nav.Link> */}
           </Nav>
+
           <Nav>
-            <Link className="btn-login btn" to="/login">
-              Log in
-            </Link>
-            <Link className="btn-signup btn" to="/signup">
-              Sign up
-            </Link>
-            {/* <NavDropdown title="Setting" id="basic-nav-dropdown">
-              <NavDropdown.Item >Log in</NavDropdown.Item>
-              <NavDropdown.Item >
-                Log out
-              </NavDropdown.Item>
-              <NavDropdown.Item >Profile</NavDropdown.Item>
-            </NavDropdown> */}
+            {!isAuthenticated ? (
+              <>
+                <Link className="btn-login btn" to="/login">
+                  Log in
+                </Link>
+                <Link className="btn-signup btn" to="/signup">
+                  Sign up
+                </Link>
+              </>
+            ) : (
+              <NavDropdown
+                title={<img src={userInfo.avatar === "" ? defaultAvatar : userInfo.avatar} alt="avatar" className="rounded-circle" style={{ width: "40px", height: "40px", objectFit: "cover" }} />}
+                id="user-nav-dropdown"
+                align="end"
+              >
+                <NavDropdown.Item onClick={() => navigate("/profile")}>Trang cá nhân</NavDropdown.Item>
+                <NavDropdown.Divider />
+                <NavDropdown.Item onClick={handleLogout}>Đăng xuất</NavDropdown.Item>
+              </NavDropdown>
+            )}
           </Nav>
         </Navbar.Collapse>
       </Container>
