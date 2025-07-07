@@ -18,21 +18,6 @@ public class FetchAdminDTO {
 
     @Getter
     @Setter
-    public static class FetchQuizDTO {
-        private Long quizId;
-        private String title;
-        private String subjectName;
-        private Long timeLimit;
-        private Long totalParticipants;
-        private Boolean isActive;
-        @Enumerated(EnumType.STRING)
-        private DifficultyLevel difficulty;
-        private List<FetchQuestionDTO> questions;
-        private List<FetchResultDTO> results; // ✅ dùng DTO thay vì entity
-    }
-
-    @Getter
-    @Setter
     public static class FetchQuestionDTO {
         private Long questionId;
         private String context;
@@ -88,6 +73,41 @@ public class FetchAdminDTO {
     @Setter
     public static class FetchUserPaginationDTO {
         private List<FetchUserDTO> users;
+        private Metadata metadata;
+    }
+
+    @Getter
+    @Setter
+    public static class FetchFullQuizDTO {
+        private Long quizId;
+        private String title;
+        private String subjectName;
+        private Long timeLimit;
+        private Long totalParticipants;
+        private Boolean isActive;
+        @Enumerated(EnumType.STRING)
+        private DifficultyLevel difficulty;
+        private List<FetchQuestionDTO> questions;
+        private List<FetchResultDTO> results; // ✅ dùng DTO thay vì entity
+    }
+
+    @Getter
+    @Setter
+    public static class FetchTableQuizDTO {
+        private Long quizId;
+        private String title;
+        private String subjectName;
+        private Long timeLimit;
+        private Long totalParticipants;
+        private Boolean isActive;
+        @Enumerated(EnumType.STRING)
+        private DifficultyLevel difficulty;
+    }
+
+    @Getter
+    @Setter
+    public static class FetchQuizPaginationDTO {
+        private List<FetchTableQuizDTO> quizzes;
         private Metadata metadata;
     }
 

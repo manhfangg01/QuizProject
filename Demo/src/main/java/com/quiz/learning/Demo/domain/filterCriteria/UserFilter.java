@@ -1,4 +1,4 @@
-package com.quiz.learning.Demo.service.filterCriteria;
+package com.quiz.learning.Demo.domain.filterCriteria;
 
 import lombok.Getter;
 import lombok.Setter;

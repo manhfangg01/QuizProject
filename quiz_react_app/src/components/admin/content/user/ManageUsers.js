@@ -27,13 +27,13 @@ const ManageUsers = (props) => {
   });
 
   const handleSearch = () => {
-    fetchData(0, filter); // truyền filter xuống backend
+    fetchData(1, filter); // truyền filter xuống backend
   };
 
   const handleClear = () => {
     const reset = { id: "", email: "", fullName: "", role: "" };
     setFilter(reset);
-    fetchData(0, reset);
+    fetchData(1, reset);
   };
   const handleShowHideCreateUserModal = (value) => {
     setShowModalCreateUser(value);

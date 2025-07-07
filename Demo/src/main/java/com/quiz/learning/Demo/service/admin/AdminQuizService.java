@@ -6,14 +6,28 @@ import java.util.Optional;
 
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import com.quiz.learning.Demo.domain.Question;
 import com.quiz.learning.Demo.domain.Quiz;
+import com.quiz.learning.Demo.domain.User;
+import com.quiz.learning.Demo.domain.filterCriteria.QuizFilter;
+import com.quiz.learning.Demo.domain.filterCriteria.UserFilter;
+import com.quiz.learning.Demo.domain.metadata.Metadata;
 import com.quiz.learning.Demo.domain.request.admin.quiz.CreateQuizRequest;
 import com.quiz.learning.Demo.domain.request.admin.quiz.UpdateQuizRequest;
 import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO;
+import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO.FetchQuizPaginationDTO;
+import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO.FetchTableQuizDTO;
+import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO.FetchUserPaginationDTO;
 import com.quiz.learning.Demo.repository.QuizRepository;
+import com.quiz.learning.Demo.service.CalculationFunction;
+import com.quiz.learning.Demo.service.specification.QuizSpecs;
 import com.quiz.learning.Demo.util.error.DuplicatedObjectException;
 import com.quiz.learning.Demo.util.error.NullObjectException;
 import com.quiz.learning.Demo.util.error.ObjectNotFound;
@@ -23,13 +37,14 @@ public class AdminQuizService {
     private final QuizRepository quizRepository;
     private final AdminQuestionService adminQuestionService;
     private final AdminResultService adminResultService;
+    private final QuizSpecs quizSpecs;
 
     public AdminQuizService(QuizRepository quizRepository, AdminQuestionService adminQuestionService,
-            AdminResultService adminResultService) {
+            AdminResultService adminResultService, QuizSpecs quizSpecs) {
         this.quizRepository = quizRepository;
         this.adminQuestionService = adminQuestionService;
         this.adminResultService = adminResultService;
-
+        this.quizSpecs = quizSpecs;
     }
 
     public Quiz handleGetQuiz(Long id) {
@@ -44,8 +59,8 @@ public class AdminQuizService {
         this.quizRepository.save(quiz);
     }
 
-    public FetchAdminDTO.FetchQuizDTO convertToDTO(Quiz quiz) {
-        FetchAdminDTO.FetchQuizDTO dto = new FetchAdminDTO.FetchQuizDTO();
+    public FetchAdminDTO.FetchFullQuizDTO convertToFullDTO(Quiz quiz) {
+        FetchAdminDTO.FetchFullQuizDTO dto = new FetchAdminDTO.FetchFullQuizDTO();
         dto.setQuizId(quiz.getId());
         dto.setTitle(quiz.getTitle());
         dto.setSubjectName(quiz.getSubjectName());
@@ -77,25 +92,69 @@ public class AdminQuizService {
         return dto;
     }
 
-    public List<FetchAdminDTO.FetchQuizDTO> handleFetchAllquizzes() {
-        List<Quiz> quizzes = this.quizRepository.findAll();
-        List<FetchAdminDTO.FetchQuizDTO> quizDTOs = quizzes == null ? Collections.emptyList()
-                : quizzes
-                        .stream()
-                        .map(quiz -> {
-                            return this.convertToDTO(quiz);
-                        })
-                        .collect(Collectors.toList());
-
-        return quizDTOs;
+    public FetchTableQuizDTO convertToTableDTO(Quiz quiz) {
+        FetchTableQuizDTO dto = new FetchTableQuizDTO();
+        dto.setDifficulty(quiz.getDifficulty());
+        dto.setIsActive(quiz.getIsActive());
+        dto.setQuizId(quiz.getId());
+        dto.setSubjectName(quiz.getSubjectName());
+        dto.setTimeLimit(quiz.getTimeLimit());
+        dto.setTitle(quiz.getTitle());
+        dto.setTotalParticipants(quiz.getTotalParticipants());
+        return dto;
     }
 
-    public FetchAdminDTO.FetchQuizDTO handleFetchQuizById(Long id) {
+    public Pageable handlePagination(int page, int size, String sortBy, String order) {
+        // Validate input parameters
+        page = Math.max(page, 1); // Đảm bảo page >= 1
+        size = Math.max(size, 1); // Đảm bảo size >= 1
+
+        Sort sort = order.equalsIgnoreCase("ASC") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        return PageRequest.of(page - 1, size, sort);
+    }
+
+    public FetchQuizPaginationDTO handleFetchAllQuizzes(int page, int size, String sortBy, String order,
+            QuizFilter filterCriteria) {
+        Pageable pageable = this.handlePagination(page, size, sortBy, order);
+
+        // Xây dựng specification
+        Specification<Quiz> spec = Specification.where(null);
+
+        if (filterCriteria.getId() != null) {
+            spec = spec.and(this.quizSpecs.hasId(filterCriteria.getId()));
+        }
+        if (filterCriteria.getTitle() != null) {
+            spec = spec.and(this.quizSpecs.titleContains(filterCriteria.getTitle()));
+        }
+        if (filterCriteria.getSubject() != null) {
+            spec = spec.and(this.quizSpecs.hasSubject(filterCriteria.getSubject()));
+        }
+        // Thêm các điều kiện filter khác tương tự...
+
+        Page<Quiz> pageQuizzes = this.quizRepository.findAll(spec, pageable);
+        List<Quiz> quizzes = pageQuizzes.getContent();
+
+        // Gán DTO
+        FetchQuizPaginationDTO dto = new FetchQuizPaginationDTO();
+        Metadata metadata = new Metadata();
+        metadata.setCurrentPage(page);
+        metadata.setPageSize(size);
+        metadata.setTotalObjects(pageQuizzes.getTotalElements());
+        metadata.setTotalPages(pageQuizzes.getTotalPages()); // Sửa: bỏ -1
+        metadata.setHasNext(pageQuizzes.hasNext()); // Sử dụng method có sẵn
+        metadata.setHasPrevious(pageQuizzes.hasPrevious()); // Sử dụng method có sẵn
+
+        dto.setMetadata(metadata);
+        dto.setQuizzes(quizzes.stream().map(this::convertToTableDTO).collect(Collectors.toList()));
+        return dto;
+    }
+
+    public FetchAdminDTO.FetchFullQuizDTO handleFetchQuizById(Long id) {
         Optional<Quiz> checkQuiz = this.quizRepository.findById(id);
         if (checkQuiz.isEmpty()) {
             throw new ObjectNotFound("Quiz Not Found");
         }
-        return convertToDTO(checkQuiz.get());
+        return convertToFullDTO(checkQuiz.get());
     }
 
     private List<Question> fetchQuestionsByIds(List<Long> ids) {
@@ -108,7 +167,7 @@ public class AdminQuizService {
                         .collect(Collectors.toList());
     }
 
-    public FetchAdminDTO.FetchQuizDTO handleCreateQuiz(CreateQuizRequest createdQuiz) {
+    public FetchAdminDTO.FetchTableQuizDTO handleCreateQuiz(CreateQuizRequest createdQuiz) {
         if (createdQuiz == null) {
             throw new NullObjectException("Quiz is null");
         }
@@ -131,10 +190,10 @@ public class AdminQuizService {
         quiz.setTotalParticipants(Long.valueOf(0));
 
         Quiz saved = quizRepository.save(quiz);
-        return convertToDTO(saved);
+        return convertToTableDTO(saved);
     }
 
-    public FetchAdminDTO.FetchQuizDTO handleUpdateQuiz(UpdateQuizRequest request) {
+    public FetchAdminDTO.FetchTableQuizDTO handleUpdateQuiz(UpdateQuizRequest request) {
         Quiz quiz = quizRepository.findById(request.getQuizId())
                 .orElseThrow(() -> new ObjectNotFound("Quiz with id " + request.getQuizId() + " not found"));
 
@@ -154,7 +213,7 @@ public class AdminQuizService {
         List<Question> updatedQuestions = fetchQuestionsByIds(request.getQuestions());
         quiz.setQuestions(updatedQuestions);
 
-        return convertToDTO(quizRepository.save(quiz));
+        return convertToTableDTO(quizRepository.save(quiz));
     }
 
     public void handleDeleteQuiz(Long id) {

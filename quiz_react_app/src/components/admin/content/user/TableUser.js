@@ -1,6 +1,7 @@
 import { Table, Button, Pagination } from "react-bootstrap";
 import { getUserById } from "../../../../services/UserServices";
 import { Bounce, toast } from "react-toastify";
+import CustomPagination from "../CustomPagination";
 
 const TableUser = ({ fetchUsers, users, metadata, onEdit, onDelete, onDetail }) => {
   const showToast = (type, message) => {
@@ -85,28 +86,7 @@ const TableUser = ({ fetchUsers, users, metadata, onEdit, onDelete, onDetail }) 
           )}
         </tbody>
       </Table>
-      <div className="pagination">
-        {metadata && metadata.totalPages > 0 && (
-          <div className="d-flex justify-content-center mt-3">
-            <Pagination>
-              <Pagination.First disabled={metadata.currentPage === 1} onClick={() => onPageChange(1)} />
-              <Pagination.Prev disabled={!metadata.hasPrevious} onClick={() => onPageChange(metadata.currentPage - 1)} />
-
-              {[...Array(metadata.totalPages)].map((_, index) => {
-                const page = index + 1;
-                return (
-                  <Pagination.Item key={page} active={page === metadata.currentPage} onClick={() => onPageChange(page)}>
-                    {page}
-                  </Pagination.Item>
-                );
-              })}
-
-              <Pagination.Next disabled={!metadata.hasNext} onClick={() => onPageChange(metadata.currentPage + 1)} />
-              <Pagination.Last disabled={metadata.currentPage === metadata.totalPages} onClick={() => onPageChange(metadata.totalPages)} />
-            </Pagination>
-          </div>
-        )}
-      </div>
+      <CustomPagination metadata={metadata} onPageChange={onPageChange} />
     </>
   );
 };

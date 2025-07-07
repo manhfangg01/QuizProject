@@ -10,7 +10,7 @@ import User from "./components/user/User";
 import Home from "./components/home/Home";
 import ManageUsers from "../src/components/admin/content/user/ManageUsers";
 import ManageOptions from "../src/components/admin/content/ManageOptions";
-import ManageQuizzes from "../src/components/admin/content/ManageQuizzes";
+import ManageQuizzes from "../src/components/admin/content/quiz/ManageQuizzes";
 import ManageQuestions from "../src/components/admin/content/ManageQuestions";
 import ManageResults from "../src/components/admin/content/ManageResults";
 import Dashboard from "./components/admin/dashboard/Dashboard";

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.quiz.learning.Demo.domain.filterCriteria.UserFilter;
 import com.quiz.learning.Demo.domain.request.admin.user.CreateUserRequest;
 import com.quiz.learning.Demo.domain.request.admin.user.UpdateUserRequest;
 import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO;
@@ -17,7 +18,6 @@ import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO.FetchUserPagin
 import com.quiz.learning.Demo.domain.restResponse.ApiMessage;
 import com.quiz.learning.Demo.service.admin.AdminUserService;
 import com.quiz.learning.Demo.service.admin.relationServices.AdminResultRelationUser;
-import com.quiz.learning.Demo.service.filterCriteria.UserFilter;
 
 import jakarta.validation.Valid;
 
@@ -41,7 +41,7 @@ public class AdminUserController {
     @GetMapping("/admin/users/fetch")
     @ApiMessage("fetch all users")
     public ResponseEntity<FetchUserPaginationDTO> fetch(
-            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "id") String sortBy,
             @RequestParam(defaultValue = "asc") String order,

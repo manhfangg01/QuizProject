@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.quiz.learning.Demo.domain.User;
+import com.quiz.learning.Demo.domain.filterCriteria.UserFilter;
 import com.quiz.learning.Demo.domain.metadata.Metadata;
 import com.quiz.learning.Demo.domain.request.admin.user.CreateUserRequest;
 import com.quiz.learning.Demo.domain.request.admin.user.UpdateUserRequest;
@@ -24,8 +25,8 @@ import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO;
 import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO.FetchUserDTO;
 import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO.FetchUserPaginationDTO;
 import com.quiz.learning.Demo.repository.UserRepository;
+import com.quiz.learning.Demo.service.CalculationFunction;
 import com.quiz.learning.Demo.service.azure.AzureBlobService;
-import com.quiz.learning.Demo.service.filterCriteria.UserFilter;
 import com.quiz.learning.Demo.service.specification.UserSpecs;
 import com.quiz.learning.Demo.util.error.DuplicatedObjectException;
 import com.quiz.learning.Demo.util.error.InvalidUploadedFile;
@@ -85,42 +86,14 @@ public class AdminUserService {
         return dto;
     }
 
-    public boolean isPrime(long n) {
-        if (n <= 1)
-            return false;
-        if (n == 2)
-            return true;
-        if (n % 2 == 0)
-            return false;
-
-        int sqrt = (int) Math.sqrt(n);
-        for (int i = 3; i <= sqrt; i += 2) {
-            if (n % i == 0)
-                return false;
-        }
-        return true;
-    }
-
-    public int maxDivisorOfNUnder10(long n) {
-        for (int i = 10; i >= 1; i--) {
-            if (n % i == 0) {
-                return i;
-            }
-        }
-        return -1; // Trường hợp bất thường, nếu n < 1
-    }
-
     public Pageable handlePagination(int page, int size, String sortBy, String order) {
+        // Validate page and size
+        page = page < 1 ? 1 : page;
+        size = size < 1 ? 10 : size;
+        size = size > 100 ? 100 : size; // Giới hạn tối đa 100 items/page
 
         Sort sort = order.equalsIgnoreCase("ASC") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
-        // Logic phân trang theo tổng số
-        long totalUsers = this.userRepository.count();
-        if (totalUsers != 0 && !isPrime(totalUsers) && totalUsers > 10) {
-            size = maxDivisorOfNUnder10(totalUsers);
-        }
-
-        Pageable pageable = PageRequest.of(page, size, sort);
-        return pageable;
+        return PageRequest.of(page - 1, size, sort);
     }
 
     public FetchUserPaginationDTO handleFetchAllUsers(int page, int size, String sortBy, String order,
@@ -133,17 +106,20 @@ public class AdminUserService {
         Specification<User> spec3 = this.userSpecs.hasRole(filterCriteria.getRole());
         Specification<User> spec4 = this.userSpecs.nameLike(filterCriteria.getFullName());
         spec = spec.and(spec1).and(spec2).and(spec3).and(spec4);
+
         Page<User> pageUsers = this.userRepository.findAll(spec, pageable);
         List<User> users = pageUsers.getContent();
+
         // Gán DTO
         FetchUserPaginationDTO dto = new FetchUserPaginationDTO();
         Metadata metadata = new Metadata();
         metadata.setCurrentPage(page);
         metadata.setPageSize(size);
-        metadata.setTotalObjects(Long.valueOf(pageUsers.getTotalElements()));
-        metadata.setTotalPages(pageUsers.getTotalPages() - 1);
-        metadata.setHasNext(page < pageUsers.getTotalPages() - 1);
-        metadata.setHasPrevious(page > 1);
+        metadata.setTotalObjects(pageUsers.getTotalElements());
+        metadata.setTotalPages(pageUsers.getTotalPages());
+        metadata.setHasNext(pageUsers.hasNext());
+        metadata.setHasPrevious(pageUsers.hasPrevious());
+
         dto.setMetadata(metadata);
         dto.setUsers(users.stream().map(this::convertToDTO).collect(Collectors.toList()));
         return dto;
