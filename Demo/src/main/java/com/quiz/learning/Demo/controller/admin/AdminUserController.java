@@ -17,11 +17,13 @@ import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO.FetchUserPagin
 import com.quiz.learning.Demo.domain.restResponse.ApiMessage;
 import com.quiz.learning.Demo.service.admin.AdminUserService;
 import com.quiz.learning.Demo.service.admin.relationServices.AdminResultRelationUser;
+import com.quiz.learning.Demo.service.filterCriteria.UserFilter;
 
 import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
@@ -42,9 +44,10 @@ public class AdminUserController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "id") String sortBy,
-            @RequestParam(defaultValue = "asc") String order) {
+            @RequestParam(defaultValue = "asc") String order,
+            @ModelAttribute UserFilter filterCriteria) {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(this.userService.handleFetchAllUsers(page, size, sortBy, order));
+                .body(this.userService.handleFetchAllUsers(page, size, sortBy, order, filterCriteria));
     }
 
     @GetMapping("/admin/users/fetch/{id}")

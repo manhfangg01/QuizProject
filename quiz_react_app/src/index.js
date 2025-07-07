@@ -8,7 +8,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Admin from "./components/admin/Admin";
 import User from "./components/user/User";
 import Home from "./components/home/Home";
-import ManageUsers from "../src/components/admin/content/ManageUsers";
+import ManageUsers from "../src/components/admin/content/user/ManageUsers";
 import ManageOptions from "../src/components/admin/content/ManageOptions";
 import ManageQuizzes from "../src/components/admin/content/ManageQuizzes";
 import ManageQuestions from "../src/components/admin/content/ManageQuestions";

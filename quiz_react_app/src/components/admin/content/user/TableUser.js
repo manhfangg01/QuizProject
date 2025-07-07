@@ -1,5 +1,5 @@
 import { Table, Button, Pagination } from "react-bootstrap";
-import { getUserById } from "../../../services/UserServices";
+import { getUserById } from "../../../../services/UserServices";
 import { Bounce, toast } from "react-toastify";
 
 const TableUser = ({ fetchUsers, users, metadata, onEdit, onDelete, onDetail }) => {

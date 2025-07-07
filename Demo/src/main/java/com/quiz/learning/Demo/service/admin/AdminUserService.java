@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,6 +25,8 @@ import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO.FetchUserDTO;
 import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO.FetchUserPaginationDTO;
 import com.quiz.learning.Demo.repository.UserRepository;
 import com.quiz.learning.Demo.service.azure.AzureBlobService;
+import com.quiz.learning.Demo.service.filterCriteria.UserFilter;
+import com.quiz.learning.Demo.service.specification.UserSpecs;
 import com.quiz.learning.Demo.util.error.DuplicatedObjectException;
 import com.quiz.learning.Demo.util.error.InvalidUploadedFile;
 import com.quiz.learning.Demo.util.error.ObjectNotFound;
@@ -33,17 +36,18 @@ import com.quiz.learning.Demo.util.security.SecurityUtil;
 public class AdminUserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-
+    private final UserSpecs userSpecs;
     private final AdminRoleService adminRoleService;
     private final AzureBlobService azureBlobService;
 
     public AdminUserService(UserRepository userRepository, PasswordEncoder passwordEncoder,
             AdminRoleService adminRoleService,
-            AzureBlobService azureBlobService) {
+            AzureBlobService azureBlobService, UserSpecs userSpecs) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.adminRoleService = adminRoleService;
         this.azureBlobService = azureBlobService;
+        this.userSpecs = userSpecs;
 
     }
 
@@ -106,7 +110,7 @@ public class AdminUserService {
         return -1; // Trường hợp bất thường, nếu n < 1
     }
 
-    public FetchUserPaginationDTO handleFetchAllUsers(int page, int size, String sortBy, String order) {
+    public Pageable handlePagination(int page, int size, String sortBy, String order) {
 
         Sort sort = order.equalsIgnoreCase("ASC") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
         // Logic phân trang theo tổng số
@@ -116,7 +120,20 @@ public class AdminUserService {
         }
 
         Pageable pageable = PageRequest.of(page, size, sort);
-        Page<User> pageUsers = this.userRepository.findAll(pageable);
+        return pageable;
+    }
+
+    public FetchUserPaginationDTO handleFetchAllUsers(int page, int size, String sortBy, String order,
+            UserFilter filterCriteria) {
+
+        Pageable pageable = this.handlePagination(page, size, sortBy, order);
+        Specification<User> spec = (root, query, cb) -> cb.conjunction();
+        Specification<User> spec1 = this.userSpecs.hasId(filterCriteria.getId());
+        Specification<User> spec2 = this.userSpecs.hasEmailLike(filterCriteria.getEmail());
+        Specification<User> spec3 = this.userSpecs.hasRole(filterCriteria.getRole());
+        Specification<User> spec4 = this.userSpecs.nameLike(filterCriteria.getFullName());
+        spec = spec.and(spec1).and(spec2).and(spec3).and(spec4);
+        Page<User> pageUsers = this.userRepository.findAll(spec, pageable);
         List<User> users = pageUsers.getContent();
         // Gán DTO
         FetchUserPaginationDTO dto = new FetchUserPaginationDTO();
@@ -127,11 +144,8 @@ public class AdminUserService {
         metadata.setTotalPages(pageUsers.getTotalPages() - 1);
         metadata.setHasNext(page < pageUsers.getTotalPages() - 1);
         metadata.setHasPrevious(page > 1);
-
         dto.setMetadata(metadata);
-
         dto.setUsers(users.stream().map(this::convertToDTO).collect(Collectors.toList()));
-
         return dto;
     }
 

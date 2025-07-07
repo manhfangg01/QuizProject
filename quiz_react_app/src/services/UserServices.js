@@ -1,10 +1,11 @@
 import { use } from "react";
 import axiosInstance from "../utils/axiosCustomize";
 
-export const getAllUsersService = async (pageNumber = 1) => {
+export const getAllUsersService = async (pageNumber = 0, filter) => {
   const response = await axiosInstance.get("/api/admin/users/fetch", {
     params: {
       page: pageNumber,
+      ...filter,
     },
   });
   return response;
