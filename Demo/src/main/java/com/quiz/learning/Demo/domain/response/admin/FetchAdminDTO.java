@@ -2,10 +2,7 @@ package com.quiz.learning.Demo.domain.response.admin;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.Set;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.quiz.learning.Demo.domain.Role;
 import com.quiz.learning.Demo.domain.metadata.Metadata;
 import com.quiz.learning.Demo.util.constant.DifficultyLevel;
 
@@ -38,6 +35,7 @@ public class FetchAdminDTO {
         private Long id;
         private String context;
         private Boolean isCorrect;
+        private Long questionId;
 
     }
 
@@ -108,6 +106,13 @@ public class FetchAdminDTO {
     @Setter
     public static class FetchQuizPaginationDTO {
         private List<FetchTableQuizDTO> quizzes;
+        private Metadata metadata;
+    }
+
+    @Getter
+    @Setter
+    public static class FetchOptionPaginationDTO {
+        private List<FetchOptionDTO> options;
         private Metadata metadata;
     }
 

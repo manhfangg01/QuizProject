@@ -5,26 +5,46 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.oauth2.jwt.JwtEncoder;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.stereotype.Service;
 
 import com.quiz.learning.Demo.domain.Answer;
 import com.quiz.learning.Demo.domain.Option;
 import com.quiz.learning.Demo.domain.Question;
+import com.quiz.learning.Demo.domain.filterCriteria.OptionFilter;
+import com.quiz.learning.Demo.domain.metadata.Metadata;
 import com.quiz.learning.Demo.domain.request.admin.option.CreateOptionRequest;
 import com.quiz.learning.Demo.domain.request.admin.option.UpdateOptionRequest;
 import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO;
+import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO.FetchOptionPaginationDTO;
 import com.quiz.learning.Demo.repository.OptionRepository;
+import com.quiz.learning.Demo.service.specification.OptionSpecs;
 import com.quiz.learning.Demo.util.error.DuplicatedObjectException;
 import com.quiz.learning.Demo.util.error.ObjectNotFound;
 
 @Service
 public class AdminOptionService {
+
+    private final JwtEncoder jwtEncoder;
+
+    private final SecurityFilterChain filterChain;
     private final OptionRepository optionRepository;
     private final AdminAnswerService adminAnswerService;
+    private final OptionSpecs optionSpecs;
 
-    public AdminOptionService(OptionRepository optionRepository, AdminAnswerService adminAnswerService) {
+    public AdminOptionService(OptionRepository optionRepository, AdminAnswerService adminAnswerService,
+            OptionSpecs optionSpecs, SecurityFilterChain filterChain, JwtEncoder jwtEncoder) {
         this.optionRepository = optionRepository;
         this.adminAnswerService = adminAnswerService;
+        this.optionSpecs = optionSpecs;
+        this.filterChain = filterChain;
+        this.jwtEncoder = jwtEncoder;
 
     }
 
@@ -41,17 +61,41 @@ public class AdminOptionService {
         dto.setContext(option.getContext());
         dto.setId(option.getId());
         dto.setIsCorrect(option.getIsCorrect());
+        dto.setQuestionId(option.getQuestion() == null ? null : option.getQuestion().getId());
         return dto;
     }
 
-    public List<FetchAdminDTO.FetchOptionDTO> handleFetchAllOptions() {
-        List<Option> options = this.optionRepository.findAll();
+    public Pageable handlePagination(int page, int size, String sortBy, String order) {
+        // Validate page and size
+        page = page < 1 ? 1 : page;
+        size = size < 1 ? 10 : size;
+        size = size > 100 ? 100 : size; // Giới hạn tối đa 100 items/page
 
-        return options == null ? Collections.emptyList()
-                : options
-                        .stream()
-                        .map(this::convertToDTO)
-                        .collect(Collectors.toList());
+        Sort sort = order.equalsIgnoreCase("ASC") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        return PageRequest.of(page - 1, size, sort);
+    }
+
+    public FetchOptionPaginationDTO handleFetchAllOptions(int page, int size, String sortBy, String order,
+            OptionFilter filter) {
+        FetchOptionPaginationDTO dto = new FetchOptionPaginationDTO();
+        Pageable pageable = this.handlePagination(page, size, sortBy, order);
+        Specification<Option> spec = (root, criteria, cb) -> cb.conjunction();
+        spec = spec.and(this.optionSpecs.hasId(filter.getId()));
+        spec = spec.and(this.optionSpecs.hasQuestionId(filter.getQuestionId()));
+        spec = spec.and(this.optionSpecs.isCorrect(filter.getIsCorrect()));
+        spec = spec.and(this.optionSpecs.contextContains(filter.getContext()));
+        Page<Option> pageOptions = this.optionRepository.findAll(spec, pageable);
+        List<Option> options = pageOptions.getContent();
+        dto.setOptions(options.stream().map(this::convertToDTO).collect(Collectors.toList()));
+        Metadata metadata = new Metadata();
+        metadata.setCurrentPage(page);
+        metadata.setPageSize(size);
+        metadata.setTotalObjects(pageOptions.getTotalElements());
+        metadata.setTotalPages(pageOptions.getTotalPages());
+        metadata.setHasNext(pageOptions.hasNext());
+        metadata.setHasPrevious(pageOptions.hasPrevious());
+        dto.setMetadata(metadata);
+        return dto;
 
     }
 

@@ -9,6 +9,5 @@ import lombok.Setter;
 public class CreateOptionRequest {
     @NotBlank(message = "Context can't be blanked")
     private String context;
-    @NotBlank(message = "isCorrect can't be blanked")
     private Boolean isCorrect;
 }

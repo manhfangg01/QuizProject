@@ -12,6 +12,5 @@ public class UpdateOptionRequest {
     private Long optionId;
     @NotBlank(message = "Context can't be blanked")
     private String context;
-    @NotNull(message = "isCorrect can't be null")
     private Boolean isCorrect;
 }

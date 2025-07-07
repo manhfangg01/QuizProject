@@ -25,7 +25,6 @@ import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO;
 import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO.FetchUserDTO;
 import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO.FetchUserPaginationDTO;
 import com.quiz.learning.Demo.repository.UserRepository;
-import com.quiz.learning.Demo.service.CalculationFunction;
 import com.quiz.learning.Demo.service.azure.AzureBlobService;
 import com.quiz.learning.Demo.service.specification.UserSpecs;
 import com.quiz.learning.Demo.util.error.DuplicatedObjectException;

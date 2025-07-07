@@ -1,0 +1,64 @@
+.manage-options-container {
+  padding: 10px;
+  .title-and-btn {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    .title {
+      font-weight: 700;
+      font-size: 50px;
+      padding: 10px;
+    }
+    .btn-add-new {
+      .btn {
+        height: 50%;
+        font-size: 16px;
+        padding: 8px 16px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-right: 35px;
+      }
+    }
+  }
+
+  .options-content {
+  }
+}
+
+.label-uploading {
+  .form-label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 20px;
+    border-radius: 10px;
+    background: rgb(187, 183, 183);
+    width: fit-content;
+    padding: 5px 10px;
+    margin: 0;
+
+    &:hover {
+      background: rgb(223, 220, 220);
+    }
+  }
+}
+
+.modal-add-option {
+  border: 3px dashed #ccc;
+  height: 200px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #ccc;
+  .img-preview {
+    height: 100%;
+    width: 30%;
+  }
+}
+
+.pagination {
+  margin-bottom: 0px;
+  display: flex;
+  justify-content: center;
+}

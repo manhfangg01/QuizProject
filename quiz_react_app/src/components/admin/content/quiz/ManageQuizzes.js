@@ -7,7 +7,6 @@ import { getAllQuizzesService } from "../../../../services/QuizServices";
 import UpdateQuizModal from "../modals/quizzes/UpdateQuizModal";
 import DeleteQuizModal from "../modals/quizzes/DeleteQuizModal";
 import DetailQuizModal from "../modals/quizzes/DetailQuizModal";
-import { Button, Form } from "react-bootstrap";
 import FormQuizFilter from "./FormQuizFilter";
 
 const ManageQuiz = () => {

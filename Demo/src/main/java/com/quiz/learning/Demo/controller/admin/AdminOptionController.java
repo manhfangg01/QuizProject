@@ -2,9 +2,12 @@ package com.quiz.learning.Demo.controller.admin;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import com.quiz.learning.Demo.domain.filterCriteria.OptionFilter;
+import com.quiz.learning.Demo.domain.filterCriteria.UserFilter;
 import com.quiz.learning.Demo.domain.request.admin.option.CreateOptionRequest;
 import com.quiz.learning.Demo.domain.request.admin.option.UpdateOptionRequest;
 import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO;
+import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO.FetchOptionPaginationDTO;
 import com.quiz.learning.Demo.domain.restResponse.ApiMessage;
 import com.quiz.learning.Demo.service.admin.AdminOptionService;
 
@@ -16,8 +19,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -33,8 +38,14 @@ public class AdminOptionController {
 
     @GetMapping("/admin/options/fetch")
     @ApiMessage("fetch all options")
-    public ResponseEntity<List<FetchAdminDTO.FetchOptionDTO>> fetch() {
-        return ResponseEntity.status(HttpStatus.OK).body(this.optionService.handleFetchAllOptions());
+    public ResponseEntity<FetchOptionPaginationDTO> fetch(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String order,
+            @ModelAttribute OptionFilter filterCriteria) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(this.optionService.handleFetchAllOptions(page, size, sortBy, order, filterCriteria));
     }
 
     @GetMapping("/admin/options/fetch/{id}")
