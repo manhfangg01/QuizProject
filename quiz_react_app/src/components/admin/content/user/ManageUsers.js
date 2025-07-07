@@ -7,7 +7,7 @@ import { getAllUsersService } from "../../../../services/UserServices";
 import UpdateUserModal from "../modals/users/UpdateUserModal";
 import DeleteUserModal from "../modals/users/DeleteUserModal";
 import DetailUserModal from "../modals/users/DetailUserModal";
-import { Button, Form } from "react-bootstrap";
+import FormUserFilter from "./FormUserFilter";
 const ManageUsers = (props) => {
   const [metadata, setMetadata] = useState({});
   const [listUsers, setListUsers] = useState([]);
@@ -41,17 +41,14 @@ const ManageUsers = (props) => {
   const handleDetailUser = (showValue, userData) => {
     setShowModalDetailUser(showValue);
     setDetailUserData(userData);
-    console.log("Debugg", userData);
   };
   const handleUpdateUser = (showValue, userData) => {
     setShowModalUpdateUser(showValue);
     setUserData(userData);
-    console.log("Debugg", userData);
   };
   const handleDeleteUser = (showValue, userId) => {
     setShowModalDeleteUser(showValue);
     setDeleteUserId(userId);
-    console.log("Debugg", userId);
   };
 
   const fetchData = async (pageNumber, filter) => {
@@ -68,8 +65,8 @@ const ManageUsers = (props) => {
     }
   };
   useEffect(() => {
-    fetchData();
-  }, []);
+    fetchData(1, filter); // Load dữ liệu ban đầu với filter mặc định
+  }, []); // Chỉ chạy 1 lần khi mount
   return (
     <div className="manage-users-container">
       <div className="title-and-btn">
@@ -86,37 +83,7 @@ const ManageUsers = (props) => {
         </div>
       </div>
       <div className="filter-manager mb-3">
-        <Form className="row g-2 align-items-end">
-          <div className="col-md-2">
-            <Form.Label>ID</Form.Label>
-            <Form.Control type="text" placeholder="Search by ID" value={filter.id} onChange={(e) => setFilter({ ...filter, id: e.target.value })} />
-          </div>
-          <div className="col-md-3">
-            <Form.Label>Email</Form.Label>
-            <Form.Control type="text" placeholder="Search by Email" value={filter.email} onChange={(e) => setFilter({ ...filter, email: e.target.value })} />
-          </div>
-          <div className="col-md-3">
-            <Form.Label>Full Name</Form.Label>
-            <Form.Control type="text" placeholder="Search by Name" value={filter.fullName} onChange={(e) => setFilter({ ...filter, fullName: e.target.value })} />
-          </div>
-          <div className="col-md-2">
-            <Form.Label>Role</Form.Label>
-            <Form.Select value={filter.role} onChange={(e) => setFilter({ ...filter, role: e.target.value })}>
-              <option value="">-- All --</option>
-              <option value="ADMIN">Admin</option>
-              <option value="USER">User</option>
-              {/* thêm role khác nếu có */}
-            </Form.Select>
-          </div>
-          <div className="col-md-2 d-flex">
-            <Button variant="primary" className="me-2" onClick={handleSearch}>
-              Search
-            </Button>
-            <Button variant="secondary" onClick={handleClear}>
-              Clear
-            </Button>
-          </div>
-        </Form>
+        <FormUserFilter filter={filter} setFilter={setFilter} handleClear={handleClear} handleSearch={handleSearch} />
       </div>
       <div className="users-content">
         <div className="table-users-container">

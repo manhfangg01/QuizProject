@@ -118,17 +118,15 @@ public class AdminQuizService {
         Pageable pageable = this.handlePagination(page, size, sortBy, order);
 
         // Xây dựng specification
-        Specification<Quiz> spec = Specification.where(null);
-
-        if (filterCriteria.getId() != null) {
-            spec = spec.and(this.quizSpecs.hasId(filterCriteria.getId()));
-        }
-        if (filterCriteria.getTitle() != null) {
-            spec = spec.and(this.quizSpecs.titleContains(filterCriteria.getTitle()));
-        }
-        if (filterCriteria.getSubject() != null) {
-            spec = spec.and(this.quizSpecs.hasSubject(filterCriteria.getSubject()));
-        }
+        Specification<Quiz> spec = (root, query, cb) -> cb.conjunction();
+        Specification<Quiz> spec1 = this.quizSpecs.hasId(filterCriteria.getId());
+        Specification<Quiz> spec2 = this.quizSpecs.titleContains(filterCriteria.getTitle());
+        Specification<Quiz> spec3 = this.quizSpecs.hasSubject(filterCriteria.getSubject());
+        Specification<Quiz> spec4 = this.quizSpecs.hasDifficulty(filterCriteria.getDifficulty());
+        Specification<Quiz> spec5 = this.quizSpecs.isActive(filterCriteria.getActive());
+        Specification<Quiz> spec6 = this.quizSpecs.hasMinParticipants(filterCriteria.getTotalParticipants());
+        Specification<Quiz> spec7 = this.quizSpecs.timeLimitLessThanOrEqual(filterCriteria.getTimeLimit());
+        spec = spec.and(spec1).and(spec2).and(spec3).and(spec4).and(spec5).and(spec6).and(spec7);
         // Thêm các điều kiện filter khác tương tự...
 
         Page<Quiz> pageQuizzes = this.quizRepository.findAll(spec, pageable);

@@ -42,7 +42,7 @@ public class AdminUserController {
     @ApiMessage("fetch all users")
     public ResponseEntity<FetchUserPaginationDTO> fetch(
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "5") int size,
             @RequestParam(defaultValue = "id") String sortBy,
             @RequestParam(defaultValue = "asc") String order,
             @ModelAttribute UserFilter filterCriteria) {
