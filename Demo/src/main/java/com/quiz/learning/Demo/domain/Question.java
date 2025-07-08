@@ -2,6 +2,7 @@ package com.quiz.learning.Demo.domain;
 
 import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 
@@ -26,7 +27,7 @@ public class Question {
     @Column(columnDefinition = "MEDIUMTEXT")
     private String context;
 
-    @OneToMany(mappedBy = "question")
+    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Option> options;
 
     @ManyToMany(mappedBy = "questions")

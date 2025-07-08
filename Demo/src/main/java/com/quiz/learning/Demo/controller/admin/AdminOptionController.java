@@ -48,11 +48,25 @@ public class AdminOptionController {
                 .body(this.optionService.handleFetchAllOptions(page, size, sortBy, order, filterCriteria));
     }
 
-    @GetMapping("/admin/options/multi-fetch")
-    @ApiMessage("fetch options")
-    public ResponseEntity<List<FetchOptionDTO>> fetchMultiOption(@RequestBody List<Long> listOptionIds) {
+    @PostMapping("/admin/options/multi-fetch")
+    public ResponseEntity<List<FetchOptionDTO>> fetchMultiOption(@RequestBody List<Long> optionIds) { // Post mới được
+                                                                                                      // truyền
+                                                                                                      // requestBody,
+                                                                                                      // còn Get là chỉ
+                                                                                                      // lấy từ param
+                                                                                                      // thôi
+        return ResponseEntity.ok(this.optionService.handleGetOptions(optionIds));
+    }
+
+    @GetMapping("/admin/options/fetch-available")
+    @ApiMessage("fetch availables")
+    public ResponseEntity<FetchOptionPaginationDTO> fetchAvailableOptions(@RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String order,
+            @ModelAttribute OptionFilter filterCriteria) {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(this.optionService.handleGetOptions(listOptionIds));
+                .body(this.optionService.handleFetchAllAvailableOptions(page, size, sortBy, order, filterCriteria));
     }
 
     @GetMapping("/admin/options/fetch/{id}")

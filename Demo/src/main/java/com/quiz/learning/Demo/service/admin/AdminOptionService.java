@@ -3,6 +3,7 @@ package com.quiz.learning.Demo.service.admin;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
@@ -47,6 +48,38 @@ public class AdminOptionService {
         this.filterChain = filterChain;
         this.jwtEncoder = jwtEncoder;
 
+    }
+
+    public FetchOptionPaginationDTO handleFetchAllAvailableOptions(int page, int size, String sortBy, String order,
+            OptionFilter filter) {
+        FetchOptionPaginationDTO dto = new FetchOptionPaginationDTO();
+        Pageable pageable = this.handlePagination(page, size, sortBy, order);
+
+        // Thêm điều kiện lọc option chưa gán cho question nào
+        Specification<Option> spec = (root, criteria, cb) -> cb.isNull(root.get("question"));
+
+        // Kết hợp với các filter khác
+        spec = spec.and(this.optionSpecs.hasId(filter.getId()));
+        spec = spec.and(this.optionSpecs.isCorrect(filter.getIsCorrect()));
+        spec = spec.and(this.optionSpecs.contextContains(filter.getContext()));
+
+        // Không cần filter questionId vì chúng ta đang tìm options chưa gán
+        Page<Option> pageOptions = this.optionRepository.findAll(spec, pageable);
+
+        dto.setOptions(pageOptions.getContent().stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList()));
+
+        Metadata metadata = new Metadata();
+        metadata.setCurrentPage(page);
+        metadata.setPageSize(size);
+        metadata.setTotalObjects(pageOptions.getTotalElements());
+        metadata.setTotalPages(pageOptions.getTotalPages());
+        metadata.setHasNext(pageOptions.hasNext());
+        metadata.setHasPrevious(pageOptions.hasPrevious());
+        dto.setMetadata(metadata);
+
+        return dto;
     }
 
     public Option handleGetOption(Long id) {

@@ -51,6 +51,7 @@ public class AdminQuestionService {
         FetchAdminDTO.FetchQuestionDTO dto = new FetchAdminDTO.FetchQuestionDTO();
         dto.setQuestionId(question.getId());
         dto.setContext(question.getContext());
+
         List<Option> options = question.getOptions();
 
         List<FetchAdminDTO.FetchOptionDTO> optionDTOs = options == null ? Collections.emptyList()
@@ -128,8 +129,14 @@ public class AdminQuestionService {
         question.setContext(newQuestion.getContext());
 
         // Map từ CreateOptionRequest -> Option
-        question.setOptions(this.fetchOptionsByIds(newQuestion.getOptionIds()));
-        // Lưu và trả về DTO
+        List<Option> options = this.fetchOptionsByIds(newQuestion.getOptionIds()); // Lưu và trả về DTO
+
+        // Thiết lập quan hệ 2 chiều
+        for (Option opt : options) {
+            opt.setQuestion(question); // Quan trọng: gán ngược lại
+        }
+        question.setOptions(options);
+
         Question saved = questionRepository.save(question);
         return convertToDTO(saved);
     }
@@ -139,17 +146,38 @@ public class AdminQuestionService {
         if (checkQuestion.isEmpty()) {
             throw new ObjectNotFound("Question not found");
         }
-        Question realQuestion = checkQuestion.get();
-        if (this.questionRepository.findByContext(updatedQuestion.getContext()).isPresent()) {
-            if (updatedQuestion.getContext().equalsIgnoreCase(realQuestion.getContext()))
-                throw new DuplicatedObjectException("Question with the similar context is found");
-        }
-        Question question = new Question();
-        question.setContext(updatedQuestion.getContext());
 
-        question.setOptions(this.fetchOptionsByIds(updatedQuestion.getOptionIds()));
-        // Lưu và trả về DTO
-        Question saved = questionRepository.save(question);
+        Question realQuestion = checkQuestion.get();
+
+        // Kiểm tra trùng context
+        Optional<Question> duplicate = questionRepository.findByContext(updatedQuestion.getContext());
+        if (duplicate.isPresent() && !duplicate.get().getId().equals(realQuestion.getId())) {
+            throw new DuplicatedObjectException("Question with the similar context is found");
+        }
+
+        // Cập nhật context
+        realQuestion.setContext(updatedQuestion.getContext());
+
+        // --- Xử lý options ---
+        // 1. Xóa liên kết cũ (nếu có)
+        for (Option opt : realQuestion.getOptions()) {
+            opt.setQuestion(null); // gỡ liên kết cũ
+        }
+
+        // 2. Lấy các option mới
+        List<Option> newOptions = fetchOptionsByIds(updatedQuestion.getOptionIds());
+
+        // 3. Gán lại quan hệ 2 chiều
+        for (Option opt : newOptions) {
+            opt.setQuestion(realQuestion);
+        }
+
+        // 4. Gán danh sách mới
+        realQuestion.setOptions(newOptions);
+
+        // Lưu lại
+        Question saved = questionRepository.save(realQuestion);
+
         return convertToDTO(saved);
     }
 
