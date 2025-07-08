@@ -87,7 +87,7 @@ const ManageUsers = (props) => {
       </div>
       <div className="users-content">
         <div className="table-users-container">
-          <TableUser users={listUsers} metadata={metadata} onEdit={handleUpdateUser} onDelete={handleDeleteUser} onDetail={handleDetailUser} fetchUsers={fetchData} />
+          <TableUser users={listUsers} metadata={metadata} onEdit={handleUpdateUser} onDelete={handleDeleteUser} onDetail={handleDetailUser} fetchUsers={fetchData} filter={filter} />
         </div>
         <CreateUserModal show={showModalCreateUser} setShow={handleShowHideCreateUserModal} onCreateUser={fetchData} />
         <UpdateUserModal show={showModalUpdateUser} setShow={handleUpdateUser} onUpdateUser={fetchData} userData={userData} />

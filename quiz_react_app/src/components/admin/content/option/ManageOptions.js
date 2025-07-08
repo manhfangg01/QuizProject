@@ -92,7 +92,15 @@ const ManageOptions = () => {
         </div>
         <div className="options-content">
           <div className="table-options-container">
-            <TableOptions options={listOptions} metadata={metadata} onEdit={handleUpdateOption} onDelete={handleDeleteOption} onDetail={handleDetailOption} fetchOptions={fetchOptions} />
+            <TableOptions
+              options={listOptions}
+              metadata={metadata}
+              onEdit={handleUpdateOption}
+              onDelete={handleDeleteOption}
+              onDetail={handleDetailOption}
+              fetchOptions={fetchOptions}
+              filter={filter}
+            />
           </div>
           <CreateOptionModal show={showModalCreateOption} setShow={handleShowHideCreateOptionModal} onCreateOption={fetchOptions} />
           <UpdateOptionModal show={showModalUpdateOption} setShow={handleUpdateOption} onUpdateOption={fetchOptions} optionData={optionData} />

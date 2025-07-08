@@ -3,7 +3,7 @@ import { getQuizById } from "../../../../services/QuizServices";
 import { Bounce, toast } from "react-toastify";
 import CustomPagination from "../CustomPagination";
 
-const TableQuiz = ({ fetchQuizzes, quizzes, metadata, onEdit, onDelete, onDetail }) => {
+const TableQuiz = ({ fetchQuizzes, quizzes, metadata, onEdit, onDelete, onDetail, filter }) => {
   const showToast = (type, message) => {
     toast[type](message, {
       position: "top-center",
@@ -87,7 +87,7 @@ const TableQuiz = ({ fetchQuizzes, quizzes, metadata, onEdit, onDelete, onDetail
         </tbody>
       </Table>
 
-      <CustomPagination metadata={metadata} onPageChange={onPageChange} />
+      <CustomPagination metadata={metadata} onPageChange={onPageChange} filter={filter} />
     </>
   );
 };

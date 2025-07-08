@@ -9,16 +9,25 @@ export const getAllOptions = async (pageNumber = 1, filter) => {
   });
 };
 
+export const getAllAvailableOptions = async (pageNumber = 1, filter) => {
+  return axiosInstance.get("/api/admin/options/fetch-available", {
+    params: {
+      page: pageNumber,
+      ...filter,
+    },
+  });
+};
+
+export const getOptionsByIds = async (optionIds) => {
+  return axiosInstance.post("/api/admin/options/multi-fetch", optionIds);
+};
+
 export const getOptionById = async (optionId) => {
   return axiosInstance.get(`/api/admin/options/fetch/${optionId}`);
 };
 
 export const putUpdateOption = (optionId, context, isCorrect) => {
-  return axiosInstance.put("/api/admin/options/update", {
-    optionId,
-    context,
-    isCorrect,
-  });
+  return axiosInstance.put("/api/admin/options/update", {});
 };
 
 export const postCreateOption = async (context, isCorrect) => {

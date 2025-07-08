@@ -93,7 +93,7 @@ const ManageQuiz = () => {
 
       <div className="quizzes-content">
         <div className="table-quizzes-container">
-          <TableQuizzes quizzes={listQuizzes} metadata={metadata} onEdit={handleUpdateQuiz} onDelete={handleDeleteQuiz} onDetail={handleDetailQuiz} fetchQuizzes={fetchData} />
+          <TableQuizzes quizzes={listQuizzes} metadata={metadata} onEdit={handleUpdateQuiz} onDelete={handleDeleteQuiz} onDetail={handleDetailQuiz} fetchQuizzes={fetchData} filter={filter} />
         </div>
 
         <CreateQuizModal show={showModalCreateQuiz} setShow={handleShowHideCreateQuizModal} onCreateQuiz={fetchData} />

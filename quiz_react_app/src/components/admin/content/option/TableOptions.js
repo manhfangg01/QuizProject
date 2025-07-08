@@ -3,7 +3,7 @@ import { getOptionById } from "../../../../services/OptionService";
 import { Bounce, toast } from "react-toastify";
 import CustomPagination from "../CustomPagination";
 
-const TableOptions = ({ fetchOptions, options, metadata, onEdit, onDelete, onDetail }) => {
+const TableOptions = ({ fetchOptions, options, metadata, onEdit, onDelete, onDetail, filter }) => {
   const showToast = (type, message) => {
     toast[type](message, {
       position: "top-center",
@@ -86,7 +86,7 @@ const TableOptions = ({ fetchOptions, options, metadata, onEdit, onDelete, onDet
           )}
         </tbody>
       </Table>
-      <CustomPagination metadata={metadata} onPageChange={onPageChange} />
+      <CustomPagination metadata={metadata} onPageChange={onPageChange} filter={filter} />
     </>
   );
 };

@@ -3,7 +3,7 @@ import { getUserById } from "../../../../services/UserServices";
 import { Bounce, toast } from "react-toastify";
 import CustomPagination from "../CustomPagination";
 
-const TableUser = ({ fetchUsers, users, metadata, onEdit, onDelete, onDetail }) => {
+const TableUser = ({ fetchUsers, users, metadata, onEdit, onDelete, onDetail, filter }) => {
   const showToast = (type, message) => {
     toast[type](message, {
       position: "top-center",
@@ -86,7 +86,7 @@ const TableUser = ({ fetchUsers, users, metadata, onEdit, onDelete, onDetail }) 
           )}
         </tbody>
       </Table>
-      <CustomPagination metadata={metadata} onPageChange={onPageChange} />
+      <CustomPagination metadata={metadata} onPageChange={onPageChange} filter={filter} />
     </>
   );
 };
