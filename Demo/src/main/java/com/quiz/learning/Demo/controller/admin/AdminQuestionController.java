@@ -2,22 +2,24 @@ package com.quiz.learning.Demo.controller.admin;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import com.quiz.learning.Demo.domain.filterCriteria.QuestionFilter;
 import com.quiz.learning.Demo.domain.request.admin.question.CreateQuestionRequest;
 import com.quiz.learning.Demo.domain.request.admin.question.UpdateQuestionRequest;
 import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO;
+import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO.FetchQuestionPaginationDTO;
 import com.quiz.learning.Demo.domain.restResponse.ApiMessage;
 import com.quiz.learning.Demo.service.admin.AdminQuestionService;
 import com.quiz.learning.Demo.service.admin.relationServices.AdminQuestionRelationQuiz;
 
 import jakarta.validation.Valid;
 
-import java.util.List;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -37,8 +39,14 @@ public class AdminQuestionController {
 
     @GetMapping("/admin/questions/fetch")
     @ApiMessage("fetch all questions")
-    public ResponseEntity<List<FetchAdminDTO.FetchQuestionDTO>> fetchAllQuestions() {
-        return ResponseEntity.status(HttpStatus.OK).body(this.questionService.handleFetchAllQuestions());
+    public ResponseEntity<FetchQuestionPaginationDTO> fetchAllQuestions(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String order,
+            @ModelAttribute QuestionFilter filterCriteria) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(this.questionService.handleFetchAllQuestions(page, size, sortBy, order, filterCriteria));
     }
 
     @GetMapping("/admin/questions/fetch/{id}")

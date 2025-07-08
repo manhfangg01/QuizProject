@@ -22,6 +22,7 @@ import com.quiz.learning.Demo.domain.metadata.Metadata;
 import com.quiz.learning.Demo.domain.request.admin.option.CreateOptionRequest;
 import com.quiz.learning.Demo.domain.request.admin.option.UpdateOptionRequest;
 import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO;
+import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO.FetchOptionDTO;
 import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO.FetchOptionPaginationDTO;
 import com.quiz.learning.Demo.repository.OptionRepository;
 import com.quiz.learning.Demo.service.specification.OptionSpecs;
@@ -54,6 +55,12 @@ public class AdminOptionService {
             throw new ObjectNotFound("Option with id: " + id + " is not existed");
         }
         return checkOption.get();
+    }
+
+    public List<FetchOptionDTO> handleGetOptions(List<Long> ids) {
+        List<Option> options = this.optionRepository.findAllById(ids);
+        return options.stream().map(this::convertToDTO).collect(Collectors.toList());
+
     }
 
     public FetchAdminDTO.FetchOptionDTO convertToDTO(Option option) {

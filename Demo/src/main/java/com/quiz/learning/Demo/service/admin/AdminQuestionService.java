@@ -5,14 +5,23 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import com.quiz.learning.Demo.domain.Option;
 import com.quiz.learning.Demo.domain.Question;
+import com.quiz.learning.Demo.domain.filterCriteria.QuestionFilter;
+import com.quiz.learning.Demo.domain.metadata.Metadata;
 import com.quiz.learning.Demo.domain.request.admin.question.CreateQuestionRequest;
 import com.quiz.learning.Demo.domain.request.admin.question.UpdateQuestionRequest;
 import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO;
+import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO.FetchQuestionPaginationDTO;
 import com.quiz.learning.Demo.repository.QuestionRepository;
+import com.quiz.learning.Demo.service.specification.QuestionSpecs;
 import com.quiz.learning.Demo.util.error.DuplicatedObjectException;
 import com.quiz.learning.Demo.util.error.NullObjectException;
 import com.quiz.learning.Demo.util.error.ObjectNotFound;
@@ -21,10 +30,13 @@ import com.quiz.learning.Demo.util.error.ObjectNotFound;
 public class AdminQuestionService {
     private final QuestionRepository questionRepository;
     private final AdminOptionService adminOptionService;
+    private final QuestionSpecs questionSpecs;
 
-    public AdminQuestionService(QuestionRepository questionRepository, AdminOptionService adminOptionService) {
+    public AdminQuestionService(QuestionRepository questionRepository, AdminOptionService adminOptionService,
+            QuestionSpecs questionSpecs) {
         this.questionRepository = questionRepository;
         this.adminOptionService = adminOptionService;
+        this.questionSpecs = questionSpecs;
     }
 
     public Question handleGetQuestion(Long id) {
@@ -51,14 +63,36 @@ public class AdminQuestionService {
         return dto;
     }
 
-    public List<FetchAdminDTO.FetchQuestionDTO> handleFetchAllQuestions() {
-        List<Question> questions = this.questionRepository.findAll();
-        return questions == null ? Collections.emptyList()
-                : questions
-                        .stream()
-                        .map(ques -> {
-                            return this.convertToDTO(ques);
-                        }).collect(Collectors.toList());
+    public Pageable handlePagination(int page, int size, String sortBy, String order) {
+        page = page < 1 ? 1 : page;
+        size = size < 1 ? 10 : size;
+        size = size > 100 ? 100 : size;
+        Sort sort = order.equalsIgnoreCase("ASC") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        return PageRequest.of(page - 1, size, sort);
+    }
+
+    public FetchQuestionPaginationDTO handleFetchAllQuestions(int page, int size, String sortBy, String order,
+            QuestionFilter filter) {
+        FetchQuestionPaginationDTO dto = new FetchQuestionPaginationDTO();
+        Pageable pageable = this.handlePagination(page, size, sortBy, order);
+        Specification<Question> spec = (root, criteria, cb) -> cb.conjunction();
+        spec = spec.and(this.questionSpecs.contextContains(filter.getContext()));
+        spec = spec.and(this.questionSpecs.hasAtLeastNOptions(filter.getNumberOfOptions()));
+        spec = spec.and(this.questionSpecs.hasId(filter.getId()));
+        spec = spec.and(this.questionSpecs.hasQuizId(filter.getQuizId()));
+        Page<Question> pageQuestions = this.questionRepository.findAll(spec, pageable);
+        List<Question> questions = pageQuestions.getContent();
+        dto.setQuestions(questions.stream().map(this::convertToDTO).collect(Collectors.toList()));
+        Metadata metadata = new Metadata();
+        metadata.setCurrentPage(page);
+        metadata.setPageSize(size);
+        metadata.setTotalObjects(pageQuestions.getTotalElements());
+        metadata.setTotalPages(pageQuestions.getTotalPages());
+        metadata.setHasNext(pageQuestions.hasNext());
+        metadata.setHasPrevious(pageQuestions.hasPrevious());
+        dto.setMetadata(metadata);
+
+        return dto;
     }
 
     public FetchAdminDTO.FetchQuestionDTO handleFetchOneQuestion(Long id) {
@@ -94,7 +128,7 @@ public class AdminQuestionService {
         question.setContext(newQuestion.getContext());
 
         // Map từ CreateOptionRequest -> Option
-        question.setOptions(this.fetchOptionsByIds(newQuestion.getOptions()));
+        question.setOptions(this.fetchOptionsByIds(newQuestion.getOptionIds()));
         // Lưu và trả về DTO
         Question saved = questionRepository.save(question);
         return convertToDTO(saved);
@@ -113,7 +147,7 @@ public class AdminQuestionService {
         Question question = new Question();
         question.setContext(updatedQuestion.getContext());
 
-        question.setOptions(this.fetchOptionsByIds(updatedQuestion.getOptions()));
+        question.setOptions(this.fetchOptionsByIds(updatedQuestion.getOptionIds()));
         // Lưu và trả về DTO
         Question saved = questionRepository.save(question);
         return convertToDTO(saved);

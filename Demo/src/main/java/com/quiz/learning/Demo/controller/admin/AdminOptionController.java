@@ -3,10 +3,10 @@ package com.quiz.learning.Demo.controller.admin;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.quiz.learning.Demo.domain.filterCriteria.OptionFilter;
-import com.quiz.learning.Demo.domain.filterCriteria.UserFilter;
 import com.quiz.learning.Demo.domain.request.admin.option.CreateOptionRequest;
 import com.quiz.learning.Demo.domain.request.admin.option.UpdateOptionRequest;
 import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO;
+import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO.FetchOptionDTO;
 import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO.FetchOptionPaginationDTO;
 import com.quiz.learning.Demo.domain.restResponse.ApiMessage;
 import com.quiz.learning.Demo.service.admin.AdminOptionService;
@@ -46,6 +46,13 @@ public class AdminOptionController {
             @ModelAttribute OptionFilter filterCriteria) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(this.optionService.handleFetchAllOptions(page, size, sortBy, order, filterCriteria));
+    }
+
+    @GetMapping("/admin/options/multi-fetch")
+    @ApiMessage("fetch options")
+    public ResponseEntity<List<FetchOptionDTO>> fetchMultiOption(@RequestBody List<Long> listOptionIds) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(this.optionService.handleGetOptions(listOptionIds));
     }
 
     @GetMapping("/admin/options/fetch/{id}")

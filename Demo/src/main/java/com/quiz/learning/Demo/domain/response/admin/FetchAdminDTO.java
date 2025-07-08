@@ -116,4 +116,11 @@ public class FetchAdminDTO {
         private Metadata metadata;
     }
 
+    @Getter
+    @Setter
+    public static class FetchQuestionPaginationDTO {
+        private List<FetchQuestionDTO> questions;
+        private Metadata metadata;
+    }
+
 }

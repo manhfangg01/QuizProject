@@ -17,5 +17,5 @@ public class UpdateQuestionRequest {
     private String context;
     @NotNull(message = "Options list must not be null")
     @Size(min = 4, max = 4, message = "Options list must contain exactly 4 items")
-    private List<Long> options;
+    private List<Long> optionIds;
 }
