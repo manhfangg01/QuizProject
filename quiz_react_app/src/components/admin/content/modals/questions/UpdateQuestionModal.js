@@ -1,118 +1,91 @@
 import { useEffect, useState } from "react";
-import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
-import { Bounce, toast } from "react-toastify";
-import { putUpdateQuestion } from "../../../../../services/QuestionServices";
-import "react-toastify/dist/ReactToastify.css";
+import Modal from "react-bootstrap/Modal";
 
-const UpdateQuestionModal = ({ show, setShow, onUpdateQuestion, questionData, selectedOptionIds, setSelectedOptionIds, availableOptions, setShowOptionSelection }) => {
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { putUpdateQuestion } from "../../../../../services/QuestionServices"; // Giả sử API update
+import { Badge, Form } from "react-bootstrap";
+
+const UpdateQuestionModal = ({ show, setShow, onUpdateQuestion, questionData, setShowUpdateOptions, selectedOptionIds, setSelectedOptionIds }) => {
   const [context, setContext] = useState("");
+  const [selectedIds, setSelectedIds] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [tempSelectedOptionIds, setTempSelectedOptionIds] = useState([]);
+
+  useEffect(() => {
+    if (questionData) {
+      setContext(questionData.context || "");
+      const ids = questionData.options?.map((opt) => opt.id) || [];
+      setSelectedOptionIds(ids);
+    }
+  }, [questionData]);
 
   const handleClose = () => {
-    setShow(false);
     setContext("");
-    setIsLoading(false);
-    setShowOptionSelection(false);
-    setTempSelectedOptionIds([]);
-  };
-
-  const showToast = (type, message) => {
-    toast[type](message, {
-      position: "top-center",
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      theme: "light",
-      transition: Bounce,
-    });
-  };
-
-  const handleCheckboxChange = (id) => {
-    if (tempSelectedOptionIds.includes(id)) {
-      setTempSelectedOptionIds(tempSelectedOptionIds.filter((optId) => optId !== id));
-    } else {
-      if (tempSelectedOptionIds.length >= 4) {
-        showToast("warning", "Chỉ được chọn tối đa 4 lựa chọn.");
-        return;
-      }
-      setTempSelectedOptionIds([...tempSelectedOptionIds, id]);
-    }
+    setSelectedIds([]);
+    setShow(false);
   };
 
   const handleSubmit = async () => {
-    if (tempSelectedOptionIds.length < 2 || tempSelectedOptionIds.length > 4) {
-      showToast("warning", "Cần chọn từ 2 đến 4 lựa chọn.");
-      return;
-    }
-
     setIsLoading(true);
     try {
-      const payload = {
-        questionId: questionData.id,
-        context,
-        optionIds: tempSelectedOptionIds,
-      };
-
-      const res = await putUpdateQuestion(payload.questionId, payload.context, payload.optionIds);
-      if (res.statusCode === 200 || res.statusCode === 201) {
-        showToast("success", "Cập nhật câu hỏi thành công!");
-        setSelectedOptionIds([...tempSelectedOptionIds]); // cập nhật lại selected chính thức
+      const res = await putUpdateQuestion(questionData.id, context, selectedOptionIds);
+      if (res?.statusCode === 200 || res?.statusCode === 201) {
+        toast.success("Cập nhật câu hỏi thành công");
         onUpdateQuestion();
         handleClose();
       } else {
-        showToast("warning", res?.message || "Cập nhật không thành công!");
+        toast.warning("Cập nhật không thành công!");
       }
     } catch (err) {
-      console.error("Lỗi cập nhật câu hỏi:", err);
-      showToast("error", err?.response?.data?.message || "Đã xảy ra lỗi khi cập nhật!");
+      toast.warning("Đã xảy ra lỗi!");
     } finally {
       setIsLoading(false);
     }
   };
 
-  useEffect(() => {
-    if (show && questionData) {
-      setContext(questionData.context || "");
-      setTempSelectedOptionIds([...selectedOptionIds]); // clone từ selected ban đầu
-    }
-  }, [show, questionData]);
+  const handleShowUpdateOptionModal = () => {
+    setShowUpdateOptions(true);
+  };
 
   return (
-    <Modal show={show} onHide={handleClose} size="xl" backdrop="static">
+    <Modal show={show} onHide={handleClose} size="lg" backdrop="static">
       <Modal.Header closeButton>
-        <Modal.Title>Cập nhật câu hỏi</Modal.Title>
+        <Modal.Title>Tạo câu hỏi mới</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <form className="row g-3">
-          <div className="col-md-12">
-            <label className="form-label">Nội dung câu hỏi</label>
-            <input type="text" className="form-control" placeholder="Nhập nội dung câu hỏi" value={context} onChange={(e) => setContext(e.target.value)} required />
-          </div>
+        <Form.Group className="mb-3">
+          <Form.Label>Nội dung câu hỏi</Form.Label>
+          <Form.Control as="textarea" rows={3} value={context} onChange={(e) => setContext(e.target.value)} placeholder="Nhập nội dung câu hỏi..." />
+        </Form.Group>
 
-          <div className="col-md-12">
-            <label className="form-label">Chọn từ 2 đến 4 lựa chọn</label>
-            {availableOptions.length > 0 ? (
-              availableOptions.map((opt) => (
-                <div className="form-check" key={opt.id}>
-                  <input className="form-check-input" type="checkbox" id={`option-${opt.id}`} checked={tempSelectedOptionIds.includes(opt.id)} onChange={() => handleCheckboxChange(opt.id)} />
-                  <label className="form-check-label" htmlFor={`option-${opt.id}`}>
-                    {opt.context} {opt.isCorrect ? "(Đúng)" : "(Sai)"}
-                  </label>
-                </div>
+        <Form.Group className="mb-3">
+          <Form.Label>Lựa chọn đã chọn ({selectedOptionIds.length}/4):</Form.Label>
+          <div>
+            {selectedOptionIds.length > 0 ? (
+              selectedOptionIds.map((id) => (
+                <Badge bg="secondary" key={id} className="me-2">
+                  {id}
+                </Badge>
               ))
             ) : (
-              <p className="text-muted">Không có lựa chọn nào.</p>
+              <div className="text-muted">Chưa chọn lựa chọn nào.</div>
             )}
           </div>
-        </form>
+          {selectedOptionIds.length > 0 && (
+            <Button className="btn-danger mt-2" onClick={() => setSelectedOptionIds([])}>
+              Xóa hết các lựa chọn
+            </Button>
+          )}
+        </Form.Group>
+
+        <Button variant="outline-primary" onClick={handleShowUpdateOptionModal}>
+          + Chọn Options
+        </Button>
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={handleClose}>
-          Đóng
+          Hủy
         </Button>
         <Button variant="primary" onClick={handleSubmit} disabled={isLoading}>
           {isLoading ? "Đang xử lý..." : "Lưu thay đổi"}
@@ -121,5 +94,4 @@ const UpdateQuestionModal = ({ show, setShow, onUpdateQuestion, questionData, se
     </Modal>
   );
 };
-
 export default UpdateQuestionModal;

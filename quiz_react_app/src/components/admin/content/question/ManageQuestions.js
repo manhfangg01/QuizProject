@@ -7,10 +7,11 @@ import FormQuestionFilter from "./FormQuestionFilter";
 import { FaUserPlus } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import { getAllQuestions, postCreateQuestion } from "../../../../services/QuestionServices";
-import { getAllAvailableOptions } from "../../../../services/OptionService";
+import { getAllAvailableOptions, getAllOptions } from "../../../../services/OptionService";
 import "./ManageQuestions.scss";
 import { toast } from "react-toastify";
 import SelectOptionModal from "../modals/questions/SelectOptionModal";
+import UpdateOptionsForQuestionModal from "../modals/questions/UpdateOptionsForQuestionModal";
 
 const ManageQuestions = () => {
   const [metadata, setMetadata] = useState({});
@@ -32,6 +33,9 @@ const ManageQuestions = () => {
   const [selectedOptionIds, setSelectedOptionIds] = useState({});
   const [showSelectOptionModal, setShowSelectOptionModal] = useState(false);
   const [metadataForOptions, setMetadataForOptions] = useState({});
+  const [showUpdateOptionsForQuestionModal, setShowUpdateOptionsForQuestionModal] = useState(false);
+
+  const [updateModalOptionIds, setUpdateModalOptionIds] = useState([]);
 
   const fetchAvailableOptions = async (pageNumber, filter) => {
     try {
@@ -44,7 +48,6 @@ const ManageQuestions = () => {
       console.error("❌ Error calling API:", error);
     }
   };
-
   const fetchQuestions = async (pageNumber, filter) => {
     try {
       const response = await getAllQuestions(pageNumber, filter);
@@ -130,6 +133,7 @@ const ManageQuestions = () => {
             filter={filter}
           />
         </div>
+
         <SelectOptionModal
           show={showSelectOptionModal}
           setShow={setShowSelectOptionModal}
@@ -150,15 +154,22 @@ const ManageQuestions = () => {
         />
         <UpdateQuestionModal
           show={showModalUpdateQuestion}
-          setShow={handleUpdateQuestion}
+          setShow={setShowModalUpdateQuestion}
           onUpdateQuestion={fetchQuestions}
           questionData={questionData}
-          selectedOptionIds={selectedOptionIds || []}
-          setSelectedOptionIds={setSelectedOptionIds}
-          availableOptions={availableOptions || []}
-          showOptionSelection={showSelectOptionModal}
-          setShowOptionSelection={setShowSelectOptionModal}
+          setShowUpdateOptions={setShowUpdateOptionsForQuestionModal}
+          selectedOptionIds={updateModalOptionIds}
+          setSelectedOptionIds={setUpdateModalOptionIds}
         />
+
+        <UpdateOptionsForQuestionModal
+          show={showUpdateOptionsForQuestionModal}
+          setShow={setShowUpdateOptionsForQuestionModal}
+          selectedOptionIds={selectedOptionIds}
+          setSelectedOptionIds={setSelectedOptionIds}
+          questionData={questionData} // ✅ thêm dòng này
+        />
+
         <DeleteQuestionModal show={showModalDeleteQuestion} setShow={handleDeleteQuestion} onDeleteQuestion={fetchQuestions} questionId={deleteQuestionId} />
         <DetailQuestionModal show={showModalDetailQuestion} setShow={handleDetailQuestion} questionData={detailQuestionData} />
       </div>

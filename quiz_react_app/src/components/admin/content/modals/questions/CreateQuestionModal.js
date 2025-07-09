@@ -5,13 +5,12 @@ import { toast } from "react-toastify";
 
 const CreateQuestionModal = ({ show, setShow, onCreateQuestion, setShowOptionSelection, selectedOptionIds = [], setSelectedOptionIds }) => {
   const [context, setContext] = useState("");
-  const [error, setError] = useState("");
   const handleCheckAtLeastOneTrueOption = async (optionIds) => {
     try {
       console.log(optionIds.length);
 
       if (optionIds.length < 2 || optionIds.length > 4) {
-        setError("Số lượng lựa chọn phải từ 2 đến 4.");
+        toast.warning("Số lượng câu hỏi từ 2 đến 4");
         return false;
       }
 
@@ -22,19 +21,16 @@ const CreateQuestionModal = ({ show, setShow, onCreateQuestion, setShowOptionSel
         const correctCount = listOption.filter((opt) => opt.isCorrect === true).length;
 
         if (correctCount !== 1) {
-          setError("Một câu hỏi cần có đúng 1 đáp án đúng.");
+          toast.warning("Một câu hỏi cần có đúng 1 đáp án đúng.");
           return false;
         }
-
-        // ✅ Đúng chuẩn
-        setError(""); // clear lỗi trước đó nếu có
         return true;
       } else {
-        setError("Không thể lấy dữ liệu lựa chọn từ server.");
+        toast.warning("Không thể lấy dữ liệu lựa chọn từ server.");
       }
     } catch (error) {
       console.error("❌ Lỗi khi gọi API:", error);
-      setError("Lỗi hệ thống khi kiểm tra đáp án.");
+      toast.warning("Lỗi hệ thống khi kiểm tra đáp án.");
     }
 
     return false;
@@ -42,16 +38,13 @@ const CreateQuestionModal = ({ show, setShow, onCreateQuestion, setShowOptionSel
 
   const handleSubmit = async () => {
     if (!context.trim()) {
-      alert("Vui lòng nhập nội dung câu hỏi.");
+      toast.warning("Không được bỏ trống nội dung");
       return;
     }
 
     const isValid = await handleCheckAtLeastOneTrueOption(selectedOptionIds); // sửa selectedIds thành selectedOptionIds
     console.log(selectedOptionIds);
     if (!isValid) {
-      toast.warning(error);
-      setError(""); // clear lỗi trước đó nếu có
-
       return;
     }
 
@@ -67,7 +60,6 @@ const CreateQuestionModal = ({ show, setShow, onCreateQuestion, setShowOptionSel
   };
 
   const handleClose = () => {
-    setError(""); // clear lỗi trước đó nếu có
     setContext("");
     setShow(false);
     setShowOptionSelection(false);

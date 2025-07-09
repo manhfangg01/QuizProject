@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Modal, Table, Form, Button } from "react-bootstrap";
 import FormOptionFilter from "../../option/FormOptionFilter";
 import CustomPagination from "../../CustomPagination";
+import { getAllOptions } from "../../../../../services/OptionService";
 
-const SelectOptionModal = ({ show, setShow, availableOptions = [], setSelectedOptionIds, metadata, fetchOptions }) => {
+const UpdateOptionsForQuestionModal = ({ show, setShow, selectedOptionIds, setSelectedOptionIds, questionData }) => {
   const [selectedIds, setSelectedIds] = useState([]);
   const [filter, setFilter] = useState({
     id: "",
@@ -11,6 +12,36 @@ const SelectOptionModal = ({ show, setShow, availableOptions = [], setSelectedOp
     isCorrect: "",
     questionId: "",
   });
+  const [options, setOptions] = useState([]);
+  const [metadata, setMetadata] = useState({});
+
+  const fetchOptions = async (pageNumber, filter) => {
+    try {
+      const response = await getAllOptions(pageNumber, filter);
+      if (response.statusCode === 200) {
+        setOptions(response.data.options);
+        setMetadata(response.data.metadata);
+      }
+    } catch (error) {
+      console.error("❌ Error calling API:", error);
+    }
+  };
+
+  useEffect(() => {
+    console.log(questionData);
+    if (Array.isArray(selectedOptionIds)) {
+      setSelectedIds(selectedOptionIds);
+    } else {
+      setSelectedIds([]); // fallback an toàn
+    }
+  }, [selectedOptionIds]);
+
+  useEffect(() => {
+    if (show) {
+      fetchOptions(1, filter); // gọi API ngay khi mở modal
+    }
+  }, [show]);
+
   const handleClose = () => {
     setShow(false);
     setSelectedIds([]);
@@ -31,11 +62,11 @@ const SelectOptionModal = ({ show, setShow, availableOptions = [], setSelectedOp
     setSelectedIds((prev) => (prev.includes(optionId) ? prev.filter((id) => id !== optionId) : [...prev, optionId]));
   };
 
-  const handleSubmit = async () => {
-    setSelectedOptionIds(selectedIds);
-    setSelectedIds([]);
+  const handleSubmit = () => {
+    setSelectedOptionIds(selectedIds); // gửi về cha (UpdateQuestionModal)
     setShow(false);
   };
+
   const onPageChange = (pageNumber, filter) => {
     if (pageNumber === metadata.currentPage) return;
     fetchOptions(pageNumber, filter);
@@ -60,11 +91,16 @@ const SelectOptionModal = ({ show, setShow, availableOptions = [], setSelectedOp
               </tr>
             </thead>
             <tbody>
-              {Array.isArray(availableOptions) && availableOptions.length > 0 ? (
-                availableOptions.map((option) => (
+              {Array.isArray(options) && options.length > 0 ? (
+                options.map((option) => (
                   <tr key={option.id}>
                     <td>
-                      <Form.Check type="checkbox" checked={selectedIds.includes(option.id)} onChange={() => handleSelect(option.id)} />
+                      <Form.Check
+                        type="checkbox"
+                        disable={option.questionId && option.questionId !== questionData.id}
+                        checked={selectedIds.includes(option.id)}
+                        onChange={() => handleSelect(option.id)}
+                      />
                     </td>
                     <td>{option.context}</td>
                     <td>{option.isCorrect ? "✓" : "✗"}</td>
@@ -96,4 +132,4 @@ const SelectOptionModal = ({ show, setShow, availableOptions = [], setSelectedOp
   );
 };
 
-export default SelectOptionModal;
+export default UpdateOptionsForQuestionModal;
