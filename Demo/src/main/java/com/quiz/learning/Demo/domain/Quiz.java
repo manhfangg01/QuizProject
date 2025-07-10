@@ -28,6 +28,7 @@ public class Quiz {
     private String subjectName;
     private Long timeLimit;
     private Long totalParticipants;
+
     private Boolean isActive;
     @Enumerated(EnumType.STRING)
     private DifficultyLevel difficulty;

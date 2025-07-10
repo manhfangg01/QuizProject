@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 
 import com.quiz.learning.Demo.domain.Option;
 import com.quiz.learning.Demo.domain.Question;
-import com.quiz.learning.Demo.domain.filterCriteria.QuestionFilter;
+import com.quiz.learning.Demo.domain.filterCriteria.admin.QuestionFilter;
 import com.quiz.learning.Demo.domain.metadata.Metadata;
 import com.quiz.learning.Demo.domain.request.admin.question.CreateQuestionRequest;
 import com.quiz.learning.Demo.domain.request.admin.question.UpdateQuestionRequest;

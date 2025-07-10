@@ -2,7 +2,7 @@ package com.quiz.learning.Demo.controller.admin;
 
 import org.springframework.web.bind.annotation.RestController;
 
-import com.quiz.learning.Demo.domain.filterCriteria.OptionFilter;
+import com.quiz.learning.Demo.domain.filterCriteria.admin.OptionFilter;
 import com.quiz.learning.Demo.domain.request.admin.option.CreateOptionRequest;
 import com.quiz.learning.Demo.domain.request.admin.option.UpdateOptionRequest;
 import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO;

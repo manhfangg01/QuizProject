@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.quiz.learning.Demo.domain.User;
-import com.quiz.learning.Demo.domain.filterCriteria.UserFilter;
+import com.quiz.learning.Demo.domain.filterCriteria.admin.UserFilter;
 import com.quiz.learning.Demo.domain.metadata.Metadata;
 import com.quiz.learning.Demo.domain.request.admin.user.CreateUserRequest;
 import com.quiz.learning.Demo.domain.request.admin.user.UpdateUserRequest;

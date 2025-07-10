@@ -1,4 +1,4 @@
-package com.quiz.learning.Demo.domain.filterCriteria;
+package com.quiz.learning.Demo.domain.filterCriteria.admin;
 
 import com.quiz.learning.Demo.util.constant.DifficultyLevel;
 

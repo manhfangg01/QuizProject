@@ -15,15 +15,18 @@ public class ResponseSubmissionDTO {
     private Long userId;
     private int score;
     private int totalQuestions;
+    private int totalCorrectedAnswer;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
     private Instant submittedAt;
     private List<Detail> details;
+    private Long duration;
 
     @Getter
     @Setter
     public static class Detail {
         private Long questionId;
         private Long selectedOptionId;
+        private Long correctOptionId;
         private Boolean isCorrect;
     }
 

@@ -1,96 +1,220 @@
 package com.quiz.learning.Demo.service.client;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import com.quiz.learning.Demo.domain.Answer;
+import com.quiz.learning.Demo.domain.Option;
+import com.quiz.learning.Demo.domain.Question;
 import com.quiz.learning.Demo.domain.Quiz;
-import com.quiz.learning.Demo.domain.response.client.DisplayClientDTO;
-import com.quiz.learning.Demo.domain.response.client.FetchClientDTO;
+import com.quiz.learning.Demo.domain.Result;
+import com.quiz.learning.Demo.domain.filterCriteria.client.QuizClientFilter;
+import com.quiz.learning.Demo.domain.metadata.Metadata;
+import com.quiz.learning.Demo.domain.response.client.RequestSubmissionDTO;
+import com.quiz.learning.Demo.domain.response.client.ResponseSubmissionDTO;
+import com.quiz.learning.Demo.domain.response.client.FetchClientDTO.QuizClientDTO;
+import com.quiz.learning.Demo.domain.response.client.FetchClientDTO.QuizClientPaginationDTO;
+import com.quiz.learning.Demo.domain.response.client.FetchClientDTO.QuizClientPlayDTO;
+import com.quiz.learning.Demo.domain.response.client.RequestSubmissionDTO.SubmittedAnswer;
+import com.quiz.learning.Demo.domain.response.client.ResponseSubmissionDTO.Detail;
+import com.quiz.learning.Demo.repository.AnswerRepository;
+import com.quiz.learning.Demo.repository.OptionRepository;
+import com.quiz.learning.Demo.repository.QuestionRepository;
 import com.quiz.learning.Demo.repository.QuizRepository;
+import com.quiz.learning.Demo.repository.ResultRepository;
+import com.quiz.learning.Demo.repository.UserRepository;
+import com.quiz.learning.Demo.service.specification.QuizSpecs;
 import com.quiz.learning.Demo.util.error.ObjectNotFound;
 
 @Service
 public class ClientQuizService {
     private final QuizRepository quizRepository;
+    private final QuizSpecs quizSpecs;
+    private final ClientQuestionService clientQuestionService;
+    private final ResultRepository resultRepository;
+    private final AnswerRepository answerRepository;
+    private final OptionRepository optionRepository;
+    private final QuestionRepository questionRepository;
+    private final UserRepository userRepository;
 
-    public ClientQuizService(QuizRepository quizRepository) {
+    public ClientQuizService(QuizRepository quizRepository, QuizSpecs quizSpecs,
+            ClientQuestionService clientQuestionService, ResultRepository resultRepository,
+            AnswerRepository answerRepository, OptionRepository optionRepository,
+            QuestionRepository questionRepository, UserRepository userRepository) {
         this.quizRepository = quizRepository;
+        this.quizSpecs = quizSpecs;
+        this.clientQuestionService = clientQuestionService;
+        this.resultRepository = resultRepository;
+        this.answerRepository = answerRepository;
+        this.optionRepository = optionRepository;
+        this.questionRepository = questionRepository;
+        this.userRepository = userRepository;
     }
 
-    public FetchClientDTO.QuizClientDTO convertToDTO(Quiz quiz) {
-        FetchClientDTO.QuizClientDTO quizDTO = new FetchClientDTO.QuizClientDTO();
-        quizDTO.setId(quiz.getId());
-        quizDTO.setNumberOfQuestion(quiz.getQuestions() != null ? quiz.getQuestions().size() : 0);
-        quizDTO.setIsActive(quiz.getIsActive());
-        quizDTO.setDifficulty(quiz.getDifficulty());
-        quizDTO.setTimeLimit(quiz.getTimeLimit());
-        quizDTO.setTitle(quiz.getTitle());
-        return quizDTO;
+    public QuizClientDTO convertToDto(Quiz quiz) {
+        QuizClientDTO dto = new QuizClientDTO();
+        dto.setQuizId((quiz.getId()));
+        dto.setDifficulty(quiz.getDifficulty());
+        dto.setTitle(quiz.getTitle());
+
+        return dto;
     }
 
-    public FetchClientDTO.QuizClientDTO handleFetchQuizById(Long id) {
+    public Pageable handlePagination(int page, int size, String sortBy, String order) {
+        // Validate input parameters
+        page = Math.max(page, 1); // Đảm bảo page >= 1
+        size = Math.max(size, 1); // Đảm bảo size >= 1
+
+        Sort sort = order.equalsIgnoreCase("ASC") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        return PageRequest.of(page - 1, size, sort);
+    }
+
+    public QuizClientPaginationDTO handleFetchQuizzes(int page, int size, String sortBy, String order,
+            QuizClientFilter filterCriteria) {
+        Pageable pageable = this.handlePagination(page, size, sortBy, order);
+
+        Specification<Quiz> spec = (root, query, cb) -> cb.conjunction();
+        Specification<Quiz> spec1 = this.quizSpecs.titleContains(filterCriteria.getContext());
+        Specification<Quiz> spec2 = this.quizSpecs.hasDifficulty(filterCriteria.getDifficultyLevel());
+        spec = spec.and(spec1).and(spec2);
+
+        Page<Quiz> pageQuizzes = this.quizRepository.findAll(spec, pageable);
+        List<Quiz> quizzes = pageQuizzes.getContent();
+
+        // Gán DTO
+        QuizClientPaginationDTO dto = new QuizClientPaginationDTO();
+        Metadata metadata = new Metadata();
+        metadata.setCurrentPage(page);
+        metadata.setPageSize(size);
+        metadata.setTotalObjects(pageQuizzes.getTotalElements());
+        metadata.setTotalPages(pageQuizzes.getTotalPages()); // Sửa: bỏ -1
+        metadata.setHasNext(pageQuizzes.hasNext()); // Sử dụng method có sẵn
+        metadata.setHasPrevious(pageQuizzes.hasPrevious()); // Sử dụng method có sẵn
+
+        dto.setMetadata(metadata);
+        dto.setQuizzes(quizzes.stream().map(this::convertToDto).collect(Collectors.toList()));
+        return dto;
+
+    }
+
+    public QuizClientPlayDTO handleDisplayQuiz(Long id) {
         Optional<Quiz> checkQuiz = this.quizRepository.findById(id);
         if (checkQuiz.isEmpty()) {
-            throw new ObjectNotFound("Quiz Not Found");
+            throw new ObjectNotFound("Tập câu hỏi không tồn tại");
         }
-        return this.convertToDTO(checkQuiz.get());
+        Quiz realQuiz = checkQuiz.get();
+        QuizClientPlayDTO dto = new QuizClientPlayDTO();
+        dto.setQuizId(realQuiz.getId());
+        dto.setDifficulty(realQuiz.getDifficulty());
+        dto.setIsActive(realQuiz.getIsActive());
+        dto.setNumberOfQuestion(realQuiz.getQuestions() == null ? 0 : realQuiz.getQuestions().size());
+        dto.setSubjectName(realQuiz.getSubjectName());
+        dto.setTimeLimit(realQuiz.getTimeLimit());
+        dto.setTitle(realQuiz.getTitle());
+        dto.setTotalParticipants(realQuiz.getTotalParticipants());
+        dto.setQuestions(realQuiz.getQuestions() == null ? Collections.emptyList()
+                : realQuiz.getQuestions().stream().map(clientQuestionService::convertToDto).toList());
+        return dto;
+
     }
 
-    public DisplayClientDTO.QuizPlayDTO handleClientDisplayQuiz(Long id) {
-        Optional<Quiz> checkQuiz = this.quizRepository.findById(id);
+    public ResponseSubmissionDTO handleSubmitAnswer(RequestSubmissionDTO submissionDTO) {
+        Optional<Quiz> checkQuiz = quizRepository.findById(submissionDTO.getQuizId());
         if (checkQuiz.isEmpty()) {
-            throw new ObjectNotFound("Quiz Not Found");
+            throw new ObjectNotFound("Tập câu hỏi không tồn tại");
         }
 
         Quiz realQuiz = checkQuiz.get();
+        ResponseSubmissionDTO res = new ResponseSubmissionDTO();
+        Instant now = Instant.now();
+        int totalQuestions = realQuiz.getQuestions() == null ? 0 : realQuiz.getQuestions().size();
 
-        DisplayClientDTO.QuizPlayDTO quizPlayDTO = new DisplayClientDTO.QuizPlayDTO();
-        quizPlayDTO.setQuizId(realQuiz.getId());
-        quizPlayDTO.setTimeLimit(realQuiz.getTimeLimit());
-        quizPlayDTO.setTitle(realQuiz.getTitle());
+        // Tạo kết quả ban đầu
+        Result result = new Result();
+        result.setQuiz(realQuiz);
+        result.setUser(userRepository.findById(submissionDTO.getUserId()).orElse(null));
+        result.setSubmittedAt(now);
+        result.setDuration(submissionDTO.getDuration());
+        result.setTotalQuestion(totalQuestions);
+        result.setTotalCorrectedAnswer(0); // tạm thời
+        result.setScore(0); // tạm thời
 
-        List<DisplayClientDTO.QuestionDTO> listQuestionPlay = new ArrayList<>();
+        result = resultRepository.save(result); // lưu để có ID
 
-        if (realQuiz.getQuestions() != null) {
-            listQuestionPlay = realQuiz.getQuestions() == null ? Collections.emptyList()
-                    : realQuiz.getQuestions().stream().map(question -> {
-                        DisplayClientDTO.QuestionDTO questionDTO = new DisplayClientDTO.QuestionDTO();
-                        questionDTO.setQuestionId(question.getId());
-                        questionDTO.setContent(question.getContext());
+        int correctCount = 0;
+        List<Detail> detailList = new ArrayList<>();
+        List<Answer> answerList = new ArrayList<>();
 
-                        List<DisplayClientDTO.OptionDTO> optionDTOs = question.getOptions() == null
-                                ? Collections.emptyList()
-                                : question
-                                        .getOptions().stream().map(option -> {
-                                            DisplayClientDTO.OptionDTO optionDTO = new DisplayClientDTO.OptionDTO();
-                                            optionDTO.setOptionId(option.getId());
-                                            optionDTO.setContent(option.getContext());
-                                            return optionDTO;
-                                        }).collect(Collectors.toList());
+        if (submissionDTO.getAnswers() != null) {
+            for (SubmittedAnswer submittedAnswer : submissionDTO.getAnswers()) {
+                // Lấy selected Option
+                Optional<Option> selectedOptionOpt = optionRepository.findById(submittedAnswer.getSelectedOptionId());
+                if (selectedOptionOpt.isEmpty()) {
+                    throw new ObjectNotFound("Lựa chọn không tồn tại: ID = " + submittedAnswer.getSelectedOptionId());
+                }
 
-                        questionDTO.setOptions(optionDTOs);
-                        return questionDTO;
-                    }).collect(Collectors.toList());
+                Option selectedOption = selectedOptionOpt.get();
+                Question question = selectedOption.getQuestion(); // lấy question từ option
+
+                // Lấy đáp án đúng
+                Optional<Option> correctOptionOpt = question.getOptions()
+                        .stream()
+                        .filter(Option::getIsCorrect)
+                        .findFirst();
+
+                Long correctOptionId = correctOptionOpt.map(Option::getId).orElse(null);
+                boolean isCorrect = correctOptionId != null && correctOptionId.equals(selectedOption.getId());
+
+                if (isCorrect)
+                    correctCount++;
+
+                // Tạo Answer
+                Answer answer = new Answer();
+                answer.setIsCorrect(isCorrect);
+                answer.setSelectedOption(selectedOption);
+                answer.setResult(result);
+                answerList.add(answer);
+
+                // Tạo Detail để trả về
+                Detail detail = new Detail();
+                detail.setQuestionId(question.getId());
+                detail.setCorrectOptionId(correctOptionId);
+                detail.setSelectedOptionId(selectedOption.getId());
+                detail.setIsCorrect(isCorrect);
+                detailList.add(detail);
+            }
+
+            // Lưu danh sách Answer
+            answerRepository.saveAll(answerList);
         }
 
-        quizPlayDTO.setQuestions(listQuestionPlay);
-        return quizPlayDTO;
-    }
+        // Cập nhật lại result với số câu đúng và điểm
+        result.setTotalCorrectedAnswer(correctCount);
+        result.setScore(correctCount * 10);
+        resultRepository.save(result);
 
-    public List<FetchClientDTO.QuizClientDTO> handleClientFetchquizzes() {
-        List<Quiz> allquizzes = this.quizRepository.findAll();
-        if (allquizzes.isEmpty()) {
-            return null;
-        }
-        return allquizzes == null ? Collections.emptyList()
-                : allquizzes.stream()
-                        .map(this::convertToDTO)
-                        .collect(Collectors.toList());
+        // Trả kết quả về cho client
+        res.setQuizId(realQuiz.getId());
+        res.setUserId(submissionDTO.getUserId());
+        res.setSubmittedAt(now);
+        res.setDuration(submissionDTO.getDuration());
+        res.setTotalQuestions(totalQuestions);
+        res.setTotalCorrectedAnswer(correctCount);
+        res.setScore(correctCount * 10);
+        res.setDetails(detailList);
+
+        return res;
     }
 
 }

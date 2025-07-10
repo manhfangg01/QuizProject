@@ -1,9 +1,7 @@
 package com.quiz.learning.Demo.service.admin;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
@@ -18,7 +16,7 @@ import org.springframework.stereotype.Service;
 import com.quiz.learning.Demo.domain.Answer;
 import com.quiz.learning.Demo.domain.Option;
 import com.quiz.learning.Demo.domain.Question;
-import com.quiz.learning.Demo.domain.filterCriteria.OptionFilter;
+import com.quiz.learning.Demo.domain.filterCriteria.admin.OptionFilter;
 import com.quiz.learning.Demo.domain.metadata.Metadata;
 import com.quiz.learning.Demo.domain.request.admin.option.CreateOptionRequest;
 import com.quiz.learning.Demo.domain.request.admin.option.UpdateOptionRequest;
