@@ -81,9 +81,6 @@ const Signup = () => {
 
     try {
       const res = await callRegister(formData.fullName, formData.email, formData.password, formData.confirmPassword);
-
-      console.log(res); // res chỉ là `data` do interceptor đã rút gọn
-
       if (res.statusCode === 200 || res.statusCode === 201) {
         showToast("success", "Đăng kí người dùng thành công !");
         navigate("/login");

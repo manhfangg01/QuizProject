@@ -70,7 +70,6 @@ const Login = () => {
     try {
       const res = await callLogin(formData.username, formData.password);
 
-      console.log(res); // res chỉ là `data` do interceptor đã rút gọn
       if (res.statusCode === 200) {
         const token = res.data.accessToken;
         localStorage.setItem("accessToken", token);

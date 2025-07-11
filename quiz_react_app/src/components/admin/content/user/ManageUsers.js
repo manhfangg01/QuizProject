@@ -55,7 +55,6 @@ const ManageUsers = (props) => {
     try {
       const response = await getAllUsersService(pageNumber, filter);
       // phải có await thì mới gọi ra data như interceptor đã cấu hình
-      console.log(">>>>✅ Response từ API:", response);
       if (response.statusCode === 200) {
         setListUsers(response.data.users);
         setMetadata(response.data.metadata);

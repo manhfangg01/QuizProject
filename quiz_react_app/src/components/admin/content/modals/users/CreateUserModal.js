@@ -71,7 +71,6 @@ const CreateUserModal = (props) => {
     try {
       // Call API
       const res = await postCreateNewUser(email, password, fullName, role, imageFile);
-      console.log(res);
 
       // Handle response
       if (res.statusCode === 200 || res.statusCode === 201) {

@@ -3,6 +3,7 @@ import { Modal, Table, Form, Button } from "react-bootstrap";
 import FormOptionFilter from "../../option/FormOptionFilter";
 import CustomPagination from "../../CustomPagination";
 import { getAllOptions } from "../../../../../services/OptionService";
+import { toast } from "react-toastify";
 
 const UpdateOptionsForQuestionModal = ({ show, setShow, selectedOptionIds, setSelectedOptionIds, questionData }) => {
   const [selectedIds, setSelectedIds] = useState([]);
@@ -18,6 +19,7 @@ const UpdateOptionsForQuestionModal = ({ show, setShow, selectedOptionIds, setSe
   const fetchOptions = async (pageNumber, filter) => {
     try {
       const response = await getAllOptions(pageNumber, filter);
+
       if (response.statusCode === 200) {
         setOptions(response.data.options);
         setMetadata(response.data.metadata);
@@ -28,23 +30,26 @@ const UpdateOptionsForQuestionModal = ({ show, setShow, selectedOptionIds, setSe
   };
 
   useEffect(() => {
-    console.log(questionData);
     if (Array.isArray(selectedOptionIds)) {
       setSelectedIds(selectedOptionIds);
     } else {
-      setSelectedIds([]); // fallback an toàn
+      setSelectedIds([]);
     }
   }, [selectedOptionIds]);
+  useEffect(() => {
+    if (questionData && questionData.options) {
+      setSelectedIds(questionData.options.map((opt) => opt.id));
+    }
+  }, [questionData]);
 
   useEffect(() => {
     if (show) {
-      fetchOptions(1, filter); // gọi API ngay khi mở modal
+      fetchOptions(1, filter);
     }
   }, [show]);
 
   const handleClose = () => {
     setShow(false);
-    setSelectedIds([]);
     setFilter({});
   };
 
@@ -63,7 +68,23 @@ const UpdateOptionsForQuestionModal = ({ show, setShow, selectedOptionIds, setSe
   };
 
   const handleSubmit = () => {
-    setSelectedOptionIds(selectedIds); // gửi về cha (UpdateQuestionModal)
+    // 1. Kiểm tra số lượng lựa chọn
+    if (selectedIds.length < 2 || selectedIds.length > 4) {
+      toast.warning("Bạn phải chọn từ 2 đến 4 lựa chọn.");
+      return;
+    }
+
+    // 2. Kiểm tra số lượng câu đúng trong các option được chọn
+    const selectedOptions = options.filter((opt) => selectedIds.includes(opt.id));
+    const correctCount = selectedOptions.filter((opt) => opt.isCorrect === true).length;
+
+    if (correctCount !== 1) {
+      toast.warning("Bạn phải chọn đúng 1 câu trả lời đúng.");
+      return;
+    }
+
+    // Nếu hợp lệ thì submit
+    setSelectedOptionIds(selectedIds);
     setShow(false);
   };
 
@@ -92,16 +113,19 @@ const UpdateOptionsForQuestionModal = ({ show, setShow, selectedOptionIds, setSe
             </thead>
             <tbody>
               {Array.isArray(options) && options.length > 0 ? (
-                options.map((option) => (
+                options.map((option, index) => (
                   <tr key={option.id}>
                     <td>
-                      <Form.Check
-                        type="checkbox"
-                        disable={option.questionId && option.questionId !== questionData.id}
-                        checked={selectedIds.includes(option.id)}
-                        onChange={() => handleSelect(option.id)}
-                      />
+                      {option.questionId && option.questionId !== questionData.questionId ? (
+                        <>
+                          <Form.Check type="checkbox" hidden checked={false} />
+                          <small className="text-muted">Đã thuộc câu khác</small>
+                        </>
+                      ) : (
+                        <Form.Check type="checkbox" checked={selectedIds.includes(option.id)} onChange={() => handleSelect(option.id)} />
+                      )}
                     </td>
+
                     <td>{option.context}</td>
                     <td>{option.isCorrect ? "✓" : "✗"}</td>
                   </tr>

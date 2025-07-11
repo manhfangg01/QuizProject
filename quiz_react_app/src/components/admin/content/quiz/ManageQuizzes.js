@@ -62,7 +62,6 @@ const ManageQuiz = () => {
   const fetchData = async (pageNumber = 1, filterParam = {}) => {
     try {
       const response = await getAllQuizzesService(pageNumber, filterParam);
-      console.log("✅ Quizzes fetched:", response);
       if (response.statusCode === 200) {
         setListQuizzes(response.data.quizzes);
         setMetadata(response.data.metadata);

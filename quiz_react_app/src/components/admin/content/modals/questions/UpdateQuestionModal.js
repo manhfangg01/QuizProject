@@ -18,7 +18,11 @@ const UpdateQuestionModal = ({ show, setShow, onUpdateQuestion, questionData, se
       const ids = questionData.options?.map((opt) => opt.id) || [];
       setSelectedOptionIds(ids);
     }
-  }, [questionData]);
+  }, [show]);
+
+  useEffect(() => {
+    setSelectedIds(selectedOptionIds);
+  }, [selectedOptionIds]);
 
   const handleClose = () => {
     setContext("");
@@ -29,7 +33,7 @@ const UpdateQuestionModal = ({ show, setShow, onUpdateQuestion, questionData, se
   const handleSubmit = async () => {
     setIsLoading(true);
     try {
-      const res = await putUpdateQuestion(questionData.id, context, selectedOptionIds);
+      const res = await putUpdateQuestion(questionData.questionId, context, selectedOptionIds);
       if (res?.statusCode === 200 || res?.statusCode === 201) {
         toast.success("Cập nhật câu hỏi thành công");
         onUpdateQuestion();

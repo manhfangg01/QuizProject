@@ -48,11 +48,7 @@ const CreateOptionModal = (props) => {
     }
 
     try {
-      // Call API
       const res = await postCreateOption(context, isCorrect);
-      console.log(res);
-
-      // Handle response
       if (res.statusCode === 200 || res.statusCode === 201) {
         showToast("success", "Tạo lựa chọn thành công!");
         onCreateOption();

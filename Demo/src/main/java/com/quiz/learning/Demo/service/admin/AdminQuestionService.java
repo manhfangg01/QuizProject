@@ -1,5 +1,6 @@
 package com.quiz.learning.Demo.service.admin;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -20,6 +21,7 @@ import com.quiz.learning.Demo.domain.request.admin.question.CreateQuestionReques
 import com.quiz.learning.Demo.domain.request.admin.question.UpdateQuestionRequest;
 import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO;
 import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO.FetchQuestionPaginationDTO;
+import com.quiz.learning.Demo.repository.OptionRepository;
 import com.quiz.learning.Demo.repository.QuestionRepository;
 import com.quiz.learning.Demo.service.specification.QuestionSpecs;
 import com.quiz.learning.Demo.util.error.DuplicatedObjectException;
@@ -31,12 +33,14 @@ public class AdminQuestionService {
     private final QuestionRepository questionRepository;
     private final AdminOptionService adminOptionService;
     private final QuestionSpecs questionSpecs;
+    private final OptionRepository optionRepository;
 
     public AdminQuestionService(QuestionRepository questionRepository, AdminOptionService adminOptionService,
-            QuestionSpecs questionSpecs) {
+            QuestionSpecs questionSpecs, OptionRepository optionRepository) {
         this.questionRepository = questionRepository;
         this.adminOptionService = adminOptionService;
         this.questionSpecs = questionSpecs;
+        this.optionRepository = optionRepository;
     }
 
     public Question handleGetQuestion(Long id) {
@@ -158,26 +162,25 @@ public class AdminQuestionService {
         // Cập nhật context
         realQuestion.setContext(updatedQuestion.getContext());
 
-        // --- Xử lý options ---
-        // 1. Xóa liên kết cũ (nếu có)
-        for (Option opt : realQuestion.getOptions()) {
-            opt.setQuestion(null); // gỡ liên kết cũ
+        // Lấy danh sách option mới từ DB
+        List<Option> newOptions = optionRepository.findAllById(updatedQuestion.getOptionIds());
+
+        // Gỡ liên kết các option bị bỏ chọn
+        List<Option> oldOptions = new ArrayList<>(realQuestion.getOptions());
+        for (Option oldOption : oldOptions) {
+            if (!updatedQuestion.getOptionIds().contains(oldOption.getId())) {
+                oldOption.setQuestion(null); // gỡ liên kết
+            }
         }
 
-        // 2. Lấy các option mới
-        List<Option> newOptions = fetchOptionsByIds(updatedQuestion.getOptionIds());
-
-        // 3. Gán lại quan hệ 2 chiều
-        for (Option opt : newOptions) {
-            opt.setQuestion(realQuestion);
+        // Gán lại danh sách mới
+        for (Option newOption : newOptions) {
+            newOption.setQuestion(realQuestion); // đảm bảo liên kết
         }
-
-        // 4. Gán danh sách mới
         realQuestion.setOptions(newOptions);
 
         // Lưu lại
         Question saved = questionRepository.save(realQuestion);
-
         return convertToDTO(saved);
     }
 

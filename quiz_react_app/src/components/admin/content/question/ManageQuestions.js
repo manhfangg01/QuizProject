@@ -165,9 +165,9 @@ const ManageQuestions = () => {
         <UpdateOptionsForQuestionModal
           show={showUpdateOptionsForQuestionModal}
           setShow={setShowUpdateOptionsForQuestionModal}
-          selectedOptionIds={selectedOptionIds}
-          setSelectedOptionIds={setSelectedOptionIds}
-          questionData={questionData} // ✅ thêm dòng này
+          selectedOptionIds={updateModalOptionIds}
+          setSelectedOptionIds={setUpdateModalOptionIds}
+          questionData={questionData}
         />
 
         <DeleteQuestionModal show={showModalDeleteQuestion} setShow={handleDeleteQuestion} onDeleteQuestion={fetchQuestions} questionId={deleteQuestionId} />

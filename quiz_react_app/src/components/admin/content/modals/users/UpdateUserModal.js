@@ -16,7 +16,6 @@ const UpdateUserModal = ({ show, setShow, onUpdateUser, userData }) => {
 
   // Gán dữ liệu khi mở modal
   useEffect(() => {
-    console.log(userData);
     if (userData) {
       setFullName(userData.fullName || "");
       setEmail(userData.email || "");
@@ -49,7 +48,6 @@ const UpdateUserModal = ({ show, setShow, onUpdateUser, userData }) => {
   };
 
   const handleSubmit = async () => {
-    console.log("check fullName", fullName);
     setIsLoading(true);
     try {
       const res = await putUpdateUser(

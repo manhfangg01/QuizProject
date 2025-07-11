@@ -53,7 +53,7 @@ const TableQuestions = ({ fetchQuestions, questions, metadata, onEdit, onDelete,
             <th>#</th>
             <th>Question Content</th>
             <th>Options Count</th>
-            <th>Quiz ID</th>
+
             <th>Actions</th>
           </tr>
         </thead>
@@ -68,7 +68,7 @@ const TableQuestions = ({ fetchQuestions, questions, metadata, onEdit, onDelete,
                     {question.options?.length || 0}
                   </Badge>
                 </td>
-                <td>{question.quizId || "-"}</td>
+
                 <td className="text-center" style={{ display: "flex", justifyContent: "space-around" }}>
                   <Button variant="info" size="sm" className="me-2" onClick={() => handleFetchOneQuestion(question.questionId)}>
                     Detail

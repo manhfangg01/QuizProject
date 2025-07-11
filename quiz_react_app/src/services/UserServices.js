@@ -39,8 +39,6 @@ export const putUpdateUser = async (userId, fullName, role, imageFile) => {
     role,
   };
 
-  console.log(">>Debug", user);
-
   const userBlob = new Blob([JSON.stringify(user)], {
     type: "application/json",
   });

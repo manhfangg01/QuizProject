@@ -40,9 +40,6 @@ export const putUpdateQuiz = async (quizId, fullName, role, imageFile) => {
     fullName,
     role,
   };
-
-  console.log(">>Debug", quiz);
-
   const quizBlob = new Blob([JSON.stringify(quiz)], {
     type: "application/json",
   });

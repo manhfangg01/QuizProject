@@ -7,8 +7,6 @@ const CreateQuestionModal = ({ show, setShow, onCreateQuestion, setShowOptionSel
   const [context, setContext] = useState("");
   const handleCheckAtLeastOneTrueOption = async (optionIds) => {
     try {
-      console.log(optionIds.length);
-
       if (optionIds.length < 2 || optionIds.length > 4) {
         toast.warning("Số lượng câu hỏi từ 2 đến 4");
         return false;
@@ -43,7 +41,6 @@ const CreateQuestionModal = ({ show, setShow, onCreateQuestion, setShowOptionSel
     }
 
     const isValid = await handleCheckAtLeastOneTrueOption(selectedOptionIds); // sửa selectedIds thành selectedOptionIds
-    console.log(selectedOptionIds);
     if (!isValid) {
       return;
     }
