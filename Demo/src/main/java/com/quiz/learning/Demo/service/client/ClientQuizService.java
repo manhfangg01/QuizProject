@@ -7,30 +7,40 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.quiz.learning.Demo.domain.Answer;
 import com.quiz.learning.Demo.domain.Option;
 import com.quiz.learning.Demo.domain.Question;
 import com.quiz.learning.Demo.domain.Quiz;
+import com.quiz.learning.Demo.domain.QuizProgress;
 import com.quiz.learning.Demo.domain.Result;
+import com.quiz.learning.Demo.domain.User;
 import com.quiz.learning.Demo.domain.filterCriteria.client.QuizClientFilter;
 import com.quiz.learning.Demo.domain.metadata.Metadata;
-import com.quiz.learning.Demo.domain.response.client.RequestSubmissionDTO;
+import com.quiz.learning.Demo.domain.request.client.RequestExitingQuiz;
+import com.quiz.learning.Demo.domain.request.client.RequestSavingProgress;
+import com.quiz.learning.Demo.domain.request.client.RequestSubmissionDTO;
+import com.quiz.learning.Demo.domain.request.client.SubmittedAnswer;
+import com.quiz.learning.Demo.domain.response.client.ResponseExitingQuiz;
+import com.quiz.learning.Demo.domain.response.client.ResponseSavingProgress;
 import com.quiz.learning.Demo.domain.response.client.ResponseSubmissionDTO;
 import com.quiz.learning.Demo.domain.response.client.FetchClientDTO.QuizClientDTO;
 import com.quiz.learning.Demo.domain.response.client.FetchClientDTO.QuizClientPaginationDTO;
 import com.quiz.learning.Demo.domain.response.client.FetchClientDTO.QuizClientPlayDTO;
-import com.quiz.learning.Demo.domain.response.client.RequestSubmissionDTO.SubmittedAnswer;
 import com.quiz.learning.Demo.domain.response.client.ResponseSubmissionDTO.Detail;
 import com.quiz.learning.Demo.repository.AnswerRepository;
 import com.quiz.learning.Demo.repository.OptionRepository;
 import com.quiz.learning.Demo.repository.QuestionRepository;
+import com.quiz.learning.Demo.repository.QuizProgressRepository;
 import com.quiz.learning.Demo.repository.QuizRepository;
 import com.quiz.learning.Demo.repository.ResultRepository;
 import com.quiz.learning.Demo.repository.UserRepository;
@@ -47,11 +57,14 @@ public class ClientQuizService {
     private final OptionRepository optionRepository;
     private final QuestionRepository questionRepository;
     private final UserRepository userRepository;
+    private final QuizProgressRepository quizProgressRepository;
+    private final ObjectMapper objectMapper;
 
     public ClientQuizService(QuizRepository quizRepository, QuizSpecs quizSpecs,
             ClientQuestionService clientQuestionService, ResultRepository resultRepository,
             AnswerRepository answerRepository, OptionRepository optionRepository,
-            QuestionRepository questionRepository, UserRepository userRepository) {
+            QuestionRepository questionRepository, UserRepository userRepository,
+            QuizProgressRepository quizProgressRepository, ObjectMapper objectMapper) {
         this.quizRepository = quizRepository;
         this.quizSpecs = quizSpecs;
         this.clientQuestionService = clientQuestionService;
@@ -60,6 +73,8 @@ public class ClientQuizService {
         this.optionRepository = optionRepository;
         this.questionRepository = questionRepository;
         this.userRepository = userRepository;
+        this.quizProgressRepository = quizProgressRepository;
+        this.objectMapper = objectMapper;
     }
 
     public QuizClientDTO convertToDto(Quiz quiz) {
@@ -146,7 +161,7 @@ public class ClientQuizService {
         result.setUser(userRepository.findById(submissionDTO.getUserId()).orElse(null));
         result.setSubmittedAt(now);
         result.setDuration(submissionDTO.getDuration());
-        result.setTotalQuestion(totalQuestions);
+        result.setTotalQuestions(totalQuestions);
         result.setTotalCorrectedAnswer(0); // tạm thời
         result.setScore(0); // tạm thời
 
@@ -214,7 +229,64 @@ public class ClientQuizService {
         res.setScore(correctCount * 10);
         res.setDetails(detailList);
 
+        // Xóa đi những progress tạm thời liên quan
+        this.quizProgressRepository.deleteAllByUserIdAndQuizId(submissionDTO.getUserId(), submissionDTO.getQuizId());
+
         return res;
+    }
+
+    public ResponseSavingProgress handleSaveProgress(RequestSavingProgress request) {
+        Quiz quiz = quizRepository.findById(request.getQuizId())
+                .orElseThrow(() -> new ObjectNotFound("Quiz not found"));
+        User user = userRepository.findById(request.getUserId())
+                .orElseThrow(() -> new ObjectNotFound("User not found"));
+
+        // 2. Lưu hoặc cập nhật tiến độ (theo entity QuizProgress)
+        Optional<QuizProgress> existingProgress = quizProgressRepository
+                .findByUserAndQuiz(user, quiz);
+
+        QuizProgress progress = existingProgress.orElse(new QuizProgress());
+        progress.setQuiz(quiz);
+        progress.setUser(user);
+        progress.setDuration(request.getDuration());
+        progress.setSavedAt(Instant.now());
+
+        // Giả sử bạn lưu danh sách answer dưới dạng JSON
+        String answersJson;
+        try {
+            answersJson = objectMapper.writeValueAsString(request.getAnswers());
+        } catch (com.fasterxml.jackson.core.JsonProcessingException e) {
+            throw new RuntimeException("Failed to serialize answers", e);
+        }
+        progress.setAnswersJson(answersJson);
+
+        quizProgressRepository.save(progress);
+
+        // 3. Trả về kết quả
+        ResponseSavingProgress dto = new ResponseSavingProgress();
+        dto.setQuizId(quiz.getId());
+        dto.setUserId(user.getId());
+        dto.setSavedAt(progress.getSavedAt());
+        return dto;
+    }
+
+    public ResponseExitingQuiz handleExitQuiz(RequestExitingQuiz request) {
+        // "Do cùng là lưu progress chỉ khác là save được gọi tự động, còn exit chỉ được
+        // gọi khi người dùng chủ động thoát" => Map DTO qua sau đó sử dụng logic của
+        // saving
+        RequestSavingProgress saveRequest = new RequestSavingProgress();
+        saveRequest.setQuizId(request.getQuizId());
+        saveRequest.setUserId(request.getUserId());
+        saveRequest.setDuration(request.getDuration());
+        saveRequest.setAnswers(request.getAnswers());
+
+        ResponseSavingProgress saved = handleSaveProgress(saveRequest);
+
+        ResponseExitingQuiz response = new ResponseExitingQuiz();
+        response.setQuizId(saved.getQuizId());
+        response.setUserId(saved.getUserId());
+        response.setSavedAt(saved.getSavedAt());
+        return response;
     }
 
 }

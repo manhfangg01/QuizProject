@@ -1,4 +1,4 @@
-package com.quiz.learning.Demo.domain.response.client;
+package com.quiz.learning.Demo.domain.request.client;
 
 import java.util.List;
 
@@ -13,12 +13,5 @@ public class RequestSubmissionDTO {
     private Long duration; // tính bằng giây
 
     private List<SubmittedAnswer> answers;
-
-    @Getter
-    @Setter
-    public static class SubmittedAnswer {
-        private Long questionId;
-        private Long selectedOptionId;
-    }
 
 }

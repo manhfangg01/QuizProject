@@ -1,5 +1,5 @@
 package com.quiz.learning.Demo.util.constant;
 
 public enum DifficultyLevel {
-    EASY, MEDIUM, HARD
+    EASY, MEDIUM, HARD, NA
 }

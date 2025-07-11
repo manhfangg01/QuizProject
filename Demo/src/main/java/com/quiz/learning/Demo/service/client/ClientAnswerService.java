@@ -3,7 +3,7 @@ package com.quiz.learning.Demo.service.client;
 import org.springframework.stereotype.Service;
 
 import com.quiz.learning.Demo.domain.Answer;
-import com.quiz.learning.Demo.domain.response.client.RequestSubmissionDTO.SubmittedAnswer;
+import com.quiz.learning.Demo.domain.request.client.SubmittedAnswer;
 import com.quiz.learning.Demo.repository.AnswerRepository;
 
 @Service
