@@ -105,7 +105,7 @@ public class FetchAdminDTO {
     @Getter
     @Setter
     public static class FetchQuizPaginationDTO {
-        private List<FetchTableQuizDTO> quizzes;
+        private List<FetchFullQuizDTO> quizzes;
         private Metadata metadata;
     }
 

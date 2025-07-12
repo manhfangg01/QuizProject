@@ -1,153 +1,131 @@
 import { useEffect, useState } from "react";
-import Modal from "react-bootstrap/Modal";
-import Button from "react-bootstrap/Button";
-import { Bounce, toast } from "react-toastify";
+import { Button, Modal, Form, Badge } from "react-bootstrap";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { putUpdateQuiz } from "../../../../../services/QuizServices";
+import { putUpdateQuiz } from "../../../../../services/QuizServices"; // 🔁 Đổi sang API cập nhật quiz
 
-const UpdateQuizModal = ({ show, setShow, onUpdateQuiz, quizData }) => {
+const UpdateQuizModal = ({ show, setShow, onUpdateQuiz, quizData, setShowUpdateQuestions, updatedQuestionIds, setUpdatedQuestionIds, fetchAllQuestions }) => {
   const [title, setTitle] = useState("");
   const [subjectName, setSubjectName] = useState("");
-  const [timeLimit, setTimeLimit] = useState(1);
-  const [isActive, setIsActive] = useState(true);
+  const [timeLimit, setTimeLimit] = useState(15);
   const [difficulty, setDifficulty] = useState("EASY");
-  const [questionIds, setQuestionIds] = useState([]);
-
+  const [isActive, setIsActive] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
 
+  // Load dữ liệu quiz khi mở modal
   useEffect(() => {
     if (quizData) {
       setTitle(quizData.title || "");
       setSubjectName(quizData.subjectName || "");
-      setTimeLimit(quizData.timeLimit || 1);
-      setIsActive(quizData.isActive ?? true);
+      setTimeLimit(quizData.timeLimit || 15);
       setDifficulty(quizData.difficulty || "EASY");
-      setQuestionIds(quizData.questions?.map((q) => q.questionId) || []);
+      setIsActive(quizData.isActive ?? true);
+      const ids = quizData.questions?.map((q) => q.questionId) || [];
+      setUpdatedQuestionIds(ids);
     }
-  }, [quizData]);
+    fetchAllQuestions(1, {});
+  }, [show]);
 
   const handleClose = () => {
     setShow(false);
+    setIsLoading(false);
     setTitle("");
     setSubjectName("");
-    setTimeLimit(1);
-    setIsActive(true);
-    setDifficulty("EASY");
-    setQuestionIds([]);
-    setIsLoading(false);
-  };
-
-  const showToast = (type, message) => {
-    toast[type](message, {
-      position: "top-center",
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      theme: "light",
-      transition: Bounce,
-    });
+    setTimeLimit(15); // ✅ Thay null bằng giá trị mặc định => K nên set bằng null
+    setIsActive(true); // ✅ Thay null bằng giá trị mặc định
   };
 
   const handleSubmit = async () => {
-    if (!title || !subjectName || timeLimit < 1 || questionIds.length < 1) {
-      showToast("error", "Vui lòng điền đầy đủ thông tin hợp lệ!");
+    if (!title || !subjectName || updatedQuestionIds.length < 2) {
+      toast.warning("Vui lòng nhập đầy đủ thông tin và chọn ít nhất 2 câu hỏi.");
       return;
     }
 
-    const requestBody = {
-      quizId: quizData.quizId,
-      title,
-      subjectName,
-      timeLimit,
-      isActive,
-      difficulty,
-      questions: questionIds,
-    };
-
     setIsLoading(true);
     try {
-      const res = await putUpdateQuiz(requestBody);
-      if (res && (res.statusCode === 200 || res.statusCode === 201)) {
-        showToast("success", "Cập nhật quiz thành công!");
-        onUpdateQuiz();
+      const res = await putUpdateQuiz(quizData.quizId, title, subjectName, timeLimit, difficulty, isActive, updatedQuestionIds);
+      if (res?.statusCode === 200 || res?.statusCode === 201) {
+        toast.success("Cập nhật bài Quiz thành công");
+        onUpdateQuiz(1, {});
         handleClose();
       } else {
-        showToast("warning", res?.message || "Cập nhật không thành công.");
+        toast.warning("Cập nhật không thành công!");
       }
     } catch (err) {
-      console.error("❌ Lỗi cập nhật quiz:", err);
-      showToast("error", err.response?.data?.message || "Đã xảy ra lỗi!");
-    } finally {
-      setIsLoading(false);
+      if (err.response) {
+        toast.warning("API trả về lỗi: " + err.response.data.message);
+      } else {
+        console.log("👉 Response lỗi có body:", err);
+      }
     }
   };
 
   return (
-    <Modal show={show} onHide={handleClose} backdrop="static" size="xl">
+    <Modal show={show} onHide={handleClose} size="lg" backdrop="static">
       <Modal.Header closeButton>
         <Modal.Title>Cập nhật bài Quiz</Modal.Title>
       </Modal.Header>
+
       <Modal.Body>
-        <form className="row g-3">
-          <div className="col-md-6">
-            <label className="form-label">Tiêu đề</label>
-            <input type="text" className="form-control" value={title} onChange={(e) => setTitle(e.target.value)} required />
-          </div>
+        <Form.Group className="mb-3">
+          <Form.Label>Tiêu đề</Form.Label>
+          <Form.Control value={title} onChange={(e) => setTitle(e.target.value)} />
+        </Form.Group>
 
-          <div className="col-md-6">
-            <label className="form-label">Môn học</label>
-            <input type="text" className="form-control" value={subjectName} onChange={(e) => setSubjectName(e.target.value)} required />
-          </div>
+        <Form.Group className="mb-3">
+          <Form.Label>Môn học</Form.Label>
+          <Form.Control value={subjectName} onChange={(e) => setSubjectName(e.target.value)} />
+        </Form.Group>
 
-          <div className="col-md-4">
-            <label className="form-label">Thời gian (phút)</label>
-            <input type="number" className="form-control" value={timeLimit} onChange={(e) => setTimeLimit(+e.target.value)} min={1} required />
-          </div>
+        <Form.Group className="mb-3">
+          <Form.Label>Thời gian làm bài (phút)</Form.Label>
+          <Form.Control type="number" min={1} value={timeLimit} onChange={(e) => setTimeLimit(Number(e.target.value))} />
+        </Form.Group>
 
-          <div className="col-md-4">
-            <label className="form-label">Độ khó</label>
-            <select className="form-select" value={difficulty} onChange={(e) => setDifficulty(e.target.value)}>
-              <option value="EASY">Dễ</option>
-              <option value="MEDIUM">Trung bình</option>
-              <option value="HARD">Khó</option>
-            </select>
-          </div>
+        <Form.Group className="mb-3">
+          <Form.Label>Độ khó</Form.Label>
+          <Form.Select value={difficulty} onChange={(e) => setDifficulty(e.target.value)}>
+            <option value="EASY">Dễ</option>
+            <option value="MEDIUM">Trung bình</option>
+            <option value="HARD">Khó</option>
+          </Form.Select>
+        </Form.Group>
 
-          <div className="col-md-4">
-            <label className="form-label">Trạng thái</label>
-            <select className="form-select" value={isActive ? "true" : "false"} onChange={(e) => setIsActive(e.target.value === "true")}>
-              <option value="true">Đang hoạt động</option>
-              <option value="false">Ngừng hoạt động</option>
-            </select>
-          </div>
+        <Form.Group className="mb-3">
+          <Form.Check type="checkbox" label="Kích hoạt bài quiz" checked={isActive} onChange={(e) => setIsActive(e.target.checked)} />
+        </Form.Group>
 
-          <div className="col-12">
-            <label className="form-label">Danh sách câu hỏi (ID)</label>
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Nhập các ID cách nhau bởi dấu phẩy (VD: 1,2,3)"
-              value={questionIds.join(",")}
-              onChange={(e) => {
-                const ids = e.target.value
-                  .split(",")
-                  .map((id) => parseInt(id.trim()))
-                  .filter((id) => !isNaN(id));
-                setQuestionIds(ids);
-              }}
-              required
-            />
+        <Form.Group className="mb-3">
+          <Form.Label>Câu hỏi đã chọn ({updatedQuestionIds.length})</Form.Label>
+          <div>
+            {updatedQuestionIds.length > 0 ? (
+              updatedQuestionIds.map((id) => (
+                <Badge bg="secondary" key={id} className="me-2">
+                  {id}
+                </Badge>
+              ))
+            ) : (
+              <div className="text-muted">Chưa chọn câu hỏi nào.</div>
+            )}
           </div>
-        </form>
+          {updatedQuestionIds.length > 0 && (
+            <Button className="btn-danger mt-2" onClick={() => setUpdatedQuestionIds([])}>
+              Xóa hết câu hỏi
+            </Button>
+          )}
+        </Form.Group>
+
+        <Button variant="outline-primary" onClick={() => setShowUpdateQuestions(true)}>
+          + Chọn câu hỏi
+        </Button>
       </Modal.Body>
+
       <Modal.Footer>
         <Button variant="secondary" onClick={handleClose}>
-          Đóng
+          Hủy
         </Button>
         <Button variant="primary" onClick={handleSubmit} disabled={isLoading}>
-          {isLoading ? "Đang xử lý..." : "Lưu thay đổi"}
+          {isLoading ? "Đang cập nhật..." : "Lưu thay đổi"}
         </Button>
       </Modal.Footer>
     </Modal>

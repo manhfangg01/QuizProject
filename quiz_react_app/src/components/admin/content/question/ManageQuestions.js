@@ -7,7 +7,7 @@ import FormQuestionFilter from "./FormQuestionFilter";
 import { FaUserPlus } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import { getAllQuestions, postCreateQuestion } from "../../../../services/QuestionServices";
-import { getAllAvailableOptions, getAllOptions } from "../../../../services/OptionService";
+import { getAllAvailableOptions } from "../../../../services/OptionService";
 import "./ManageQuestions.scss";
 import { toast } from "react-toastify";
 import SelectOptionModal from "../modals/questions/SelectOptionModal";

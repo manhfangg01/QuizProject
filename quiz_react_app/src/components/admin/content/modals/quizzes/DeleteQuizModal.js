@@ -3,9 +3,9 @@ import { Bounce, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
-import { deleteQuizById } from "../../../../../services/QuizServices";
+import { deleteQuizById } from "../../../../../services/QuizServices"; // 🔁 Đảm bảo có hàm này
 
-const DeleteQuizModal = ({ show, setShow, onDeleteQuiz, quizId }) => {
+const DeleteQuizModal = ({ show, setShow, onDeleteQuiz, quizData }) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleClose = () => {
@@ -26,21 +26,21 @@ const DeleteQuizModal = ({ show, setShow, onDeleteQuiz, quizId }) => {
   };
 
   const handleDelete = async () => {
-    if (!quizId) return;
+    if (!(quizData && quizData.id)) return;
 
     setIsLoading(true);
     try {
-      const res = await deleteQuizById(quizId);
+      const res = await deleteQuizById(quizData.id);
       if (res && (res.statusCode === 200 || res.statusCode === 204)) {
         showToast("success", "Xóa bài quiz thành công!");
-        onDeleteQuiz(); // reload lại danh sách quiz
+        onDeleteQuiz(); // Refresh quiz list
         handleClose();
       } else {
         showToast("warning", res?.message || "Không thể xóa bài quiz.");
       }
     } catch (err) {
-      console.error("❌ Error deleting quiz:", err);
-      showToast("error", err?.response?.data?.message || "Đã xảy ra lỗi khi xóa quiz!");
+      console.error("Error deleting quiz:", err);
+      showToast("error", err?.response?.data?.message || "Đã xảy ra lỗi khi xóa!");
     } finally {
       setIsLoading(false);
     }
@@ -49,10 +49,12 @@ const DeleteQuizModal = ({ show, setShow, onDeleteQuiz, quizId }) => {
   return (
     <Modal show={show} onHide={handleClose} backdrop="static" size="md">
       <Modal.Header closeButton>
-        <Modal.Title>Xác nhận xóa Quiz</Modal.Title>
+        <Modal.Title>Xác nhận xóa</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <p>Bạn có chắc chắn muốn xóa bài quiz này không?</p>
+        <p>
+          Bạn có chắc chắn muốn xóa <strong>bài quiz</strong> này không?
+        </p>
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={handleClose}>

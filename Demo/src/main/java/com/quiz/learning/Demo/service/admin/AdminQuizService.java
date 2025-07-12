@@ -15,12 +15,16 @@ import org.springframework.stereotype.Service;
 
 import com.quiz.learning.Demo.domain.Question;
 import com.quiz.learning.Demo.domain.Quiz;
+import com.quiz.learning.Demo.domain.Result;
 import com.quiz.learning.Demo.domain.filterCriteria.admin.QuizFilter;
 import com.quiz.learning.Demo.domain.metadata.Metadata;
 import com.quiz.learning.Demo.domain.request.admin.quiz.CreateQuizRequest;
 import com.quiz.learning.Demo.domain.request.admin.quiz.UpdateQuizRequest;
 import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO;
+import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO.FetchFullQuizDTO;
+import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO.FetchQuestionDTO;
 import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO.FetchQuizPaginationDTO;
+import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO.FetchResultDTO;
 import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO.FetchTableQuizDTO;
 import com.quiz.learning.Demo.repository.QuizRepository;
 import com.quiz.learning.Demo.service.specification.QuizSpecs;
@@ -56,7 +60,7 @@ public class AdminQuizService {
     }
 
     public FetchAdminDTO.FetchFullQuizDTO convertToFullDTO(Quiz quiz) {
-        FetchAdminDTO.FetchFullQuizDTO dto = new FetchAdminDTO.FetchFullQuizDTO();
+        FetchFullQuizDTO dto = new FetchFullQuizDTO();
         dto.setQuizId(quiz.getId());
         dto.setTitle(quiz.getTitle());
         dto.setSubjectName(quiz.getSubjectName());
@@ -65,26 +69,29 @@ public class AdminQuizService {
         dto.setIsActive(quiz.getIsActive());
         dto.setDifficulty(quiz.getDifficulty());
 
-        // ✅ convert list question
+        // 🔥 Quan trọng: map câu hỏi sang FetchQuestionDTO
+        List<FetchQuestionDTO> questions = quiz.getQuestions().stream()
+                .map(q -> {
+                    FetchQuestionDTO qDto = new FetchQuestionDTO();
+                    qDto.setQuestionId(q.getId());
+                    qDto.setContext(q.getContext());
+                    // Nếu cần, map options nữa
+                    return qDto;
+                }).collect(Collectors.toList());
+        dto.setQuestions(questions);
 
-        List<FetchAdminDTO.FetchQuestionDTO> questionDTOs = quiz.getQuestions() == null ? Collections.emptyList()
-                : quiz
-                        .getQuestions()
-                        .stream()
-                        .map(adminQuestionService::convertToDTO)
-                        .collect(Collectors.toList());
-        dto.setQuestions(questionDTOs);
-
-        if (quiz.getResults() != null) {
-            List<FetchAdminDTO.FetchResultDTO> resultDTOs = quiz.getResults() == null ? Collections.emptyList()
-                    : quiz
-                            .getResults()
-                            .stream()
-                            .map(adminResultService::convertToDTO)
-                            .collect(Collectors.toList());
-            dto.setResults(resultDTOs);
-        }
-
+        // 🔥 Quan trọng: map kết quả sang FetchResultDTO nếu cần
+        List<FetchResultDTO> results = quiz.getResults().stream()
+                .map(r -> {
+                    FetchResultDTO rDto = new FetchResultDTO();
+                    rDto.setId(r.getId());
+                    rDto.setUserId(r.getUser().getId());
+                    rDto.setQuizId(quiz.getId());
+                    rDto.setScore(r.getScore());
+                    rDto.setSubmittedAt(r.getSubmittedAt());
+                    return rDto;
+                }).collect(Collectors.toList());
+        dto.setResults(results);
         return dto;
     }
 
@@ -139,7 +146,7 @@ public class AdminQuizService {
         metadata.setHasPrevious(pageQuizzes.hasPrevious()); // Sử dụng method có sẵn
 
         dto.setMetadata(metadata);
-        dto.setQuizzes(quizzes.stream().map(this::convertToTableDTO).collect(Collectors.toList()));
+        dto.setQuizzes(quizzes.stream().map(this::convertToFullDTO).collect(Collectors.toList()));
         return dto;
     }
 

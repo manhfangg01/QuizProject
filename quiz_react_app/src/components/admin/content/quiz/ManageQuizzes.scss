@@ -5,28 +5,36 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin-bottom: 20px;
 
     .title {
       font-weight: 700;
-      font-size: 50px;
+      font-size: 36px;
       padding: 10px;
+      color: #2c3e50;
     }
 
     .btn-add-new {
       .btn {
-        height: 50%;
+        height: 40px;
         font-size: 16px;
         padding: 8px 16px;
         display: flex;
         align-items: center;
         gap: 6px;
-        margin-right: 35px;
+        background-color: #3498db;
+        border-color: #3498db;
+
+        &:hover {
+          background-color: #2980b9;
+          border-color: #2980b9;
+        }
       }
     }
   }
 
   .quizzes-content {
-    // Add styles for table or content inside quiz section if needed
+    margin-top: 20px;
   }
 }
 
@@ -35,35 +43,85 @@
     display: flex;
     align-items: center;
     gap: 5px;
-    font-size: 20px;
-    border-radius: 10px;
-    background: rgb(187, 183, 183);
+    font-size: 16px;
+    border-radius: 8px;
+    background: #ecf0f1;
     width: fit-content;
-    padding: 5px 10px;
+    padding: 5px 12px;
     margin: 0;
+    cursor: pointer;
+    transition: all 0.3s;
 
     &:hover {
-      background: rgb(223, 220, 220);
+      background: #bdc3c7;
     }
   }
 }
 
 .modal-add-quiz {
-  border: 3px dashed #ccc;
+  border: 3px dashed #95a5a6;
   height: 200px;
   display: flex;
   justify-content: center;
   align-items: center;
-  color: #ccc;
+  color: #7f8c8d;
+  border-radius: 8px;
+  margin: 15px 0;
+  transition: all 0.3s;
+
+  &:hover {
+    border-color: #3498db;
+    color: #3498db;
+  }
 
   .img-preview {
     height: 100%;
     width: 30%;
+    object-fit: contain;
   }
 }
 
 .pagination {
-  margin-bottom: 0px;
+  margin: 20px 0;
   display: flex;
   justify-content: center;
+
+  .page-item {
+    margin: 0 5px;
+
+    .page-link {
+      color: #2a2d2f;
+      border: 1px solid #ddd;
+
+      &:hover {
+        background-color: #f8f9fa;
+      }
+    }
+
+    &.active .page-link {
+      background-color: #3498db;
+      border-color: #3498db;
+    }
+  }
+}
+
+.table-quizzes-container {
+  margin-top: 20px;
+
+  table {
+    th {
+      background-color: #2c3e50;
+      color: white;
+      font-weight: 500;
+    }
+
+    td {
+      vertical-align: middle;
+    }
+
+    .badge {
+      font-size: 14px;
+      padding: 6px 10px;
+    }
+  }
 }

@@ -1,5 +1,5 @@
 import axiosInstance from "../utils/axiosCustomize";
-export const getAllQuizzesService = async (pageNumber = 1, filter) => {
+export const getAllQuizzes = async (pageNumber = 1, filter) => {
   const response = await axiosInstance.get("/api/admin/quizzes/fetch", {
     params: {
       page: pageNumber,
@@ -13,43 +13,26 @@ export const getQuizById = async (quizId) => {
   return await axiosInstance.get(`/api/admin/quizzes/fetch/${quizId}`);
 };
 
-export const postCreateNewQuiz = async (email, password, fullName, role, imageFile) => {
-  const formData = new FormData();
-  const quiz = {
-    email,
-    password,
-    fullName,
-    role,
-  };
-  const quizBlob = new Blob([JSON.stringify(quiz)], {
-    type: "application/json",
+export const postCreateQuiz = async (title, subjectName, timeLimit, difficulty, isActive, questions) => {
+  return axiosInstance.post("/api/admin/quizzes/create", {
+    title,
+    subjectName,
+    timeLimit,
+    isActive,
+    difficulty,
+    questions,
   });
-  formData.append("createQuizRequest", quizBlob);
-  if (imageFile) {
-    formData.append("quizAvatar", imageFile);
-  }
-  const response = await axiosInstance.post("/api/admin/quizzes/create", formData); // không cần gửi đi bearer token thủ công nữa custom đã tự gắn rồi
-  return response;
 };
-
-export const putUpdateQuiz = async (quizId, fullName, role, imageFile) => {
-  const formData = new FormData();
-
-  const quiz = {
+export const putUpdateQuiz = async (quizId, title, subjectName, timeLimit, difficulty, isActive, updatedQuestionIds) => {
+  const response = await axiosInstance.put("/api/admin/quizzes/update", {
     quizId,
-    fullName,
-    role,
-  };
-  const quizBlob = new Blob([JSON.stringify(quiz)], {
-    type: "application/json",
+    title,
+    subjectName,
+    timeLimit,
+    difficulty,
+    isActive,
+    questions: updatedQuestionIds,
   });
-
-  formData.append("updateQuizRequest", quizBlob);
-
-  if (imageFile) {
-    formData.append("quizAvatar", imageFile);
-  }
-  const response = await axiosInstance.post("/api/admin/quizzes/update", formData);
 
   return response;
 };

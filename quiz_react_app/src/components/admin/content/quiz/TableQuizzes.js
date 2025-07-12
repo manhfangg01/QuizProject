@@ -1,41 +1,10 @@
 import { Table, Button } from "react-bootstrap";
-import { getQuizById } from "../../../../services/QuizServices";
-import { Bounce, toast } from "react-toastify";
 import CustomPagination from "../CustomPagination";
 
-const TableQuiz = ({ fetchQuizzes, quizzes, metadata, onEdit, onDelete, onDetail, filter }) => {
-  const showToast = (type, message) => {
-    toast[type](message, {
-      position: "top-center",
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      theme: "light",
-      transition: Bounce,
-    });
-  };
-
-  const handleFetchOneQuiz = async (quizId) => {
-    if (!quizId) onDetail(true, null);
-
-    try {
-      const res = await getQuizById(quizId);
-      if (res && (res.statusCode === 200 || res.statusCode === 204)) {
-        onDetail(true, res.data);
-      } else {
-        showToast("warning", res?.message || "Không thể hiển thị quiz.");
-      }
-    } catch (err) {
-      console.error("❌ Lỗi khi fetch quiz:", err);
-      showToast("error", err?.response?.data?.message || "Đã xảy ra lỗi khi lấy quiz!");
-    }
-  };
-
-  const onPageChange = (pageNumber) => {
+const TableQuizzes = ({ fetchQuizzes, quizzes, metadata, onEdit, onDelete, onDetail, filter }) => {
+  const onPageChange = (pageNumber, filter) => {
     if (pageNumber === metadata.currentPage) return;
-    fetchQuizzes(pageNumber);
+    fetchQuizzes(pageNumber, filter);
   };
 
   return (
@@ -65,13 +34,13 @@ const TableQuiz = ({ fetchQuizzes, quizzes, metadata, onEdit, onDelete, onDetail
                 <td>{quiz.totalParticipants}</td>
                 <td>{quiz.isActive ? "Đang hoạt động" : "Ngừng hoạt động"}</td>
                 <td style={{ display: "flex", justifyContent: "space-around" }}>
-                  <Button variant="secondary" size="sm" onClick={() => handleFetchOneQuiz(quiz.quizId)}>
+                  <Button variant="secondary" size="sm" onClick={() => onDetail(true, quiz)}>
                     Chi tiết
                   </Button>
                   <Button variant="warning" size="sm" className="me-2" onClick={() => onEdit(true, quiz)}>
                     Sửa
                   </Button>
-                  <Button variant="danger" size="sm" className="me-2" onClick={() => onDelete(true, quiz.quizId)}>
+                  <Button variant="danger" size="sm" className="me-2" onClick={() => onDelete(true, quiz)}>
                     Xóa
                   </Button>
                 </td>
@@ -92,4 +61,4 @@ const TableQuiz = ({ fetchQuizzes, quizzes, metadata, onEdit, onDelete, onDetail
   );
 };
 
-export default TableQuiz;
+export default TableQuizzes;

@@ -1,66 +1,76 @@
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
-import { Badge } from "react-bootstrap";
+import { getQuizById } from "../../../../../services/QuizServices";
+import { useEffect, useState } from "react";
 
 const DetailQuizModal = ({ show, setShow, quizData }) => {
+  const [fullQuizData, setFullQuizData] = useState({});
   const handleClose = () => {
     setShow(false);
   };
+  const handleFetchFullDataForQuiz = async (quizData) => {
+    try {
+      const response = await getQuizById(quizData.quizId);
+      if (response.statusCode === 200) {
+        setFullQuizData(response.data);
+      } else {
+        console.warn("⚠️ Lấy dữ liệu quiz thất bại:", response.message || "Không rõ nguyên nhân");
+      }
+    } catch (error) {
+      console.error("❌ Lỗi khi gọi API getQuizById:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (show && quizData?.quizId) {
+      handleFetchFullDataForQuiz(quizData);
+    }
+  }, [show]);
 
   return (
-    <Modal show={show} onHide={handleClose} backdrop="static" size="xl">
+    <Modal show={show} onHide={handleClose} backdrop="static" size="lg">
       <Modal.Header closeButton>
         <Modal.Title>Chi tiết bài Quiz</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        {quizData ? (
-          <div>
-            <div className="mb-3">
-              <strong>Tiêu đề:</strong> {quizData.title}
+        {fullQuizData ? (
+          <>
+            <div className="mb-2">
+              <strong>ID:</strong> {fullQuizData.quizId}
             </div>
-            <div className="mb-3">
-              <strong>Môn học:</strong> {quizData.subjectName}
+            <div className="mb-2">
+              <strong>Tiêu đề:</strong> {fullQuizData.title}
             </div>
-            <div className="mb-3">
-              <strong>Thời gian làm bài:</strong> {quizData.timeLimit} phút
+            <div className="mb-2">
+              <strong>Môn học:</strong> {fullQuizData.subjectName}
             </div>
-            <div className="mb-3">
-              <strong>Trạng thái:</strong> <Badge bg={quizData.isActive ? "success" : "secondary"}>{quizData.isActive ? "Đang hoạt động" : "Ngừng hoạt động"}</Badge>
+            <div className="mb-2">
+              <strong>Thời gian giới hạn:</strong> {fullQuizData.timeLimit} phút
             </div>
-            <div className="mb-3">
-              <strong>Độ khó:</strong> <Badge bg="info">{quizData.difficulty}</Badge>
+            <div className="mb-2">
+              <strong>Số lượng người tham gia:</strong> {fullQuizData.totalParticipants}
             </div>
-            <div className="mb-3">
-              <strong>Số người đã làm:</strong> {quizData.totalParticipants || 0}
+            <div className="mb-2">
+              <strong>Trạng thái:</strong> {fullQuizData.isActive ? "Đang hoạt động" : "Đã tắt"}
+            </div>
+            <div className="mb-2">
+              <strong>Độ khó:</strong> {fullQuizData.difficulty}
             </div>
 
-            <div className="mt-4">
-              <h5>Câu hỏi</h5>
-              {quizData.questions && quizData.questions.length > 0 ? (
-                quizData.questions.map((q, idx) => (
-                  <div key={q.questionId} className="mb-4">
-                    <div>
-                      <strong>Câu {idx + 1}:</strong> {q.context}
-                    </div>
-                    <ul className="mt-2">
-                      {q.options.map((opt) => (
-                        <li key={opt.id}>
-                          {opt.context}{" "}
-                          {opt.isCorrect && (
-                            <Badge bg="success" className="ms-2">
-                              Đúng
-                            </Badge>
-                          )}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ))
-              ) : (
-                <p className="text-muted">Không có câu hỏi nào.</p>
-              )}
-            </div>
-          </div>
+            <hr />
+            <h5>Danh sách câu hỏi:</h5>
+            {fullQuizData.questions && fullQuizData.questions.length > 0 ? (
+              <ul>
+                {fullQuizData.questions.map((q) => (
+                  <li key={q.questionId}>
+                    ID: {q.questionId} — {q.context}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <div className="text-muted">Không có câu hỏi nào.</div>
+            )}
+          </>
         ) : (
           <div className="text-muted">Không có dữ liệu quiz.</div>
         )}

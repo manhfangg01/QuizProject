@@ -39,7 +39,7 @@ const TableUser = ({ fetchUsers, users, metadata, onEdit, onDelete, onDetail, fi
 
   return (
     <>
-      <Table striped bordered hover responsive className="mt-3" style={{ minHeight: "400px" }}>
+      <Table striped bordered hover responsive className="mt-3" style={{ minHeight: "300px" }}>
         <thead className="table-dark">
           <tr>
             <th>STT</th>
