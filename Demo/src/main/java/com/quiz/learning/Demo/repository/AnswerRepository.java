@@ -7,5 +7,5 @@ import com.quiz.learning.Demo.domain.Answer;
 
 @Repository
 public interface AnswerRepository extends JpaRepository<Answer, Long> {
-
+    public void deleteAllByResultId(Long resultId);
 }

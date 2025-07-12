@@ -216,7 +216,7 @@ public class ClientQuizService {
 
         // Cập nhật lại result với số câu đúng và điểm
         result.setTotalCorrectedAnswer(correctCount);
-        result.setScore(correctCount * 10);
+        result.setScore(correctCount);
         resultRepository.save(result);
 
         // Trả kết quả về cho client

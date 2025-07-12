@@ -8,7 +8,7 @@ import UpdateUserModal from "../modals/users/UpdateUserModal";
 import DeleteUserModal from "../modals/users/DeleteUserModal";
 import DetailUserModal from "../modals/users/DetailUserModal";
 import FormUserFilter from "./FormUserFilter";
-const ManageUsers = (props) => {
+const ManageUsers = () => {
   const [metadata, setMetadata] = useState({});
   const [listUsers, setListUsers] = useState([]);
   const [showModalCreateUser, setShowModalCreateUser] = useState(false);

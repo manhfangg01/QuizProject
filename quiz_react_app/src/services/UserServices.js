@@ -1,4 +1,3 @@
-import { use } from "react";
 import axiosInstance from "../utils/axiosCustomize";
 
 export const getAllUsersService = async (pageNumber = 1, filter) => {

@@ -44,11 +44,17 @@ public class FetchAdminDTO {
     public static class FetchResultDTO {
         private Long id;
         private Long userId;
+        private String userName;
         private Long quizId;
+        private String quizTilte;
         private List<FetchAnswerDTO> answers;
+        private int totalQuestions;
+        private int totalCorrectedAnswer;
+        private Long duration;
         private int score;
         @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
         private Instant submittedAt;
+
     }
 
     @Getter
@@ -120,6 +126,13 @@ public class FetchAdminDTO {
     @Setter
     public static class FetchQuestionPaginationDTO {
         private List<FetchQuestionDTO> questions;
+        private Metadata metadata;
+    }
+
+    @Getter
+    @Setter
+    public static class FetchResultPaginationDTO {
+        private List<FetchResultDTO> results;
         private Metadata metadata;
     }
 

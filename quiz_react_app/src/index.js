@@ -12,7 +12,7 @@ import ManageUsers from "../src/components/admin/content/user/ManageUsers";
 import ManageOptions from "../src/components/admin/content/option/ManageOptions";
 import ManageQuizzes from "../src/components/admin/content/quiz/ManageQuizzes";
 import ManageQuestions from "../src/components/admin/content/question/ManageQuestions";
-// import ManageResults from "../src/components/admin/content/ManageResults";
+import ManageResults from "../src/components/admin/content/result/ManageResults";
 import Dashboard from "./components/admin/dashboard/Dashboard";
 import Login from "./components/auth/Login";
 import Signup from "./components/auth/Signup";
@@ -39,7 +39,7 @@ root.render(
           <Route path="manage-options" element={<ManageOptions />} />
           <Route path="manage-quizzes" element={<ManageQuizzes />} />
           <Route path="manage-questions" element={<ManageQuestions />} />
-          {/* <Route path="manage-results" element={<ManageResults />} /> */}
+          <Route path="manage-results" element={<ManageResults />} />
         </Route>
       </Routes>
     </BrowserRouter>

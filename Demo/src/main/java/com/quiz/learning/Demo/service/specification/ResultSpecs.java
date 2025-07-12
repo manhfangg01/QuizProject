@@ -9,6 +9,7 @@ import com.quiz.learning.Demo.domain.Quiz_;
 import com.quiz.learning.Demo.domain.Result;
 import com.quiz.learning.Demo.domain.Result_;
 import com.quiz.learning.Demo.domain.User_;
+import com.quiz.learning.Demo.domain.filterCriteria.admin.ResultFilter;
 
 @Service
 public class ResultSpecs {
@@ -77,5 +78,18 @@ public class ResultSpecs {
             }
             return null;
         };
+    }
+
+    public Specification<Result> build(ResultFilter filter) {
+        Specification<Result> spec = (root, criteria, cb) -> cb.conjunction();
+        Specification<Result> spec1 = this.betweenDates(filter.getFrom(), filter.getTo());
+        Specification<Result> spec2 = this.hasCorrectAnswerGreaterThan(filter.getTotalCorrects());
+        Specification<Result> spec3 = this.hasDurationLessThan(filter.getDuration());
+        Specification<Result> spec4 = this.hasId(filter.getId());
+        Specification<Result> spec5 = this.hasQuizId(filter.getQuizId());
+        Specification<Result> spec6 = this.hasScoreGreaterThanOrEqual(filter.getScore());
+        Specification<Result> spec7 = this.hasUserId(filter.getUserId());
+        spec = spec.and(spec1).and(spec2).and(spec3).and(spec4).and(spec5).and(spec6).and(spec7);
+        return spec;
     }
 }
