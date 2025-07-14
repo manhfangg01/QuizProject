@@ -9,7 +9,7 @@ const TableQuizzes = ({ fetchQuizzes, quizzes, metadata, onEdit, onDelete, onDet
 
   return (
     <>
-      <Table striped bordered hover responsive className="mt-3" style={{ minHeight: "300px" }}>
+      <Table striped bordered hover responsive className="mt-3" style={{ minHeight: "200px" }}>
         <thead className="table-dark">
           <tr>
             <th>STT</th>

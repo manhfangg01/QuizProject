@@ -1,5 +1,13 @@
 import axiosInstance from "../utils/axiosCustomize";
 
+export const getTopUsers = async () => {
+  return await axiosInstance.get("/api/admin/stat/top-users");
+};
+
+export const getAdminStats = async () => {
+  return await axiosInstance.get("/api/dashboard");
+};
+
 export const getAllUsersService = async (pageNumber = 1, filter) => {
   const response = await axiosInstance.get("/api/admin/users/fetch", {
     params: {

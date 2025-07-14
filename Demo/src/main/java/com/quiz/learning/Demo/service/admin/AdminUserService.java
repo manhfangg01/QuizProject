@@ -22,8 +22,13 @@ import com.quiz.learning.Demo.domain.metadata.Metadata;
 import com.quiz.learning.Demo.domain.request.admin.user.CreateUserRequest;
 import com.quiz.learning.Demo.domain.request.admin.user.UpdateUserRequest;
 import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO;
+import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO.AdminStats;
 import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO.FetchUserDTO;
 import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO.FetchUserPaginationDTO;
+import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO.UserTopScoreDTO;
+import com.quiz.learning.Demo.repository.QuestionRepository;
+import com.quiz.learning.Demo.repository.QuizRepository;
+import com.quiz.learning.Demo.repository.ResultRepository;
 import com.quiz.learning.Demo.repository.UserRepository;
 import com.quiz.learning.Demo.service.azure.AzureBlobService;
 import com.quiz.learning.Demo.service.specification.UserSpecs;
@@ -35,6 +40,9 @@ import com.quiz.learning.Demo.util.security.SecurityUtil;
 @Service
 public class AdminUserService {
     private final UserRepository userRepository;
+    private final QuestionRepository questionRepository;
+    private final QuizRepository quizRepository;
+    private final ResultRepository resultRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserSpecs userSpecs;
     private final AdminRoleService adminRoleService;
@@ -42,12 +50,30 @@ public class AdminUserService {
 
     public AdminUserService(UserRepository userRepository, PasswordEncoder passwordEncoder,
             AdminRoleService adminRoleService,
-            AzureBlobService azureBlobService, UserSpecs userSpecs) {
+            AzureBlobService azureBlobService, UserSpecs userSpecs, QuestionRepository questionRepository,
+            QuizRepository quizRepository, ResultRepository resultRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.adminRoleService = adminRoleService;
         this.azureBlobService = azureBlobService;
         this.userSpecs = userSpecs;
+        this.questionRepository = questionRepository;
+        this.quizRepository = quizRepository;
+        this.resultRepository = resultRepository;
+
+    }
+
+    public List<UserTopScoreDTO> handleGetTopUsers(Pageable pageable) {
+        return userRepository.findTopUsersByAverageScore(PageRequest.of(0, 5));
+    }
+
+    public AdminStats handleFetchAdminStats() {
+        AdminStats stats = new AdminStats();
+        stats.setTotalQuestions(this.questionRepository.count());
+        stats.setTotalQuizzes(this.quizRepository.count());
+        stats.setTotalResults(this.resultRepository.count());
+        stats.setTotalUsers(this.userRepository.count());
+        return stats;
 
     }
 

@@ -26,6 +26,11 @@ public class AdminResultController {
         this.resultService = resultService;
     }
 
+    @GetMapping("/admin/results/fetch-avarage-time")
+    public ResponseEntity<String> getAvarageTime() {
+        return ResponseEntity.ok(this.resultService.handleFetchAverageDuration());
+    }
+
     @GetMapping("/admin/results/fetch")
     @ApiMessage("fetch all results")
     public ResponseEntity<FetchResultPaginationDTO> fetch(

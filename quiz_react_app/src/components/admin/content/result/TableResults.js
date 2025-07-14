@@ -9,7 +9,7 @@ const TableResults = ({ fetchResults, results, metadata, onDelete, onDetail, fil
 
   return (
     <>
-      <Table striped bordered hover responsive className="mt-3" style={{ minHeight: "300px" }}>
+      <Table striped bordered hover responsive className="mt-3" style={{ minHeight: "250px" }}>
         <thead className="table-dark">
           <tr>
             <th>STT</th>

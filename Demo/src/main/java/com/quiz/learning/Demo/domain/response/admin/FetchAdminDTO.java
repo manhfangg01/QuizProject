@@ -8,10 +8,53 @@ import com.quiz.learning.Demo.util.constant.DifficultyLevel;
 
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 public class FetchAdminDTO {
+
+    @Getter
+    @Setter
+    public static class AdminStats {
+        private Long totalUsers;
+        private Long totalQuizzes;
+        private Long totalQuestions;
+        private Long totalResults;
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class UserTopScoreDTO {
+        private String fullName;
+        private Double averageScore;
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class AnswerAccuracyDTO {
+        private int correct;
+        private int incorrect;
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    public static class QuizPopularityDTO {
+        private String title;
+        private Long count;
+
+        // Constructor phải khớp với @Query
+        public QuizPopularityDTO(String title, Long count) {
+            this.title = title;
+            this.count = count;
+        }
+    }
 
     @Getter
     @Setter

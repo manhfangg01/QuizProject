@@ -18,4 +18,5 @@ public interface ResultRepository extends JpaRepository<Result, Long>, JpaSpecif
     public Optional<Result> findByUserAndQuiz(User user, Quiz quiz);
 
     public List<Result> findAllByUser(User user);
+
 }

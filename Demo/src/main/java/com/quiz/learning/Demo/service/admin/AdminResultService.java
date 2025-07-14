@@ -179,6 +179,28 @@ public class AdminResultService {
         return dto;
     }
 
+    public String handleFetchAverageDuration() {
+        List<Result> results = this.resultRepository.findAll();
+        if (results == null || results.isEmpty()) {
+            return "Không có dữ liệu";
+        }
+        long totalSeconds = 0;
+        long count = 0;
+        for (Result res : results) {
+            if (res.getDuration() != null) {
+                totalSeconds += res.getDuration();
+                count++;
+            }
+        }
+        if (count == 0)
+            return "Không có dữ liệu phù hợp";
+        long avgSeconds = totalSeconds / count;
+        long minutes = avgSeconds / 60;
+        long seconds = avgSeconds % 60;
+
+        return minutes + " phút " + seconds + " giây";
+    }
+
     public void handleDeleteResult(Result result) {
         this.resultRepository.delete(result);
     }

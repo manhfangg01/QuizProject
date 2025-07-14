@@ -1,19 +1,223 @@
+// ==========================
+// 🌞 Light Theme (Default)
+// ==========================
 .admin-container {
   display: flex;
+  min-height: 100vh;
+  background-color: #f5f7fa;
+  color: #333;
+
   .admin-sidebar {
+    width: 250px;
+    background-color: #2c3e50;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+
     .pro-sidebar {
       height: 100vh !important;
     }
+
+    a {
+      color: #ddd;
+      text-decoration: none;
+
+      &:hover {
+        background-color: #34495e;
+        color: #fff;
+      }
+    }
   }
+
   .admin-content {
-    width: 100%;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+
     .admin-header {
-      height: 60px;
-      border: 1px solid green;
+      height: 70px;
+      background-color: white;
+      color: #333;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
       display: flex;
+      align-items: center;
       justify-content: space-between;
+      padding: 0 25px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+
+      .menu-toggle {
+        font-size: 20px;
+        color: #555;
+        cursor: pointer;
+
+        &:hover {
+          color: #2c3e50;
+        }
+      }
+
+      .user-info {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+
+        .user-name {
+          font-weight: 500;
+          color: #333;
+        }
+      }
     }
+
     .admin-main {
+      flex: 1;
+      padding: 25px;
+      background-color: #f9fafc;
+      overflow-y: auto;
     }
+  }
+}
+
+// ==========================
+// 🌒 Dark Theme
+// ==========================
+body[data-bs-theme="dark"] {
+  .admin-container {
+    background-color: #121212;
+    color: #f0f0f0;
+  }
+
+  .admin-sidebar {
+    background-color: #1e1e1e;
+
+    a {
+      color: #ccc;
+
+      &:hover {
+        background-color: #292929;
+        color: white;
+      }
+    }
+  }
+  .title {
+    color: white;
+  }
+
+  .admin-content {
+    .admin-header {
+      background-color: #1f1f1f;
+      border-bottom: 1px solid #333;
+      color: #eee;
+
+      .menu-toggle {
+        color: #ccc;
+
+        &:hover {
+          color: #fff;
+        }
+      }
+
+      .user-name {
+        color: #ddd;
+      }
+    }
+
+    .admin-main {
+      background-color: #181818;
+      color: #f0f0f0;
+      .title-and-btn {
+        .title {
+          color: white;
+        }
+      }
+    }
+  }
+
+  .btn-outline-secondary {
+    color: #fff;
+    border-color: #888;
+
+    &:hover {
+      background-color: #444;
+      border-color: #666;
+    }
+  }
+
+  .dropdown-menu {
+    background-color: #2a2a2a;
+    color: #f0f0f0;
+
+    .dropdown-item {
+      color: #ddd;
+
+      &:hover {
+        background-color: #3a3a3a;
+      }
+    }
+  }
+
+  .toast-body {
+    background-color: #222;
+    color: white;
+  }
+
+  .admin-dashboard {
+    background-color: #3a3a3a !important;
+    color: white;
+    .admin-stats {
+      background-color: #222 !important;
+      color: white;
+    }
+  }
+  .dashboard-accuracy-chart {
+    background-color: #222 !important;
+    color: white;
+  }
+  .dashboard-avarage-duration {
+    background-color: #222 !important;
+    .dashboard-text {
+      color: black;
+    }
+  }
+  .MuiChartsLegend-label {
+    color: white;
+  }
+
+  .pagination {
+    .page-link {
+      color: white;
+    }
+  }
+}
+
+// ==========================
+// 📱 Responsive
+// ==========================
+@media (max-width: 768px) {
+  .admin-container {
+    flex-direction: column;
+
+    .admin-sidebar {
+      width: 100% !important;
+      height: auto !important;
+    }
+
+    .admin-content {
+      .admin-header {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 10px 15px;
+      }
+    }
+  }
+}
+
+// ==========================
+// 🔽 Dropdown arrow custom
+// ==========================
+.dropdown-toggle {
+  &::after {
+    position: absolute;
+    left: 40px;
+    top: 20px;
   }
 }

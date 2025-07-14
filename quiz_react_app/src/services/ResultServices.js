@@ -1,5 +1,9 @@
 import axiosInstance from "../utils/axiosCustomize";
 
+// export const getResultStatsPerDay = async () => {
+//   const response = await axiosInstance.get("/api/admin/stat/result-per-day");
+//   return response;
+// };
 export const getAllResults = async (pageNumber = 1, filter) => {
   const response = await axiosInstance.get("/api/admin/results/fetch", {
     params: {
@@ -38,4 +42,8 @@ export const getResultById = async (id) => {
 export const deleteResultById = async (id) => {
   const response = await axiosInstance.delete(`/api/admin/results/delete/${id}`);
   return response;
+};
+
+export const getAvarageDuration = async () => {
+  return await axiosInstance.get("/api/admin/results/fetch-avarage-time");
 };

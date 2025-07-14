@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 
 import com.quiz.learning.Demo.domain.Question;
 import com.quiz.learning.Demo.domain.Quiz;
-import com.quiz.learning.Demo.domain.Result;
 import com.quiz.learning.Demo.domain.filterCriteria.admin.QuizFilter;
 import com.quiz.learning.Demo.domain.metadata.Metadata;
 import com.quiz.learning.Demo.domain.request.admin.quiz.CreateQuizRequest;
@@ -26,6 +25,7 @@ import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO.FetchQuestionD
 import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO.FetchQuizPaginationDTO;
 import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO.FetchResultDTO;
 import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO.FetchTableQuizDTO;
+import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO.QuizPopularityDTO;
 import com.quiz.learning.Demo.repository.QuizRepository;
 import com.quiz.learning.Demo.service.specification.QuizSpecs;
 import com.quiz.learning.Demo.util.error.DuplicatedObjectException;
@@ -45,6 +45,10 @@ public class AdminQuizService {
         this.adminQuestionService = adminQuestionService;
         this.adminResultService = adminResultService;
         this.quizSpecs = quizSpecs;
+    }
+
+    public List<QuizPopularityDTO> handleGetTopQuizzes(Pageable pageable) {
+        return quizRepository.findTopQuizzes(PageRequest.of(0, 5));
     }
 
     public Quiz handleGetQuiz(Long id) {

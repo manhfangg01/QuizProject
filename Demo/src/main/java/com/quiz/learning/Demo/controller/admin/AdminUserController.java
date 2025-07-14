@@ -1,5 +1,8 @@
 package com.quiz.learning.Demo.controller.admin;
 
+import java.util.List;
+
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,8 +15,11 @@ import com.quiz.learning.Demo.domain.filterCriteria.admin.UserFilter;
 import com.quiz.learning.Demo.domain.request.admin.user.CreateUserRequest;
 import com.quiz.learning.Demo.domain.request.admin.user.UpdateUserRequest;
 import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO;
+import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO.AdminStats;
 import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO.FetchUserPaginationDTO;
+import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO.UserTopScoreDTO;
 import com.quiz.learning.Demo.domain.restResponse.ApiMessage;
+import com.quiz.learning.Demo.service.admin.AdminResultService;
 import com.quiz.learning.Demo.service.admin.AdminUserService;
 import com.quiz.learning.Demo.service.admin.relationServices.AdminResultRelationUser;
 
@@ -29,12 +35,31 @@ import org.springframework.web.bind.annotation.PostMapping;
 @RequestMapping("/api")
 public class AdminUserController {
     private final AdminUserService userService;
+    private final AdminResultService resultService;
     private final AdminResultRelationUser adminResultRelationUser;
 
-    public AdminUserController(AdminUserService userService, AdminResultRelationUser adminResultRelationUser) {
+    public AdminUserController(AdminUserService userService, AdminResultRelationUser adminResultRelationUser,
+            AdminResultService resultService) {
         this.userService = userService;
         this.adminResultRelationUser = adminResultRelationUser;
+        this.resultService = resultService;
     }
+
+    @GetMapping("/admin/stat/top-users")
+    public ResponseEntity<List<UserTopScoreDTO>> getTop5Users() {
+        return ResponseEntity.ok(this.userService.handleGetTopUsers(PageRequest.of(0, 5)));
+
+    }
+
+    @GetMapping("/dashboard")
+    public ResponseEntity<AdminStats> getAdminStats() {
+        return ResponseEntity.ok(this.userService.handleFetchAdminStats());
+    }
+
+    // @GetMapping("/admin/stat/result-per-day")
+    // public ResponseEntity<List<ResultStatDTO>> getResultCountPerDay() {
+    // return ResponseEntity.ok(this.resultService.countResultsGroupedByDate());
+    // }
 
     @GetMapping("/admin/users/fetch")
     @ApiMessage("fetch all users")

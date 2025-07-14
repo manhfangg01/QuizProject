@@ -1,4 +1,8 @@
 import axiosInstance from "../utils/axiosCustomize";
+
+export const getTopQuizzes = async () => {
+  return await axiosInstance.get("/api/admin/quizzes/top-quizzes");
+};
 export const getAllQuizzes = async (pageNumber = 1, filter) => {
   const response = await axiosInstance.get("/api/admin/quizzes/fetch", {
     params: {
