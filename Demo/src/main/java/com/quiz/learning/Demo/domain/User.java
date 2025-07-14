@@ -38,6 +38,8 @@ public class User {
     @Column(columnDefinition = "MEDIUMTEXT")
     private String refreshToken;
     private String UserAvatarUrls;
+    @Column(columnDefinition = "MEDIUMTEXT")
+    private String about;
 
     @OneToMany(mappedBy = "user")
     private List<Result> results;

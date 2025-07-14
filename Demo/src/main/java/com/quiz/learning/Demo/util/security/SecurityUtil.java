@@ -2,6 +2,7 @@ package com.quiz.learning.Demo.util.security;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.Optional;
 
 import javax.crypto.SecretKey;
@@ -80,6 +81,7 @@ public class SecurityUtil {
                 .claim("email", loginUser.getEmail())
                 .claim("fullName", loginUser.getFullName())
                 .claim("role", loginUser.getRole().getName())
+                .claim("authorities", List.of("ROLE_" + loginUser.getRole().getName())) // ✅ dòng này là quan trọng nhất
                 .build();
 
         JwsHeader jwsHeader = JwsHeader.with(JWT_ALGORITHM).build();
@@ -100,6 +102,7 @@ public class SecurityUtil {
                 .claim("email", loginUser.getEmail())
                 .claim("fullName", loginUser.getFullName())
                 .claim("role", loginUser.getRole().getName())
+                .claim("authorities", List.of("ROLE_" + loginUser.getRole().getName()))
                 .build();
 
         JwsHeader jwsHeader = JwsHeader.with(JWT_ALGORITHM).build();

@@ -71,6 +71,7 @@ public class AuthService {
         loginResponse.setEmail(realUser.getEmail());
         loginResponse.setUserAvatarUrls(realUser.getUserAvatarUrls() != null ? realUser.getUserAvatarUrls() : "");
         loginResponse.setAccessToken(this.handleGenerateAccessToken(loginRequest));
+        loginResponse.setAbout(realUser.getAbout());
         return loginResponse;
     }
 

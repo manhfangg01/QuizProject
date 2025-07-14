@@ -66,3 +66,32 @@ export const deleteUserById = async (userId) => {
 export const getUserById = async (userId) => {
   return await axiosInstance.get(`/api/admin/users/fetch/${userId}`);
 };
+
+// client
+export const getProfile = async (id) => {
+  return await axiosInstance.get(`/api/client/users/profile/${id}`);
+};
+
+export const putUpdateProfile = async (id, fullName, about, avatar) => {
+  const formData = new FormData();
+
+  const user = {
+    id,
+    fullName,
+    about,
+    avatar,
+  };
+
+  const userBlob = new Blob([JSON.stringify(user)], {
+    type: "application/json",
+  });
+
+  formData.append("updateUserRequest", userBlob);
+
+  if (avatar) {
+    formData.append("avatar", avatar);
+  }
+  const response = await axiosInstance.post("/api/client/users/update-profile", formData);
+
+  return response;
+};

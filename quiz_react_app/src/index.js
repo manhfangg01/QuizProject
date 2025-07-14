@@ -18,6 +18,9 @@ import Login from "./components/auth/Login";
 import Signup from "./components/auth/Signup";
 import CheckingEmail from "./components/auth/forgot-password/CheckingEmail";
 import ResetPassword from "./components/auth/forgot-password/ResetPassword";
+import Profile from "./components/profile/Profile";
+import Setting from "./components/profile/Setting";
+import Unauthorized from "./components/auth/unauthorized/Unauthorized";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -31,6 +34,9 @@ root.render(
           <Route path="signup" element={<Signup />} />
           <Route path="forgot-password" element={<CheckingEmail />} />
           <Route path="reset-password" element={<ResetPassword />} />
+          <Route path="my-account" element={<Profile />} />
+          <Route path="my-account/setting" element={<Setting />} />
+          <Route path="unauthorized" element={<Unauthorized />} />
         </Route>
 
         <Route path="/admins" element={<Admin />}>
@@ -40,6 +46,7 @@ root.render(
           <Route path="manage-quizzes" element={<ManageQuizzes />} />
           <Route path="manage-questions" element={<ManageQuestions />} />
           <Route path="manage-results" element={<ManageResults />} />
+          <Route path="manage-profile" element={<Profile />} />
         </Route>
       </Routes>
     </BrowserRouter>

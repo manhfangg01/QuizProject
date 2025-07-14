@@ -6,6 +6,7 @@ import { NavLink, Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import defaultAvatar from "../../assets/default.jpg"; // ảnh mặc định nếu user chưa có avatar
 import { callLogout } from "../../services/AuthServices";
+import "./Header.scss";
 
 const Header = () => {
   const navigate = useNavigate();
@@ -20,6 +21,7 @@ const Header = () => {
       if (token && userData) {
         try {
           setUserInfo(JSON.parse(userData));
+
           setIsAuthenticated(true);
         } catch (e) {
           console.error("User parse error:", e);
@@ -54,7 +56,7 @@ const Header = () => {
             <NavLink to="/" className="nav-link">
               Home
             </NavLink>
-            <NavLink to="/admins" className="nav-link">
+            <NavLink to="/admins" className="nav-link" style={{ display: userInfo?.role === "ADMIN" ? "block" : "none" }}>
               Admin
             </NavLink>
             <NavLink to="/users" className="nav-link">
@@ -78,7 +80,7 @@ const Header = () => {
                 id="user-nav-dropdown"
                 align="end"
               >
-                <NavDropdown.Item onClick={() => navigate("/profile")}>Trang cá nhân</NavDropdown.Item>
+                <NavDropdown.Item onClick={() => navigate("/my-account")}>Trang cá nhân</NavDropdown.Item>
                 <NavDropdown.Divider />
                 <NavDropdown.Item onClick={handleLogout}>Đăng xuất</NavDropdown.Item>
               </NavDropdown>

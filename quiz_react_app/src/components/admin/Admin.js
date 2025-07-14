@@ -1,5 +1,5 @@
 import SideBar from "./SideBar";
-import { FaBars, FaBell, FaEnvelope } from "react-icons/fa";
+import { FaBars } from "react-icons/fa";
 import "./Admin.scss";
 import { useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
@@ -13,8 +13,6 @@ import DarkModeToggle from "./DarkModeToggle";
 
 const Admin = (props) => {
   const [collapsed, setCollapsed] = useState(false);
-  const [notifications, setNotifications] = useState(3); // Số thông báo giả
-  const [messages, setMessages] = useState(2); // Số tin nhắn giả
   const navigate = useNavigate();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userInfo, setUserInfo] = useState(null);
@@ -26,18 +24,26 @@ const Admin = (props) => {
 
       if (token && userData) {
         try {
-          setUserInfo(JSON.parse(userData));
+          const parsedUser = JSON.parse(userData);
+          setUserInfo(parsedUser);
           setIsAuthenticated(true);
+
+          // 👉 Kiểm tra role tại đây:
+          if (parsedUser.role !== "ADMIN") {
+            navigate("/unauthorized");
+          }
         } catch (e) {
           console.error("User parse error:", e);
         }
+      } else {
+        navigate("/unauthorized");
       }
     };
+
     checkAuth();
     window.addEventListener("loginSuccess", checkAuth);
     return () => window.removeEventListener("loginSuccess", checkAuth);
-  }, []);
-
+  }, [navigate]);
   const handleLogout = () => {
     callLogout();
     localStorage.removeItem("access_token");
@@ -89,8 +95,8 @@ const Admin = (props) => {
                     {userInfo?.fullName || "Admin"}
                   </span>
                 </NavDropdown.Item>
-                <NavDropdown.Item>Hồ sơ</NavDropdown.Item>
-                <NavDropdown.Item onClick={() => navigate("/admin/settings")}>Cài đặt</NavDropdown.Item>
+                <NavDropdown.Item onClick={() => navigate("/admins/manage-profile")}>Hồ sơ</NavDropdown.Item>
+                {/* <NavDropdown.Item >Cài đặt</NavDropdown.Item> */}
                 <NavDropdown.Divider />
                 <NavDropdown.Item onClick={handleLogout}>Đăng xuất</NavDropdown.Item>
               </NavDropdown>

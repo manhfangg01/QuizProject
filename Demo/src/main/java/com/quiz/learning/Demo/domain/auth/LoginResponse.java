@@ -19,6 +19,7 @@ public class LoginResponse {
     private String email;
     @JsonIgnore
     private UserLogin user;
+    private String about;
 
     @Getter
     @Setter

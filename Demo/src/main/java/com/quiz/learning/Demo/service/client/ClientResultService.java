@@ -9,7 +9,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import com.quiz.learning.Demo.domain.Answer;
 import com.quiz.learning.Demo.domain.Option;
 import com.quiz.learning.Demo.domain.Question;
 import com.quiz.learning.Demo.domain.Quiz;

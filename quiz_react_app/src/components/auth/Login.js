@@ -87,7 +87,11 @@ const Login = () => {
         window.dispatchEvent(new Event("loginSuccess")); // Đánh dấu sự kiện login thành công để ẩn nút Login và Signup
 
         showToast("success", "Đăng nhập thành công !");
-        navigate("/");
+        if (res.data.role === "ADMIN") {
+          navigate("/admins");
+        } else {
+          navigate("/");
+        }
       } else {
         // fallback nếu backend không trả statusCode rõ ràng
         showToast("error", res.error || "Có lỗi xảy ra.");
