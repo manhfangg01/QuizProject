@@ -1,5 +1,6 @@
 package com.quiz.learning.Demo.domain.response.client.profile;
 
+import java.time.Instant;
 import java.util.List;
 
 import com.quiz.learning.Demo.domain.response.client.result.ClientResultDTO;
@@ -15,5 +16,6 @@ public class ProfileDTO {
     private String username;
     private String about;
     private List<ClientResultDTO> results;
+    private Instant createdAt;
 
 }

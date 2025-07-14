@@ -21,6 +21,8 @@ import ResetPassword from "./components/auth/forgot-password/ResetPassword";
 import Profile from "./components/profile/Profile";
 import Setting from "./components/profile/Setting";
 import Unauthorized from "./components/auth/unauthorized/Unauthorized";
+import AdminProfile from "./components/admin/profile/AdminProfile";
+import AdminSetting from "./components/admin/profile/AdminSetting";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -46,7 +48,8 @@ root.render(
           <Route path="manage-quizzes" element={<ManageQuizzes />} />
           <Route path="manage-questions" element={<ManageQuestions />} />
           <Route path="manage-results" element={<ManageResults />} />
-          <Route path="manage-profile" element={<Profile />} />
+          <Route path="manage-profile" element={<AdminProfile />} />
+          <Route path="manage-profile/setting" element={<AdminSetting />} />
         </Route>
       </Routes>
     </BrowserRouter>

@@ -69,6 +69,9 @@ public class ClientUserService {
         dto.setUsername(realUser.getFullName());
         dto.setAbout(realUser.getAbout());
         dto.setEmail(realUser.getEmail());
+        if (realUser.getRole().getName().equals("ADMIN")) {
+            dto.setCreatedAt(realUser.getCreatedAt());
+        }
         return dto;
     }
 
