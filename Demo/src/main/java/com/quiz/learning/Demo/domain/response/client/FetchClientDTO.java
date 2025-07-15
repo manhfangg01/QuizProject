@@ -18,6 +18,13 @@ public class FetchClientDTO {
         private String title;
         @Enumerated(EnumType.STRING)
         private DifficultyLevel difficulty;
+        private Long timeLimit;
+        private Long totalParticipants;
+        private int totalQuestions;
+        private String subject;
+        // Do trong hệ thống thì mỗi người dùng chỉ có một kết quả đối với 1 bài quiz
+        private Long resultId;
+
     }
 
     @Getter

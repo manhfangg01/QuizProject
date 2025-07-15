@@ -44,3 +44,13 @@ export const putUpdateQuiz = async (quizId, title, subjectName, timeLimit, diffi
 export const deleteQuizById = async (quizId) => {
   return await axiosInstance.delete(`/api/admin/quizzes/delete/${quizId}`);
 };
+
+// Client
+export const getLibraryQuizzes = async (pageNumber = 1, filter) => {
+  return await axiosInstance.get("/api/client/quizzes/fetch", {
+    params: {
+      page: pageNumber,
+      ...filter,
+    },
+  });
+};

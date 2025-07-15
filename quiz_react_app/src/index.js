@@ -6,7 +6,6 @@ import reportWebVitals from "./reportWebVitals";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Admin from "./components/admin/Admin";
-import User from "./components/user/User";
 import Home from "./components/home/Home";
 import ManageUsers from "../src/components/admin/content/user/ManageUsers";
 import ManageOptions from "../src/components/admin/content/option/ManageOptions";
@@ -25,6 +24,7 @@ import AdminProfile from "./components/admin/profile/AdminProfile";
 import AdminSetting from "./components/admin/profile/AdminSetting";
 import ResultDetail from "./components/details/ResultDetail.js";
 import StatisticsPage from "./components/details/StatisticsPage.js";
+import LibraryQuizzes from "./components/quizzes/LibraryQuizzes.js";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -32,7 +32,6 @@ root.render(
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<App />}>
-          <Route path="users" element={<User />} />
           <Route index element={<Home />} />
           <Route path="login" element={<Login />} />
           <Route path="signup" element={<Signup />} />
@@ -43,6 +42,8 @@ root.render(
           <Route path="unauthorized" element={<Unauthorized />} />
           <Route path="/results/:id" element={<ResultDetail />} />
           <Route path="/results/statistics" element={<StatisticsPage />} />
+          <Route path="/quizzes" element={<LibraryQuizzes />} />
+          <Route path="/do-quiz/:id" element={<LibraryQuizzes />} />
         </Route>
 
         <Route path="/admins" element={<Admin />}>

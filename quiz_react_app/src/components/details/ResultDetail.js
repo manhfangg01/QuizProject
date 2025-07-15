@@ -15,7 +15,6 @@ const ResultDetail = () => {
       try {
         const res = await getDetailResult(id);
         if (res.statusCode === 200) {
-          console.log("Check res", res);
           setResult(res.data);
         } else {
           toast.error("Không thể lấy dữ liệu chi tiết kết quả!");

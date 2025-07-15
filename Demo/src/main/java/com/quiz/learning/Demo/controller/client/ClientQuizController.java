@@ -36,7 +36,7 @@ public class ClientQuizController {
     @ApiMessage("Truy cập các quizzes công khai")
     public ResponseEntity<QuizClientPaginationDTO> fetchClientQuizzes(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "8") int size,
             @RequestParam(defaultValue = "id") String sortBy,
             @RequestParam(defaultValue = "asc") String order,
             @ModelAttribute QuizClientFilter filterCriteria) {

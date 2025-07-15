@@ -44,6 +44,7 @@ import com.quiz.learning.Demo.repository.ResultRepository;
 import com.quiz.learning.Demo.repository.UserRepository;
 import com.quiz.learning.Demo.service.specification.QuizSpecs;
 import com.quiz.learning.Demo.util.error.ObjectNotFound;
+import com.quiz.learning.Demo.util.security.SecurityUtil;
 
 @Service
 public class ClientQuizService {
@@ -80,7 +81,16 @@ public class ClientQuizService {
         dto.setQuizId((quiz.getId()));
         dto.setDifficulty(quiz.getDifficulty());
         dto.setTitle(quiz.getTitle());
-
+        dto.setTimeLimit(quiz.getTimeLimit());
+        dto.setTotalParticipants(quiz.getTotalParticipants());
+        dto.setTotalQuestions(quiz.getQuestions() == null ? 0 : quiz.getQuestions().size());
+        dto.setSubject(quiz.getSubjectName());
+        User user = this.userRepository.findByEmail(
+                SecurityUtil.getCurrentUserLogin().orElseThrow(() -> new ObjectNotFound("Bạn chưa đăng nhập "))).get();
+        Optional<Result> checkResult = this.resultRepository.findByUserIdAndQuizId(user.getId(), quiz.getId());
+        if (checkResult.isPresent()) {
+            dto.setResultId(checkResult.get().getId());
+        }
         return dto;
     }
 
@@ -98,9 +108,12 @@ public class ClientQuizService {
         Pageable pageable = this.handlePagination(page, size, sortBy, order);
 
         Specification<Quiz> spec = (root, query, cb) -> cb.conjunction();
-        Specification<Quiz> spec1 = this.quizSpecs.titleContains(filterCriteria.getContext());
-        Specification<Quiz> spec2 = this.quizSpecs.hasDifficulty(filterCriteria.getDifficultyLevel());
-        spec = spec.and(spec1).and(spec2);
+        Specification<Quiz> spec1 = this.quizSpecs.titleContains(filterCriteria.getTitle());
+        Specification<Quiz> spec2 = this.quizSpecs.hasDifficulty(filterCriteria.getDifficulty());
+        Specification<Quiz> spec3 = this.quizSpecs.timeLimitLessThanOrEqual(filterCriteria.getTimeLimit());
+        Specification<Quiz> spec4 = this.quizSpecs.hasSubject(filterCriteria.getSubject());
+
+        spec = spec.and(spec1).and(spec2).and(spec3).and(spec4);
 
         Page<Quiz> pageQuizzes = this.quizRepository.findAll(spec, pageable);
         List<Quiz> quizzes = pageQuizzes.getContent();

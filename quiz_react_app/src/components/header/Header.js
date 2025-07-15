@@ -59,8 +59,8 @@ const Header = () => {
             <NavLink to="/admins" className="nav-link" style={{ display: userInfo?.role === "ADMIN" ? "block" : "none" }}>
               Admin
             </NavLink>
-            <NavLink to="/users" className="nav-link">
-              User
+            <NavLink to="/quizzes" className="nav-link">
+              Đề thi online
             </NavLink>
           </Nav>
 

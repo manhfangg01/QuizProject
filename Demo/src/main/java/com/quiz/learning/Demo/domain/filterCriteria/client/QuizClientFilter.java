@@ -10,7 +10,9 @@ import lombok.Setter;
 @Getter
 @Setter
 public class QuizClientFilter {
-    private String context;
+    private String title;
     @Enumerated(EnumType.STRING)
-    private DifficultyLevel difficultyLevel;
+    private DifficultyLevel difficulty;
+    private String subject;
+    private Long timeLimit;
 }
