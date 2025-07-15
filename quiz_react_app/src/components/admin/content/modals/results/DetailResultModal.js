@@ -14,7 +14,6 @@ const DetailResultModal = ({ show, setShow, resultData }) => {
   const handleFetchFullDataForResult = async (resultData) => {
     try {
       const response = await getResultById(resultData.id);
-      console.log("checkRes", response);
       if (response.statusCode === 200) {
         setFullResultData(response.data);
       } else {

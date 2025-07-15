@@ -1,8 +1,8 @@
 import SideBar from "./SideBar";
-import { FaBars } from "react-icons/fa";
+import { FaBars, FaHome } from "react-icons/fa";
 import "./Admin.scss";
 import { useEffect, useState } from "react";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Link, Outlet, useNavigate } from "react-router-dom";
 import { Bounce, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { NavDropdown, Badge } from "react-bootstrap";
@@ -62,6 +62,11 @@ const Admin = (props) => {
         <div className="admin-header">
           <div className="menu-toggle">
             <FaBars onClick={() => setCollapsed(!collapsed)} />
+          </div>
+          <div className="home-click">
+            <a href="/" className="btn" style={{ fontSize: "30px" }}>
+              <FaHome />
+            </a>
           </div>
 
           <div className="d-flex align-items-center gap-4">

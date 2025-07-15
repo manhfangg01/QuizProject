@@ -2,7 +2,6 @@ package com.quiz.learning.Demo.domain.auth;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.quiz.learning.Demo.domain.Role;
 
 import lombok.Getter;
 import lombok.Setter;

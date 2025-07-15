@@ -2,9 +2,6 @@ package com.quiz.learning.Demo.domain.auth;
 
 import java.time.Instant;
 
-import com.quiz.learning.Demo.domain.Role;
-
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 

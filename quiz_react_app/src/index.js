@@ -23,6 +23,8 @@ import Setting from "./components/profile/Setting";
 import Unauthorized from "./components/auth/unauthorized/Unauthorized";
 import AdminProfile from "./components/admin/profile/AdminProfile";
 import AdminSetting from "./components/admin/profile/AdminSetting";
+import ResultDetail from "./components/details/ResultDetail.js";
+import StatisticsPage from "./components/details/StatisticsPage.js";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -39,6 +41,8 @@ root.render(
           <Route path="my-account" element={<Profile />} />
           <Route path="my-account/setting" element={<Setting />} />
           <Route path="unauthorized" element={<Unauthorized />} />
+          <Route path="/results/:id" element={<ResultDetail />} />
+          <Route path="/results/statistics" element={<StatisticsPage />} />
         </Route>
 
         <Route path="/admins" element={<Admin />}>

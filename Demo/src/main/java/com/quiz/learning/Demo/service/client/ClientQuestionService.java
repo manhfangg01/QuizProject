@@ -1,6 +1,5 @@
 package com.quiz.learning.Demo.service.client;
 
-import java.util.Collection;
 import java.util.Collections;
 
 import org.springframework.stereotype.Service;

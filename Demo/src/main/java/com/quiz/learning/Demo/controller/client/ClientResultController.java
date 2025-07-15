@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.quiz.learning.Demo.domain.response.client.ClientPaginationResultHistory;
 import com.quiz.learning.Demo.domain.response.client.ResponseClientQuizResultDTO;
+import com.quiz.learning.Demo.domain.response.client.result.ClientDetailResultDTO;
 import com.quiz.learning.Demo.service.client.ClientResultService;
 
 import org.springframework.http.ResponseEntity;
@@ -29,13 +30,24 @@ public class ClientResultController {
         return ResponseEntity.ok(dto);
     }
 
-    @GetMapping("/client/results/history")
-    public ResponseEntity<ClientPaginationResultHistory> getMethodName(
+    @GetMapping("/client/results/history/{userId}")
+    public ResponseEntity<ClientPaginationResultHistory> getHistory(
+            @PathVariable("userId") Long userId,
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "3") int size,
             @RequestParam(defaultValue = "id") String sortBy,
             @RequestParam(defaultValue = "ASC") String order) {
-        return ResponseEntity.ok(this.clientResultService.handleFetchHistory(page, size, sortBy, order));
+        return ResponseEntity.ok(this.clientResultService.handleFetchHistory(page, size, sortBy, order, userId));
+    }
+
+    @GetMapping("/client/results/detail/{resultId}")
+    public ResponseEntity<ClientDetailResultDTO> getDetail(@PathVariable("resultId") Long resultId) {
+        return ResponseEntity.ok(this.clientResultService.handleFetchDetailResult(resultId));
+    }
+
+    @GetMapping("/client/results/statistics")
+    public String getStatistics(@RequestParam String param) {
+        return new String();
     }
 
 }

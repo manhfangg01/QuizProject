@@ -1,5 +1,6 @@
 package com.quiz.learning.Demo.service.admin;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -13,6 +14,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.stereotype.Service;
 
+import com.quiz.learning.Demo.domain.Answer;
+import com.quiz.learning.Demo.domain.Question;
 import com.quiz.learning.Demo.domain.Quiz;
 import com.quiz.learning.Demo.domain.Result;
 import com.quiz.learning.Demo.domain.User;
@@ -21,6 +24,9 @@ import com.quiz.learning.Demo.domain.metadata.Metadata;
 import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO;
 import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO.FetchResultDTO;
 import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO.FetchResultPaginationDTO;
+import com.quiz.learning.Demo.domain.response.client.result.ClientDetailResultDTO;
+import com.quiz.learning.Demo.domain.response.client.result.ClientDetailResultDTO.DetailAnswer;
+import com.quiz.learning.Demo.domain.response.client.result.ClientDetailResultDTO.DetailOption;
 import com.quiz.learning.Demo.repository.AnswerRepository;
 import com.quiz.learning.Demo.repository.QuizRepository;
 import com.quiz.learning.Demo.repository.ResultRepository;

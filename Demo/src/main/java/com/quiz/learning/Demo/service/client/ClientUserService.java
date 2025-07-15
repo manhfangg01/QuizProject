@@ -5,18 +5,12 @@ import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.quiz.learning.Demo.domain.User;
 import com.quiz.learning.Demo.domain.request.client.user.ClientRequestUserUpdate;
 import com.quiz.learning.Demo.domain.response.client.profile.ProfileDTO;
-import com.quiz.learning.Demo.domain.response.client.result.ClientResultDTO;
 import com.quiz.learning.Demo.domain.response.client.user.ClientResponseUserUpdate;
 import com.quiz.learning.Demo.repository.ResultRepository;
 import com.quiz.learning.Demo.repository.UserRepository;
@@ -36,26 +30,6 @@ public class ClientUserService {
         this.userRepository = userRepository;
         this.azureBlobService = azureBlobService;
         this.resultRepository = resultRepository;
-    }
-
-    public Pageable handlePagination(int page, int size, String sortBy, String order) {
-        // Validate input parameters
-        page = Math.max(page, 1); // Đảm bảo page >= 1
-        size = Math.max(size, 1); // Đảm bảo size >= 1
-
-        Sort sort = order.equalsIgnoreCase("ASC") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
-        return PageRequest.of(page - 1, size, sort);
-    }
-
-    public List<ClientResultDTO> handleFetchResults(int page, int size, String sortBy, String order) {
-        return this.resultRepository.findAll(this.handlePagination(page, size, sortBy, order)).stream().map(res -> {
-            ClientResultDTO dto = new ClientResultDTO();
-            dto.setDuration(res.getDuration());
-            dto.setScore(res.getScore());
-            dto.setSubmittedAt(res.getSubmittedAt());
-            dto.setTitle(res.getQuiz() == null ? "" : res.getQuiz().getTitle());
-            return dto;
-        }).collect(Collectors.toList());
     }
 
     public ProfileDTO handleFetchProfile(Long id) {

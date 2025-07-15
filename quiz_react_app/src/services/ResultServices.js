@@ -47,3 +47,17 @@ export const deleteResultById = async (id) => {
 export const getAvarageDuration = async () => {
   return await axiosInstance.get("/api/admin/results/fetch-avarage-time");
 };
+
+// Client
+export const getHistory = async (pageNumber = 1, userId) => {
+  const response = await axiosInstance.get(`/api/client/results/history/${userId}`, {
+    params: {
+      page: pageNumber,
+    },
+  });
+  return response;
+};
+
+export const getDetailResult = async (resultId) => {
+  return await axiosInstance.get(`/api/client/results/detail/${resultId}`);
+};
