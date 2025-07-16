@@ -13,6 +13,7 @@ import lombok.Setter;
 public class ResponseSubmissionDTO {
     private Long quizId;
     private Long userId;
+    private Long resultId;
     private int score;
     private int totalQuestions;
     private int totalCorrectedAnswer;

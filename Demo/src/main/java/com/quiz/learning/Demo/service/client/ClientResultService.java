@@ -158,9 +158,9 @@ public class ClientResultService {
                 dto.setQuizTitle(quiz.getTitle());
                 dto.setTotalQuestions(result.getTotalQuestions());
                 dto.setTotalCorrectedAnswers(result.getTotalCorrectedAnswer());
-                dto.setTotalWrongAnswers(result.getTotalQuestions() - result.getTotalCorrectedAnswer());
+                dto.setTotalWrongAnswers(result.getTotalWrongAnswer());
                 dto.setTotalSkippedAnswers(
-                                (int) answers.stream().filter(ans -> ans.getSelectedOption() == null).count());
+                                result.getTotalSkippedAnswer());
                 dto.setScore(result.getScore());
                 dto.setDuration(result.getDuration());
                 dto.setSubmittedAt(result.getSubmittedAt());

@@ -26,7 +26,13 @@ public class Result {
     private Long id;
     private int totalQuestions;
     private int totalCorrectedAnswer;
+    private int totalSkippedAnswer;
+    private int totalWrongAnswer;
     private int score;
+    private Boolean isLastest;
+    // Đánh dấu kết quả làm gần đây nhất để hiển thị
+    // isLastest=true => hiển thị cho người dùng
+    // isLastest=false => không hiển thị mà chỉ dành cho mục đích thống kê
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
     private Instant submittedAt;
     private Long duration;

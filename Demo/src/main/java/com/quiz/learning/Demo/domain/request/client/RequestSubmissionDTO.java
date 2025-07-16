@@ -11,7 +11,6 @@ public class RequestSubmissionDTO {
     private Long quizId;
     private Long userId;
     private Long duration; // tính bằng giây
-
     private List<SubmittedAnswer> answers;
 
 }

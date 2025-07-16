@@ -25,6 +25,7 @@ import AdminSetting from "./components/admin/profile/AdminSetting";
 import ResultDetail from "./components/details/ResultDetail.js";
 import StatisticsPage from "./components/details/StatisticsPage.js";
 import LibraryQuizzes from "./components/quizzes/LibraryQuizzes.js";
+import DoQuiz from "./components/play/DoQuiz.js";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -43,7 +44,7 @@ root.render(
           <Route path="/results/:id" element={<ResultDetail />} />
           <Route path="/results/statistics" element={<StatisticsPage />} />
           <Route path="/quizzes" element={<LibraryQuizzes />} />
-          <Route path="/do-quiz/:id" element={<LibraryQuizzes />} />
+          <Route path="/do-quiz/:id" element={<DoQuiz />} />
         </Route>
 
         <Route path="/admins" element={<Admin />}>

@@ -35,6 +35,7 @@ const SelectOptionModal = ({ show, setShow, availableOptions = [], setSelectedOp
     setSelectedOptionIds(selectedIds);
     setSelectedIds([]);
     setShow(false);
+    fetchOptions(1, {});
   };
   const onPageChange = (pageNumber, filter) => {
     if (pageNumber === metadata.currentPage) return;

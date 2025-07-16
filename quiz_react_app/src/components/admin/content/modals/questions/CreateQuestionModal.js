@@ -61,6 +61,7 @@ const CreateQuestionModal = ({ show, setShow, onCreateQuestion, setShowOptionSel
     setShow(false);
     setShowOptionSelection(false);
     setSelectedOptionIds([]);
+    // window.location.reload();
   };
 
   const handleShowOptionModal = () => {

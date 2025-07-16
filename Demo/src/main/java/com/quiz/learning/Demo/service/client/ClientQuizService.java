@@ -78,19 +78,22 @@ public class ClientQuizService {
 
     public QuizClientDTO convertToDto(Quiz quiz) {
         QuizClientDTO dto = new QuizClientDTO();
-        dto.setQuizId((quiz.getId()));
+        dto.setQuizId(quiz.getId());
         dto.setDifficulty(quiz.getDifficulty());
         dto.setTitle(quiz.getTitle());
         dto.setTimeLimit(quiz.getTimeLimit());
         dto.setTotalParticipants(quiz.getTotalParticipants());
         dto.setTotalQuestions(quiz.getQuestions() == null ? 0 : quiz.getQuestions().size());
         dto.setSubject(quiz.getSubjectName());
-        User user = this.userRepository.findByEmail(
-                SecurityUtil.getCurrentUserLogin().orElseThrow(() -> new ObjectNotFound("Bạn chưa đăng nhập "))).get();
-        Optional<Result> checkResult = this.resultRepository.findByUserIdAndQuizId(user.getId(), quiz.getId());
-        if (checkResult.isPresent()) {
-            dto.setResultId(checkResult.get().getId());
+
+        if (quiz.getResults() != null && !quiz.getResults().isEmpty()) {
+            Optional<Result> latestResult = quiz.getResults().stream()
+                    .filter(res -> Boolean.TRUE.equals(res.getIsLastest()))
+                    .findFirst();
+
+            latestResult.ifPresent(result -> dto.setResultId(result.getId()));
         }
+
         return dto;
     }
 
@@ -174,6 +177,7 @@ public class ClientQuizService {
         result.setDuration(submissionDTO.getDuration());
         result.setTotalQuestions(totalQuestions);
         result.setTotalCorrectedAnswer(0); // tạm thời
+        result.setTotalWrongAnswer(0);
         result.setScore(0); // tạm thời
 
         result = resultRepository.save(result); // lưu để có ID
@@ -183,6 +187,8 @@ public class ClientQuizService {
         List<Answer> answerList = new ArrayList<>();
 
         if (submissionDTO.getAnswers() != null) {
+            result.setTotalSkippedAnswer(realQuiz.getQuestions() == null ? 0
+                    : realQuiz.getQuestions().size() - submissionDTO.getAnswers().size());
             for (SubmittedAnswer submittedAnswer : submissionDTO.getAnswers()) {
                 // Lấy selected Option
                 Optional<Option> selectedOptionOpt = optionRepository.findById(submittedAnswer.getSelectedOptionId());
@@ -227,7 +233,14 @@ public class ClientQuizService {
 
         // Cập nhật lại result với số câu đúng và điểm
         result.setTotalCorrectedAnswer(correctCount);
+        result.setTotalWrongAnswer(totalQuestions - result.getTotalCorrectedAnswer() - result.getTotalSkippedAnswer());
         result.setScore(correctCount);
+        if (realQuiz.getResults() != null) {
+            for (Result existedResult : realQuiz.getResults()) {
+                existedResult.setIsLastest(false);
+            }
+        }
+        result.setIsLastest(true);
         resultRepository.save(result);
 
         // Trả kết quả về cho client
@@ -239,6 +252,7 @@ public class ClientQuizService {
         res.setTotalCorrectedAnswer(correctCount);
         res.setScore(correctCount * 10);
         res.setDetails(detailList);
+        res.setResultId(result.getId());
 
         // Xóa đi những progress tạm thời liên quan
         this.quizProgressRepository.deleteAllByUserIdAndQuizId(submissionDTO.getUserId(), submissionDTO.getQuizId());

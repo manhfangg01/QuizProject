@@ -56,7 +56,7 @@ const LibraryQuizzes = () => {
 
   const formatTime = (time) => {
     if (!time) return "0";
-    const minutes = Math.floor((time % 3600) / 60);
+    const minutes = Math.floor(time % 3600);
     return `${minutes}`;
   };
 
@@ -88,7 +88,7 @@ const LibraryQuizzes = () => {
       <hr />
       <div className="d-flex flex-wrap gap-3">
         {quizzes.map((quiz) => (
-          <div key={quiz.quizId} className="border rounded p-3" style={{ width: "250px" }}>
+          <div key={quiz.quizId} className="border rounded p-2" style={{ width: "250px" }}>
             <div className="fw-bold text-primary mb-1">{quiz.title}</div>
             <div className="text-muted mb-1">
               <div>

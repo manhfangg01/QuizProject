@@ -54,3 +54,16 @@ export const getLibraryQuizzes = async (pageNumber = 1, filter) => {
     },
   });
 };
+
+export const displayQuiz = async (id) => {
+  return await axiosInstance.get(`/api/client/quizzes/display/${id}`);
+};
+
+export const submitQuiz = async (quizId, userId, duration, answers) => {
+  return await axiosInstance.post("/api/client/quizzes/submit", {
+    quizId,
+    userId,
+    duration,
+    answers,
+  });
+};

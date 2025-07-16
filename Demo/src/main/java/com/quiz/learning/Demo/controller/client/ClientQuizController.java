@@ -51,7 +51,7 @@ public class ClientQuizController {
 
     @PostMapping("/client/quizzes/submit")
     @ApiMessage("Nộp bài")
-    public ResponseEntity<ResponseSubmissionDTO> postMethodName(@RequestBody RequestSubmissionDTO submit) {
+    public ResponseEntity<ResponseSubmissionDTO> submit(@RequestBody RequestSubmissionDTO submit) {
         return ResponseEntity.status(HttpStatus.OK).body(this.quizService.handleSubmitAnswer(submit));
     }
 
