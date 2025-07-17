@@ -26,6 +26,7 @@ public class Question {
     private Long id;
     @Column(columnDefinition = "MEDIUMTEXT")
     private String context;
+    private String explaination;
 
     @OneToMany(mappedBy = "question")
     private List<Option> options;

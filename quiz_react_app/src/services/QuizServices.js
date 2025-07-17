@@ -59,11 +59,12 @@ export const displayQuiz = async (id) => {
   return await axiosInstance.get(`/api/client/quizzes/display/${id}`);
 };
 
-export const submitQuiz = async (quizId, userId, duration, answers) => {
+export const submitQuiz = async (quizId, userId, duration, answers, optionLabelMap) => {
   return await axiosInstance.post("/api/client/quizzes/submit", {
     quizId,
     userId,
     duration,
     answers,
+    optionLabelMap,
   });
 };

@@ -13,6 +13,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.quiz.learning.Demo.domain.Answer;
 import com.quiz.learning.Demo.domain.Question;
@@ -211,6 +212,7 @@ public class AdminResultService {
         this.resultRepository.delete(result);
     }
 
+    @Transactional
     public void handleDeleteResultById(Long id) {
         Result result = resultRepository.findById(id)
                 .orElseThrow(() -> new ObjectNotFound("Result not found"));

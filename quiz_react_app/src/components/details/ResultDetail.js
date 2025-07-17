@@ -1,14 +1,23 @@
 import { useEffect, useState } from "react";
 import { Container, Row, Col, Card, Alert, Button, Tabs, Tab } from "react-bootstrap";
-import { useParams, useNavigate } from "react-router-dom"; // Nếu bạn cần lấy ID từ URL
+import { useParams, useNavigate, Link } from "react-router-dom"; // Nếu bạn cần lấy ID từ URL
 import { getDetailResult } from "../../services/ResultServices"; // Hàm gọi API detail result
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { IoIosInformationCircleOutline } from "react-icons/io";
+import DetailOptionModal from "./DetailOptionModal";
 
 const ResultDetail = () => {
   const { id } = useParams(); // lấy ID từ URL
   const navigate = useNavigate();
   const [result, setResult] = useState(null);
+  const [answerId, setAnswerId] = useState("");
+  const [show, setShow] = useState(false);
+
+  const handleShowDetailAnswer = (show, answerId) => {
+    setAnswerId(answerId);
+    setShow(show);
+  };
 
   useEffect(() => {
     const fetchResultDetail = async () => {
@@ -27,6 +36,11 @@ const ResultDetail = () => {
     if (id) fetchResultDetail();
   }, [id]);
 
+  const ScrollToAnswers = (id) => {
+    const element = document.getElementById("detailedAnswers");
+    element?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
   return (
     <Container>
       <Alert variant="warning">Bạn chưa tạo mục tiêu...</Alert>
@@ -34,11 +48,35 @@ const ResultDetail = () => {
 
       <h5>Kết quả thi: {result?.quizTitle || "Loading..."}</h5>
 
-      <div className="d-flex gap-2 mb-3">
-        <Button variant="primary">Xem đáp án</Button>
-        <Button variant="secondary" onClick={() => navigate(-1)}>
-          Quay về trang hồ sơ
-        </Button>
+      <div className="d-flex justify-content-between">
+        <div className="d-flex gap-2 mb-3">
+          <Button
+            onClick={() => {
+              ScrollToAnswers();
+            }}
+            variant="primary"
+          >
+            Xem đáp án
+          </Button>
+          <Link to={"/quizzes"} className="d-block h-100">
+            <Button variant="secondary" className="h-100">
+              Quay về trang đề thi
+            </Button>
+          </Link>
+        </div>
+        <div>
+          <div style={{ textAlign: "center" }}>
+            <Link to={`/do-quiz/${result?.quizId}`} className="d-block h-100">
+              <Button variant="primary" className="h-100">
+                Làm lại
+              </Button>
+            </Link>
+            <div className="d-flex align-items-center gap-1">
+              <IoIosInformationCircleOutline /> Kết quả của bạn sẽ được cập nhật lại sau khi làm
+            </div>
+          </div>
+          <div></div>
+        </div>
       </div>
 
       <Row>
@@ -101,29 +139,54 @@ const ResultDetail = () => {
         </Col>
       </Row>
 
-      <h5 className="mt-4">Phân tích chi tiết</h5>
-      <Tabs defaultActiveKey="recording1">
-        <Tab eventKey="recording1" title="Recording 1">
-          {/* Bảng chi tiết kết quả câu hỏi Recording 1 */}
-        </Tab>
-        <Tab eventKey="recording2" title="Recording 2">
-          {/* Bảng chi tiết kết quả câu hỏi Recording 2 */}
-        </Tab>
-        <Tab eventKey="summary" title="Tổng quát">
-          {/* Phân tích tổng thể */}
-        </Tab>
-      </Tabs>
-
       <div className="mt-3">
-        <Button variant="outline-primary">Xem chi tiết đáp án</Button>
-        <Button variant="outline-danger" className="ms-2">
-          Làm lại các câu sai
-        </Button>
-        <p className="text-danger mt-2" style={{ fontStyle: "italic" }}>
-          Chú ý: Khi làm lại các câu sai, điểm trung bình sẽ KHÔNG BỊ ẢNH HƯỞNG.
-        </p>
+        <h1 variant="outline-primary" id="detailedAnswers">
+          Chi tiết đáp án
+        </h1>
         <Alert variant="success">📘 Tips: Khi xem chi tiết đáp án, bạn có thể tạo và lưu highlight từ vựng, keywords...</Alert>
       </div>
+
+      <div className="d-flex flex-wrap">
+        {result?.answers.map((answer, index) => {
+          const correctLabel = !answer.isCorrect && answer.correctedOptionLabel ? answer.correctedOptionLabel : null;
+          const selectedOption = answer.options?.find((opt) => opt.optionId === answer.selectedOptionId);
+
+          return (
+            <div key={index} className="w-50 d-flex align-items-start mb-2">
+              {/* Vòng tròn số thứ tự */}
+              <div className="rounded-circle bg-primary text-white d-flex justify-content-center align-items-center me-2" style={{ width: "24px", height: "24px", fontSize: "14px" }}>
+                {index + 1}
+              </div>
+
+              {/* Nội dung */}
+              <div>
+                <div>
+                  <strong>{answer.selectedOptionLabel ?? "–"}:</strong> {selectedOption?.optionContext || <em>Chưa chọn</em>}{" "}
+                  {answer.selectedOptionLabel && (answer.isCorrect ? <span className="text-success">✔</span> : <span className="text-danger">✘</span>)}
+                </div>
+
+                {/* Nếu sai => hiển thị đáp án đúng */}
+                {correctLabel && (
+                  <div className="text-muted small">
+                    Đáp án đúng: <strong>{correctLabel}</strong>
+                  </div>
+                )}
+
+                {/* Link chi tiết */}
+                <Button
+                  onClick={() => {
+                    console.log("Check answrr", answer.answerId);
+                    handleShowDetailAnswer(true, answer?.answerId);
+                  }}
+                >
+                  [Chi tiết]
+                </Button>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+      <DetailOptionModal show={show} setShow={setShow} answerId={answerId} />
     </Container>
   );
 };

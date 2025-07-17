@@ -154,6 +154,7 @@ public class ClientResultService {
                 }
                 List<Answer> answers = result.getAnswers();
 
+                dto.setQuizId(quiz.getId());
                 dto.setResultId(resultId);
                 dto.setQuizTitle(quiz.getTitle());
                 dto.setTotalQuestions(result.getTotalQuestions());
@@ -184,6 +185,9 @@ public class ClientResultService {
                         DetailAnswer answerDTO = new DetailAnswer();
                         answerDTO.setQuestionId(q.getId());
                         answerDTO.setQuestionContext(q.getContext());
+                        answerDTO.setCorrectedOptionLabel(answer.getCorrectedOptionLabel());
+                        answerDTO.setSelectedOptionLabel(answer.getSelectedOptionLabel());
+                        answerDTO.setAnswerId(answer.getId());
 
                         // Convert options
                         List<DetailOption> optionDTOs = q.getOptions().stream()

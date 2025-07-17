@@ -20,6 +20,8 @@ public class Answer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Boolean isCorrect;
+    private String selectedOptionLabel;
+    private String correctedOptionLabel;
 
     @ManyToOne
     @JoinColumn(name = "result_id")

@@ -10,6 +10,7 @@ import lombok.Setter;
 @Setter
 public class ClientDetailResultDTO {
     private Long resultId;
+    private Long quizId;
     private String quizTitle;
     private int totalQuestions;
     private int totalCorrectedAnswers;
@@ -24,11 +25,16 @@ public class ClientDetailResultDTO {
     @Getter
     @Setter
     public static class DetailAnswer {
+        private Long answerId;
         private Long questionId;
         private String questionContext;
         private List<DetailOption> options;
         private Long selectedOptionId;
+        private Long correctedOptionId;
         private Boolean isCorrect;
+        private String selectedOptionLabel;
+        private String correctedOptionLabel;
+        private String explaination;
 
     }
 

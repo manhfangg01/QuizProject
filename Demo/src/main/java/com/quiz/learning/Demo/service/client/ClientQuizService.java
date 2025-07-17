@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -213,6 +214,22 @@ public class ClientQuizService {
 
                 // Tạo Answer
                 Answer answer = new Answer();
+                // Lấy label tương ứng từ map
+                Map<Long, String> optionIdToLabelMap = submissionDTO.getOptionLabelMap().get(question.getId());
+
+                if (optionIdToLabelMap != null) {
+
+                    optionIdToLabelMap.forEach((key, value) -> {
+                        if (key == selectedOption.getId()) {
+                            answer.setSelectedOptionLabel(value);
+                        }
+                        if (key == correctOptionId) {
+                            answer.setCorrectedOptionLabel(value);
+                        }
+                    });
+                }
+                // Tạo Answer
+
                 answer.setIsCorrect(isCorrect);
                 answer.setSelectedOption(selectedOption);
                 answer.setResult(result);
@@ -235,7 +252,9 @@ public class ClientQuizService {
         result.setTotalCorrectedAnswer(correctCount);
         result.setTotalWrongAnswer(totalQuestions - result.getTotalCorrectedAnswer() - result.getTotalSkippedAnswer());
         result.setScore(correctCount);
-        if (realQuiz.getResults() != null) {
+        if (realQuiz.getResults() != null)
+
+        {
             for (Result existedResult : realQuiz.getResults()) {
                 existedResult.setIsLastest(false);
             }
