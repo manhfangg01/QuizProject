@@ -5,7 +5,11 @@ import java.util.Optional;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
 import com.quiz.learning.Demo.domain.User;
 import com.quiz.learning.Demo.domain.auth.LoginRequest;
 import com.quiz.learning.Demo.domain.auth.LoginResponse;
@@ -28,14 +32,16 @@ public class AuthService {
     private final AdminUserService adminUserService;
     private final AdminRoleService adminRoleService;
     private final PasswordEncoder passwordEncoder;
+    private final JwtDecoder jwtDecoder;
 
     public AuthService(SecurityUtil securityUtil, UserRepository userRepository, AdminUserService adminUserService,
-            AdminRoleService adminRoleService, PasswordEncoder passwordEncoder) {
+            AdminRoleService adminRoleService, PasswordEncoder passwordEncoder, JwtDecoder jwtDecoder) {
         this.securityUtil = securityUtil;
         this.userRepository = userRepository;
         this.adminUserService = adminUserService;
         this.adminRoleService = adminRoleService;
         this.passwordEncoder = passwordEncoder;
+        this.jwtDecoder = jwtDecoder;
     }
 
     public String handleCreateRefreshToken(String username) {
@@ -148,15 +154,14 @@ public class AuthService {
         return loginResponse;
     }
 
-    public void handleLogout() {
-        // Lấy ra email người dùng
-        String email = SecurityUtil.getCurrentUserLogin().isPresent() ? SecurityUtil.getCurrentUserLogin().get() : "";
-        if (email.equals("")) {
-            throw new InvalidToken("Access Token không hợp lệ");
-        }
+    public void updateUserToken(String token, String email) {
+        Optional<User> checkUser = this.userRepository.findByEmail(email);
 
-        // update refreshToke in DB
-        this.adminUserService.updateUserRefreshToken(email, null);
+        User currentUser = checkUser.orElseThrow(() -> new ObjectNotFound("User log out not found"));
+        if (currentUser != null) {
+            currentUser.setRefreshToken(token);
+            this.userRepository.save(currentUser);
+        }
     }
 
 }

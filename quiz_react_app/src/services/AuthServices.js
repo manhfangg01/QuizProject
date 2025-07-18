@@ -1,7 +1,13 @@
+import axios from "axios";
 import axiosCustom from "../utils/axiosCustomize";
 export const callRegister = (fullName, email, password, confirmPassword) => {
   return axiosCustom.post("/api/auth/signup", { fullName, email, password, confirmPassword });
 };
+
+const instance = axios.create({
+  baseURL: "http://localhost:8080",
+  withCredentials: true,
+});
 
 export const callLogin = (username, password) => {
   return axiosCustom.post("/api/auth/login", { username, password });
@@ -16,7 +22,11 @@ export const callRefreshToken = () => {
 };
 
 export const callLogout = () => {
-  return axiosCustom.post("/api/auth/logout");
+  return instance.post("/api/auth/logout", null, {
+    headers: {
+      Authorization: "Bearer " + window.localStorage.getItem("accessToken"),
+    },
+  });
 };
 
 // forgot-password

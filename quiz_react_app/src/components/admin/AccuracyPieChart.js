@@ -19,6 +19,7 @@ export default function AccuracyPieChart() {
         setData([
           { label: "Đúng", value: response.data.correct },
           { label: "Sai", value: response.data.incorrect },
+          { label: "Bỏ qua", value: response.data?.skipped },
         ]);
       } else {
         toast.warning("Gọi API Accuracy thất bại !");

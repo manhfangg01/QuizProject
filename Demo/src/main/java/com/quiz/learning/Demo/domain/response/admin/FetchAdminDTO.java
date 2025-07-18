@@ -40,6 +40,7 @@ public class FetchAdminDTO {
     public static class AnswerAccuracyDTO {
         private int correct;
         private int incorrect;
+        private int skipped;
     }
 
     @Getter

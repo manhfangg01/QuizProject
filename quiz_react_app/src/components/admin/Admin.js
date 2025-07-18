@@ -46,7 +46,7 @@ const Admin = (props) => {
   }, [navigate]);
   const handleLogout = () => {
     callLogout();
-    localStorage.removeItem("access_token");
+    localStorage.removeItem("accessToken");
     localStorage.removeItem("user");
     setIsAuthenticated(false);
     setUserInfo(null);
@@ -103,7 +103,13 @@ const Admin = (props) => {
                 <NavDropdown.Item onClick={() => navigate("/admins/manage-profile")}>Hồ sơ</NavDropdown.Item>
                 {/* <NavDropdown.Item >Cài đặt</NavDropdown.Item> */}
                 <NavDropdown.Divider />
-                <NavDropdown.Item onClick={handleLogout}>Đăng xuất</NavDropdown.Item>
+                <NavDropdown.Item
+                  onClick={() => {
+                    handleLogout();
+                  }}
+                >
+                  Đăng xuất
+                </NavDropdown.Item>
               </NavDropdown>
             )}
           </div>

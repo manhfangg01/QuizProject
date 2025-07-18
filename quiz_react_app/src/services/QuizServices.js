@@ -1,4 +1,8 @@
+import axios from "axios";
 import axiosInstance from "../utils/axiosCustomize";
+const instance = axios.create({
+  baseURL: "http://localhost:8080",
+});
 
 export const getTopQuizzes = async () => {
   return await axiosInstance.get("/api/admin/quizzes/top-quizzes");
@@ -47,7 +51,7 @@ export const deleteQuizById = async (quizId) => {
 
 // Client
 export const getLibraryQuizzes = async (pageNumber = 1, filter) => {
-  return await axiosInstance.get("/api/client/quizzes/fetch", {
+  return await instance.get("/api/client/quizzes/fetch", {
     params: {
       page: pageNumber,
       ...filter,

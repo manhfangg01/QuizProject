@@ -26,28 +26,83 @@ import ResultDetail from "./components/details/ResultDetail.js";
 import StatisticsPage from "./components/details/StatisticsPage.js";
 import LibraryQuizzes from "./components/quizzes/LibraryQuizzes.js";
 import DoQuiz from "./components/play/DoQuiz.js";
+import Unauthenticated from "./components/auth/unauthorized/Unauthenticated.js";
+import ProtectedRoute from "./components/auth/ProtectedRoute.js";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
+const isAuthenticated = !!localStorage.getItem("accessToken");
+const user = JSON.parse(localStorage.getItem("user"));
+const userRole = user?.role || "GUEST";
+
 root.render(
   <React.StrictMode>
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<App />}>
+          {/* Public routes */}
           <Route index element={<Home />} />
           <Route path="login" element={<Login />} />
           <Route path="signup" element={<Signup />} />
           <Route path="forgot-password" element={<CheckingEmail />} />
           <Route path="reset-password" element={<ResetPassword />} />
-          <Route path="my-account" element={<Profile />} />
-          <Route path="my-account/setting" element={<Setting />} />
           <Route path="unauthorized" element={<Unauthorized />} />
-          <Route path="/results/:id" element={<ResultDetail />} />
-          <Route path="/results/statistics" element={<StatisticsPage />} />
+          <Route path="unauthenticated" element={<Unauthenticated />} />
           <Route path="/quizzes" element={<LibraryQuizzes />} />
-          <Route path="/do-quiz/:id" element={<DoQuiz />} />
+          {/* Protected routes for logged-in users (USER or ADMIN) */}
+          <Route
+            path="my-account"
+            element={
+              <ProtectedRoute isAuthenticated={isAuthenticated} userRole={userRole} allowedRoles={["USER", "ADMIN"]}>
+                <Profile />
+              </ProtectedRoute>
+            }
+          ></Route>
+          <Route
+            path="my-account/setting"
+            element={
+              <ProtectedRoute isAuthenticated={isAuthenticated} userRole={userRole} allowedRoles={["USER", "ADMIN"]}>
+                <Setting />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Quiz pages (logged-in required) */}
+          <Route
+            path="/results/:id"
+            element={
+              <ProtectedRoute isAuthenticated={isAuthenticated} userRole={userRole} allowedRoles={["USER", "ADMIN"]}>
+                <ResultDetail />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/results/statistics"
+            element={
+              <ProtectedRoute isAuthenticated={isAuthenticated} userRole={userRole} allowedRoles={["USER", "ADMIN"]}>
+                <StatisticsPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/do-quiz/:id"
+            element={
+              <ProtectedRoute isAuthenticated={isAuthenticated} userRole={userRole} allowedRoles={["USER", "ADMIN"]}>
+                <DoQuiz />
+              </ProtectedRoute>
+            }
+          />
         </Route>
 
-        <Route path="/admins" element={<Admin />}>
+        {/* Admin routes */}
+        <Route
+          path="/admins"
+          element={
+            <ProtectedRoute isAuthenticated={isAuthenticated} userRole={userRole} allowedRoles={["ADMIN"]}>
+              <Admin />
+            </ProtectedRoute>
+          }
+        >
           <Route index element={<Dashboard />} />
           <Route path="manage-users" element={<ManageUsers />} />
           <Route path="manage-options" element={<ManageOptions />} />
@@ -61,7 +116,6 @@ root.render(
     </BrowserRouter>
   </React.StrictMode>
 );
-
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals

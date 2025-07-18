@@ -35,9 +35,9 @@ const Header = () => {
     return () => window.removeEventListener("loginSuccess", checkAuth);
   }, []);
 
-  const handleLogout = () => {
-    callLogout();
-    localStorage.removeItem("access_token");
+  const handleLogout = async () => {
+    await callLogout();
+    localStorage.removeItem("accessToken");
     localStorage.removeItem("user");
     setIsAuthenticated(false);
     setUserInfo(null);

@@ -95,7 +95,6 @@ const DoQuiz = () => {
         const optionLabelMap = generateOptionLabelMap();
 
         const res = await submitQuiz(id, userInfo.id, elapsedTime, answers, optionLabelMap);
-        console.log("Check res", res);
         if (res.statusCode === 200) {
           if (timer) clearInterval(timer);
           toast.success("Quiz submitted successfully!");

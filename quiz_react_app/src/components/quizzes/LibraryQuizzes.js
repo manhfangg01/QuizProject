@@ -37,8 +37,10 @@ const LibraryQuizzes = () => {
   const loadQuizzes = async (pageNumber, filter) => {
     try {
       const res = await getLibraryQuizzes(pageNumber, filter);
-      if (res.statusCode === 200) {
-        const { quizzes, metadata } = res.data;
+      console.log("check  res library", res);
+
+      if (res.data.statusCode === 200) {
+        const { quizzes, metadata } = res.data.data;
 
         setQuizzes(quizzes);
         setMetadata(metadata);

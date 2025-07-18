@@ -8,9 +8,12 @@ import com.quiz.learning.Demo.domain.auth.SignupRequest;
 import com.quiz.learning.Demo.domain.auth.SignupResponse;
 import com.quiz.learning.Demo.domain.restResponse.ApiMessage;
 import com.quiz.learning.Demo.service.auth.AuthService;
+import com.quiz.learning.Demo.util.error.InvalidToken;
 import com.quiz.learning.Demo.util.security.SecurityUtil;
 
 import jakarta.validation.Valid;
+
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -99,7 +102,6 @@ public class AuthController {
                                 .secure(true)
                                 .path("/")
                                 .maxAge(refreshTokenExpiration)
-                                .sameSite("Strict")
                                 .build();
 
                 return ResponseEntity.ok()
@@ -109,11 +111,11 @@ public class AuthController {
 
         @PostMapping("/logout")
         @ApiMessage("Log out user")
-        public ResponseEntity<Void> logoutUser() { // Sau API này thì chỉ có refreshToken bị xóa nên AccessToken vẫn
-                                                   // dùng
-                                                   // được, điều này là đúng trong mô hình stateless
+        public ResponseEntity<Void> logoutUser() {
+                String username = SecurityUtil.getCurrentUserLogin().orElse(null);
+                System.out.println("check var logout" + username);
+                this.authService.updateUserToken(null, username);
 
-                this.authService.handleLogout();
                 // remove refresh token cookie
                 ResponseCookie deleteSpringCookie = ResponseCookie
                                 .from("refresh_token", null)
@@ -121,11 +123,32 @@ public class AuthController {
                                 .secure(true)
                                 .path("/")
                                 .maxAge(0)
+                                .sameSite("Strict") // <- thêm dòng này
                                 .build();
 
                 return ResponseEntity.ok()
                                 .header(HttpHeaders.SET_COOKIE, deleteSpringCookie.toString())
                                 .body(null);
+        }
+
+        // Test
+        @GetMapping("/me")
+        public ResponseEntity<?> getCurrentUser() {
+                String token = SecurityUtil.getCurrentUserJWT().orElse(null);
+                String username = SecurityUtil.getCurrentUserLogin().orElse(null);
+
+                if (username == null || token == null) {
+                        String reason = "";
+                        reason += username;
+                        reason += token;
+                        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                                        .body("User not authenticated due to " + reason);
+                }
+
+                return ResponseEntity.ok(Map.of(
+                                "username", username,
+                                "jwt", token));
+
         }
 
 }

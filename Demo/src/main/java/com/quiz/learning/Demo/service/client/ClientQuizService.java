@@ -13,6 +13,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -86,13 +88,20 @@ public class ClientQuizService {
         dto.setTotalParticipants(quiz.getTotalParticipants());
         dto.setTotalQuestions(quiz.getQuestions() == null ? 0 : quiz.getQuestions().size());
         dto.setSubject(quiz.getSubjectName());
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated()
+                && !(authentication.getPrincipal() instanceof String
+                        && authentication.getPrincipal().equals("anonymousUser"))) {
 
-        if (quiz.getResults() != null && !quiz.getResults().isEmpty()) {
-            Optional<Result> latestResult = quiz.getResults().stream()
-                    .filter(res -> Boolean.TRUE.equals(res.getIsLastest()))
-                    .findFirst();
+            // ✅ Đã đăng nhập, xử lý tiếp
+            if (quiz.getResults() != null && !quiz.getResults().isEmpty()) {
+                Optional<Result> latestResult = quiz.getResults().stream()
+                        .filter(res -> Boolean.TRUE.equals(res.getIsLastest()))
+                        .findFirst();
 
-            latestResult.ifPresent(result -> dto.setResultId(result.getId()));
+                latestResult.ifPresent(result -> dto.setResultId(result.getId()));
+            }
+
         }
 
         return dto;

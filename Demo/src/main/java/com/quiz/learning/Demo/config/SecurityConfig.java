@@ -1,20 +1,26 @@
 package com.quiz.learning.Demo.config;
 
+import java.util.Collection;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.web.SecurityFilterChain;
 
 import jakarta.servlet.DispatcherType;
@@ -48,12 +54,11 @@ public class SecurityConfig {
 
     @Bean
     public JwtAuthenticationConverter jwtAuthenticationConverter() {
-        JwtGrantedAuthoritiesConverter converter = new JwtGrantedAuthoritiesConverter();
-        converter.setAuthoritiesClaimName("authorities"); // 👈 giống tên claim bạn tạo ở trên
-        converter.setAuthorityPrefix(""); // hoặc "ROLE_" nếu chưa có prefix trong token
-
+        JwtGrantedAuthoritiesConverter authoritiesConverter = new JwtGrantedAuthoritiesConverter();
+        authoritiesConverter.setAuthoritiesClaimName("authorities");
+        authoritiesConverter.setAuthorityPrefix("");
         JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
-        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(converter);
+        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(authoritiesConverter);
         return jwtAuthenticationConverter;
     }
 
@@ -62,16 +67,29 @@ public class SecurityConfig {
         String[] whiteList = {
                 "/", "/api/auth/login", "/api/auth/refresh", "/api/auth/signup", "/api/auth/request-reset-link",
                 "/api/auth/reset-password",
-                "/storage/**"
+                "/api/auth/me",
+                "/storage/**",
+                "/api/client/quizzes/fetch",
         };
+
+        String[] authenList = {
+                "/api/client/answers/**",
+                "/api/client/users/profile/**",
+                "/api/client/users/update-profile",
+                "/api/client/results/**",
+                "/api/client/quizzes/submit",
+                "/api/client/quizzes/save-progress",
+                "/api/client/quizzes/exit" };
 
         http
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(corsConfig.corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
-                        .dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.INCLUDE).permitAll()
+                        // .dispatcherTypeMatchers(DispatcherType.FORWARD,
+                        // DispatcherType.INCLUDE).permitAll()
                         .requestMatchers(whiteList).permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN") // Phân quyền ADMIN
+                        .requestMatchers(authenList).authenticated()
                         .anyRequest().authenticated())
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint(customAuthExceptionHandler)
