@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RestController
 @RequestMapping("/api")
 public class ClientQuizController {
+
     private final ClientQuizService quizService;
 
     public ClientQuizController(ClientQuizService quizService) {

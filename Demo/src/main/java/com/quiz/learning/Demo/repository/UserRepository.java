@@ -24,4 +24,6 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
             "GROUP BY u.id, u.fullName " +
             "ORDER BY AVG(r.score) DESC")
     List<UserTopScoreDTO> findTopUsersByAverageScore(Pageable pageable);
+
+    public Optional<User> findByFirebaseUid(String firebaseUid);
 }

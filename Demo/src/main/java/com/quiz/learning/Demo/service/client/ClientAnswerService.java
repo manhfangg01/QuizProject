@@ -1,7 +1,6 @@
 package com.quiz.learning.Demo.service.client;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 

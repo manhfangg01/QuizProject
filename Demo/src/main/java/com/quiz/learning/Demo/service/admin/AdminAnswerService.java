@@ -6,18 +6,21 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import com.quiz.learning.Demo.domain.Answer;
-
+import com.quiz.learning.Demo.domain.Result;
 import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO;
 import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO.AnswerAccuracyDTO;
 import com.quiz.learning.Demo.repository.AnswerRepository;
+import com.quiz.learning.Demo.repository.ResultRepository;
 import com.quiz.learning.Demo.util.error.ObjectNotFound;
 
 @Service
 public class AdminAnswerService {
     private final AnswerRepository answerRepository;
+    private final ResultRepository resultRepository;
 
-    public AdminAnswerService(AnswerRepository answerRepository) {
+    public AdminAnswerService(AnswerRepository answerRepository, ResultRepository resultRepository) {
         this.answerRepository = answerRepository;
+        this.resultRepository = resultRepository;
     }
 
     public Answer handleGetAnswer(Long id) {
@@ -38,18 +41,24 @@ public class AdminAnswerService {
 
     public AnswerAccuracyDTO handleFetchAccuracy() {
         List<Answer> answers = this.answerRepository.findAll();
+        List<Result> results = this.resultRepository.findAll(); // <-- thêm dòng này
+
         int correctCounter = 0;
         int incorrectCounter = 0;
-        int skipped = 0;
+
         for (Answer ans : answers) {
-            if (ans.getIsCorrect()) {
+            if (Boolean.TRUE.equals(ans.getIsCorrect())) {
                 correctCounter++;
-            } else if (ans.getIsCorrect() == false) {
+            } else if (Boolean.FALSE.equals(ans.getIsCorrect())) {
                 incorrectCounter++;
-            } else {
-                skipped++;
             }
         }
+
+        // Tổng số câu bị skip được lấy từ danh sách Result
+        int skipped = results.stream()
+                .mapToInt(Result::getTotalSkippedAnswer)
+                .sum();
+
         AnswerAccuracyDTO dto = new AnswerAccuracyDTO();
         dto.setCorrect(correctCounter);
         dto.setIncorrect(incorrectCounter);

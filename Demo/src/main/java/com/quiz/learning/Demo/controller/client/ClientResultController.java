@@ -7,8 +7,6 @@ import com.quiz.learning.Demo.domain.response.client.ResponseClientQuizResultDTO
 import com.quiz.learning.Demo.domain.response.client.result.ClientDetailResultDTO;
 import com.quiz.learning.Demo.service.client.ClientResultService;
 
-import lombok.Getter;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

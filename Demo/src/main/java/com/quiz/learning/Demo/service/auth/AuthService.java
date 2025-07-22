@@ -3,18 +3,21 @@ package com.quiz.learning.Demo.service.auth;
 import java.time.Instant;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseToken;
 import com.quiz.learning.Demo.domain.User;
 import com.quiz.learning.Demo.domain.auth.LoginRequest;
 import com.quiz.learning.Demo.domain.auth.LoginResponse;
 import com.quiz.learning.Demo.domain.auth.SignupRequest;
 import com.quiz.learning.Demo.domain.auth.SignupResponse;
+import com.quiz.learning.Demo.repository.RoleRepository;
 import com.quiz.learning.Demo.repository.UserRepository;
 import com.quiz.learning.Demo.service.admin.AdminRoleService;
 import com.quiz.learning.Demo.service.admin.AdminUserService;
@@ -27,21 +30,30 @@ import com.quiz.learning.Demo.util.security.SecurityUtil;
 
 @Service
 public class AuthService {
+
+    @Value("${GOOGLE_CLIENT_ID}")
+    private String googleClientId;
+
     private final SecurityUtil securityUtil;
     private final UserRepository userRepository;
     private final AdminUserService adminUserService;
     private final AdminRoleService adminRoleService;
     private final PasswordEncoder passwordEncoder;
     private final JwtDecoder jwtDecoder;
+    private final RoleRepository roleRepository;
 
-    public AuthService(SecurityUtil securityUtil, UserRepository userRepository, AdminUserService adminUserService,
-            AdminRoleService adminRoleService, PasswordEncoder passwordEncoder, JwtDecoder jwtDecoder) {
+    public AuthService(
+            SecurityUtil securityUtil, UserRepository userRepository, AdminUserService adminUserService,
+            AdminRoleService adminRoleService, PasswordEncoder passwordEncoder, JwtDecoder jwtDecoder,
+            RoleRepository roleRepository) {
         this.securityUtil = securityUtil;
         this.userRepository = userRepository;
         this.adminUserService = adminUserService;
         this.adminRoleService = adminRoleService;
         this.passwordEncoder = passwordEncoder;
         this.jwtDecoder = jwtDecoder;
+        this.roleRepository = roleRepository;
+
     }
 
     public String handleCreateRefreshToken(String username) {
@@ -161,6 +173,53 @@ public class AuthService {
         if (currentUser != null) {
             currentUser.setRefreshToken(token);
             this.userRepository.save(currentUser);
+        }
+    }
+
+    public LoginResponse handleSocialLogin(String email, String name, String pictureUrl) {
+        Optional<User> userOptional = userRepository.findByEmail(email);
+
+        User user = userOptional.orElseGet(() -> {
+            // Tạo user mới nếu chưa tồn tại
+            User newUser = new User();
+            newUser.setEmail(email);
+            newUser.setFullName(name);
+            newUser.setUserAvatarUrls(pictureUrl);
+            newUser.setRole(roleRepository.findByName("USER").orElseThrow());
+            return userRepository.save(newUser);
+        });
+
+        // Tạo access token
+        String accessToken = securityUtil.createAccessToken(user.getEmail());
+
+        // Tạo và trả về response theo cách thông thường
+        LoginResponse response = new LoginResponse();
+        response.setAccessToken(accessToken);
+        response.setEmail(user.getEmail());
+        response.setFullName(user.getFullName());
+        response.setRole(user.getRole().getName());
+        response.setUserId(user.getId());
+        response.setUserAvatarUrls(user.getUserAvatarUrls());
+
+        return response;
+    }
+
+    public void updateUserProfile(String uid, String name, String pictureUrl) {
+        userRepository.findByFirebaseUid(uid).ifPresent(user -> {
+            if (StringUtils.hasText(name))
+                user.setFullName(name);
+            if (StringUtils.hasText(pictureUrl))
+                user.setUserAvatarUrls(pictureUrl);
+            userRepository.save(user);
+        });
+    }
+
+    public FirebaseToken verifyFirebaseToken(String idToken) {
+        try {
+            return FirebaseAuth.getInstance().verifyIdToken(idToken);
+        } catch (Exception e) {
+            System.err.println("Firebase token verification failed: " + e.getMessage());
+            return null;
         }
     }
 

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import com.quiz.learning.Demo.domain.restResponse.RestResponse;
 import com.quiz.learning.Demo.util.error.DuplicatedObjectException;
 import com.quiz.learning.Demo.util.error.EmailSendingException;
+import com.quiz.learning.Demo.util.error.EnvironmentValueError;
 import com.quiz.learning.Demo.util.error.InvalidResetTokenException;
 import com.quiz.learning.Demo.util.error.InvalidToken;
 import com.quiz.learning.Demo.util.error.InvalidUploadedFile;
@@ -117,6 +118,15 @@ public class GlobalExceptionHandler {
         res.setStatusCode(HttpStatus.BAD_REQUEST.value());
         res.setError(ex.getMessage());
         res.setMessage(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
+    }
+
+    @ExceptionHandler(EnvironmentValueError.class)
+    public ResponseEntity<RestResponse<Object>> handleEnvironmentValueError(EnvironmentValueError ex) {
+        RestResponse<Object> res = new RestResponse<Object>();
+        res.setStatusCode(HttpStatus.BAD_REQUEST.value());
+        res.setError("Biến môi trường bị rỗng");
+        res.setMessage("Biến môi trường bị rỗng");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
     }
 }

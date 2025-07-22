@@ -29,6 +29,7 @@ public class ResponseSubmissionDTO {
         private Long selectedOptionId;
         private Long correctOptionId;
         private Boolean isCorrect;
+        private Boolean isSkipped;
     }
 
 }

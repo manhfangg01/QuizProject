@@ -13,8 +13,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -49,8 +47,13 @@ import com.quiz.learning.Demo.service.specification.QuizSpecs;
 import com.quiz.learning.Demo.util.error.ObjectNotFound;
 import com.quiz.learning.Demo.util.security.SecurityUtil;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @Service
 public class ClientQuizService {
+    private static final Logger logger = LoggerFactory.getLogger(ClientQuizService.class);
+
     private final QuizRepository quizRepository;
     private final QuizSpecs quizSpecs;
     private final ClientQuestionService clientQuestionService;
@@ -80,6 +83,9 @@ public class ClientQuizService {
     }
 
     public QuizClientDTO convertToDto(Quiz quiz) {
+        // Khởi tạo logger
+        Logger logger = LoggerFactory.getLogger(ClientQuizService.class);
+
         QuizClientDTO dto = new QuizClientDTO();
         dto.setQuizId(quiz.getId());
         dto.setDifficulty(quiz.getDifficulty());
@@ -88,20 +94,46 @@ public class ClientQuizService {
         dto.setTotalParticipants(quiz.getTotalParticipants());
         dto.setTotalQuestions(quiz.getQuestions() == null ? 0 : quiz.getQuestions().size());
         dto.setSubject(quiz.getSubjectName());
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.isAuthenticated()
-                && !(authentication.getPrincipal() instanceof String
-                        && authentication.getPrincipal().equals("anonymousUser"))) {
 
-            // ✅ Đã đăng nhập, xử lý tiếp
-            if (quiz.getResults() != null && !quiz.getResults().isEmpty()) {
-                Optional<Result> latestResult = quiz.getResults().stream()
-                        .filter(res -> Boolean.TRUE.equals(res.getIsLastest()))
-                        .findFirst();
+        // Debug thông tin quiz cơ bản
+        logger.debug("Converting Quiz to DTO - Quiz ID: {}, Title: {}", quiz.getId(), quiz.getTitle());
 
-                latestResult.ifPresent(result -> dto.setResultId(result.getId()));
+        // Kiểm tra xem người dùng có đăng nhập không
+        Optional<String> currentUserLogin = SecurityUtil.getCurrentUserLogin();
+        if (currentUserLogin.isEmpty()) {
+            logger.debug("User not logged in, skipping resultId check");
+            return dto;
+        }
+
+        // Lấy thông tin user từ database
+        Optional<User> currentUser = userRepository.findByEmail(currentUserLogin.get());
+        if (currentUser.isEmpty()) {
+            logger.warn("User not found in database for email: {}", currentUserLogin.get());
+            return dto;
+        }
+
+        Long userId = currentUser.get().getId();
+        logger.debug("Current user ID: {}", userId);
+
+        // Tìm result mới nhất của user cho quiz này
+        try {
+            List<Result> results = resultRepository.findAllByUserIdAndQuizId(userId, quiz.getId());
+            Optional<Result> latestResult = results.stream()
+                    .filter(result -> Boolean.TRUE.equals(result.getIsLastest()))
+                    .findFirst(); // Hoặc .max(...) nếu bạn muốn theo thời gian
+
+            if (latestResult.isPresent()) {
+                logger.debug("Found latest result for user {} and quiz {}: resultId={}",
+                        userId, quiz.getId(), latestResult.get().getId());
+                dto.setResultId(latestResult.get().getId());
+            } else {
+                logger.debug("No latest result found for user {} and quiz {}", userId, quiz.getId());
             }
 
+            logger.debug("CHECK >>>>>" + latestResult.get());
+        } catch (Exception e) {
+            logger.error("Error while fetching latest result for user {} and quiz {}: {}",
+                    userId, quiz.getId(), e.getMessage());
         }
 
         return dto;
@@ -175,9 +207,16 @@ public class ClientQuizService {
         }
 
         Quiz realQuiz = checkQuiz.get();
+        Optional<User> checkUser = userRepository.findById(submissionDTO.getUserId());
+        if (checkUser.isEmpty()) {
+            throw new ObjectNotFound("Tập câu hỏi không tồn tại");
+        }
+
+        User realUser = checkUser.get();
         ResponseSubmissionDTO res = new ResponseSubmissionDTO();
         Instant now = Instant.now();
         int totalQuestions = realQuiz.getQuestions() == null ? 0 : realQuiz.getQuestions().size();
+        realQuiz.setTotalParticipants(realQuiz.getTotalParticipants() + 1);// Mỗi lần làm thì thêm 1 người
 
         // Tạo kết quả ban đầu
         Result result = new Result();
@@ -261,11 +300,11 @@ public class ClientQuizService {
         result.setTotalCorrectedAnswer(correctCount);
         result.setTotalWrongAnswer(totalQuestions - result.getTotalCorrectedAnswer() - result.getTotalSkippedAnswer());
         result.setScore(correctCount);
-        if (realQuiz.getResults() != null)
-
-        {
+        if (realQuiz.getResults() != null) {
             for (Result existedResult : realQuiz.getResults()) {
-                existedResult.setIsLastest(false);
+                if (existedResult.getUser().getId().equals(realUser.getId())) {
+                    existedResult.setIsLastest(false);
+                }
             }
         }
         result.setIsLastest(true);

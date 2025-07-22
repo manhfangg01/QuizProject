@@ -40,6 +40,7 @@ public class User {
     private String UserAvatarUrls;
     @Column(columnDefinition = "MEDIUMTEXT")
     private String about;
+    private String firebaseUid;
 
     @OneToMany(mappedBy = "user")
     private List<Result> results;

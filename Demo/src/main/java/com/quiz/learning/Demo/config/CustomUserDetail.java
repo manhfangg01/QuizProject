@@ -9,21 +9,17 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
-import com.quiz.learning.Demo.service.admin.AdminUserService;
+import com.quiz.learning.Demo.repository.UserRepository;
 
 @Component("userDetailService")
 public class CustomUserDetail implements UserDetailsService {
-    private final AdminUserService adminUserService;
-
-    public CustomUserDetail(AdminUserService adminUserService) {
-        this.adminUserService = adminUserService;
-    }
+    private final UserRepository userRepository;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         System.out.println("=== TRYING TO LOAD USER: " + username + " ===");
 
-        Optional<com.quiz.learning.Demo.domain.User> user = this.adminUserService.handleFetchUserByUsername(username);
+        Optional<com.quiz.learning.Demo.domain.User> user = this.userRepository.findByEmail(username);
         if (user.isEmpty()) {
             System.out.println("=== USER NOT FOUND IN DB ===");
             throw new UsernameNotFoundException("User not found");
@@ -39,5 +35,9 @@ public class CustomUserDetail implements UserDetailsService {
                 validUser.getEmail(),
                 validUser.getPassword(),
                 Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + validUser.getRole().getName())));
+    }
+
+    public CustomUserDetail(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 }

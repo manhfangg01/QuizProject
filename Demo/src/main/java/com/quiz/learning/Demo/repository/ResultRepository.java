@@ -23,6 +23,6 @@ public interface ResultRepository extends JpaRepository<Result, Long>, JpaSpecif
 
     public Page<Result> findAllByUser(User user, Pageable pageable);
 
-    public Optional<Result> findByUserIdAndQuizId(Long userId, Long quizId);
+    public List<Result> findAllByUserIdAndQuizId(Long userId, Long quizId);
 
 }

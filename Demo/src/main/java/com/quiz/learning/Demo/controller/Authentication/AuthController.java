@@ -1,7 +1,9 @@
 package com.quiz.learning.Demo.controller.authentication;
 
 import org.springframework.web.bind.annotation.RestController;
-
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthException;
+import com.google.firebase.auth.FirebaseToken;
 import com.quiz.learning.Demo.domain.auth.LoginRequest;
 import com.quiz.learning.Demo.domain.auth.LoginResponse;
 import com.quiz.learning.Demo.domain.auth.SignupRequest;
@@ -9,8 +11,10 @@ import com.quiz.learning.Demo.domain.auth.SignupResponse;
 import com.quiz.learning.Demo.domain.restResponse.ApiMessage;
 import com.quiz.learning.Demo.service.auth.AuthService;
 import com.quiz.learning.Demo.util.error.InvalidToken;
+import com.quiz.learning.Demo.util.error.UnauthorizedException;
 import com.quiz.learning.Demo.util.security.SecurityUtil;
 
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 
 import java.util.Map;
@@ -24,6 +28,9 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,12 +44,14 @@ public class AuthController {
         private final AuthenticationManager authenticationManager;
         private final AuthService authService;
         private final SecurityUtil securityUtil;
+        private final UserDetailsService userDetailsService;
 
         public AuthController(AuthenticationManager authenticationManager, AuthService authService,
-                        SecurityUtil securityUtil) {
+                        SecurityUtil securityUtil, UserDetailsService userDetailsService) {
                 this.authenticationManager = authenticationManager;
                 this.authService = authService;
                 this.securityUtil = securityUtil;
+                this.userDetailsService = userDetailsService;
 
         }
 
@@ -113,7 +122,7 @@ public class AuthController {
         @ApiMessage("Log out user")
         public ResponseEntity<Void> logoutUser() {
                 String username = SecurityUtil.getCurrentUserLogin().orElse(null);
-                System.out.println("check var logout" + username);
+
                 this.authService.updateUserToken(null, username);
 
                 // remove refresh token cookie
@@ -149,6 +158,79 @@ public class AuthController {
                                 "username", username,
                                 "jwt", token));
 
+        }
+
+        @PostMapping("/social-login")
+        @ApiMessage("Login with Firebase")
+        public ResponseEntity<LoginResponse> loginWithFirebase(
+                        @RequestBody Map<String, String> request,
+                        HttpServletResponse servletResponse) {
+                // 1. Lấy Firebase ID Token từ request
+                String firebaseToken = request.get("token");
+                if (!StringUtils.hasText(firebaseToken)) {
+                        throw new InvalidToken("Firebase token is required");
+                }
+
+                try {
+                        // 2. Xác thực token với Firebase Admin SDK
+                        FirebaseToken decodedToken = FirebaseAuth.getInstance()
+                                        .verifyIdToken(firebaseToken);
+
+                        // 3. Lấy thông tin user từ token
+                        String email = decodedToken.getEmail();
+                        String name = decodedToken.getName();
+                        String pictureUrl = decodedToken.getPicture();
+                        String uid = decodedToken.getUid();
+
+                        if (email == null) {
+                                throw new InvalidToken("Firebase token must contain email");
+                        }
+
+                        // 4. Xử lý đăng nhập/đăng ký
+                        LoginResponse loginResponse = authService.handleSocialLogin(
+                                        email,
+                                        name != null ? name : email.split("@")[0],
+                                        pictureUrl);
+
+                        // 5. Tạo refresh token và lưu vào database
+                        String refreshToken = authService.handleCreateRefreshToken(email);
+
+                        // 6. Tạo HTTP Only cookie
+                        ResponseCookie refreshCookie = ResponseCookie.from("refresh_token", refreshToken)
+                                        .httpOnly(true)
+                                        .secure(true) // Chỉ gửi qua HTTPS
+                                        .path("/")
+                                        .maxAge(86400) // 24 giờ
+                                        .sameSite("Strict") // Chống CSRF
+                                        .build();
+
+                        // 7. Cập nhật thông tin user (nếu cần)
+                        authService.updateUserProfile(uid, name, pictureUrl);
+
+                        // Tạo authentication và set vào SecurityContext
+                        UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+                        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                                        userDetails,
+                                        null,
+                                        userDetails.getAuthorities());
+
+                        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+                        // 8. Trả về response
+                        return ResponseEntity.ok()
+                                        .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
+                                        .body(loginResponse);
+
+                } catch (FirebaseAuthException e) {
+                        String errorMsg = switch (e.getErrorCode().toString()) {
+                                case "id-token-expired" -> "Firebase token expired";
+                                case "id-token-revoked" -> "Firebase token revoked";
+                                default -> "Invalid Firebase token: " + e.getMessage();
+                        };
+                        throw new InvalidToken(errorMsg);
+                } catch (Exception e) {
+                        throw new UnauthorizedException("Authentication failed: " + e.getMessage());
+                }
         }
 
 }

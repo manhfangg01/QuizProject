@@ -4,7 +4,6 @@ import org.springframework.stereotype.Service;
 
 import com.quiz.learning.Demo.domain.Option;
 import com.quiz.learning.Demo.domain.response.client.FetchClientDTO.OptionClientPlayDTO;
-import com.quiz.learning.Demo.domain.response.client.result.ClientDetailResultDTO.DetailAnswer;
 import com.quiz.learning.Demo.domain.response.client.result.ClientDetailResultDTO.DetailOption;
 
 @Service
