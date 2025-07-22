@@ -19,6 +19,7 @@
     "axios": "0.27.2",
     "bootstrap": "^5.3.7",
     "date-fns": "^4.1.0",
+    "firebase": "^12.0.0",
     "mdb-react-ui-kit": "^9.0.0",
     "react": "^19.1.0",
     "react-bootstrap": "^2.10.10",

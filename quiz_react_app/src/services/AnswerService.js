@@ -1,4 +1,4 @@
-import axiosCustom from "../utils/axiosCustomize";
+import axiosCustom from "../utils/SimpleAxiosCustomize";
 
 export const getAccuracy = async () => {
   return await axiosCustom.get("/api/admin/answers/fetch-accuracy");

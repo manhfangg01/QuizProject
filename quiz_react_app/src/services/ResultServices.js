@@ -1,4 +1,4 @@
-import axiosInstance from "../utils/axiosCustomize";
+import axiosInstance from "../utils/SimpleAxiosCustomize";
 
 // export const getResultStatsPerDay = async () => {
 //   const response = await axiosInstance.get("/api/admin/stat/result-per-day");

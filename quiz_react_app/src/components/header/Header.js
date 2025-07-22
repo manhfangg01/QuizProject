@@ -7,11 +7,13 @@ import { useEffect, useState } from "react";
 import defaultAvatar from "../../assets/default.jpg"; // ảnh mặc định nếu user chưa có avatar
 import { callLogout } from "../../services/AuthServices";
 import "./Header.scss";
+import { GrUserAdmin } from "react-icons/gr";
 
 const Header = () => {
   const navigate = useNavigate();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userInfo, setUserInfo] = useState(null);
+  const user = JSON.parse(localStorage.getItem("user"));
 
   useEffect(() => {
     const checkAuth = () => {
@@ -80,9 +82,22 @@ const Header = () => {
                 id="user-nav-dropdown"
                 align="end"
               >
-                <NavDropdown.Item onClick={() => navigate("/my-account")}>Trang cá nhân</NavDropdown.Item>
+                {user.role === "ADMIN" && (
+                  <>
+                    <NavDropdown.Item onClick={() => navigate("/admins")} style={{ textAlign: "center" }}>
+                      <GrUserAdmin className="me-2" />
+                      Trang quản trị
+                    </NavDropdown.Item>
+                    <NavDropdown.Divider />
+                  </>
+                )}
+                <NavDropdown.Item onClick={() => navigate("/my-account")} style={{ textAlign: "center", paddingLeft: "40px" }}>
+                  Trang cá nhân
+                </NavDropdown.Item>
                 <NavDropdown.Divider />
-                <NavDropdown.Item onClick={handleLogout}>Đăng xuất</NavDropdown.Item>
+                <NavDropdown.Item onClick={handleLogout} style={{ textAlign: "center" }}>
+                  Đăng xuất
+                </NavDropdown.Item>
               </NavDropdown>
             )}
           </Nav>

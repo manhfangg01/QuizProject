@@ -21,3 +21,12 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+quizproject-466406-d72d5de6c81e.json
+
+# Firebase
+/serviceAccountKey.json
+/firebase-config.json
+/*-firebase-adminsdk-*.json
+
+.env

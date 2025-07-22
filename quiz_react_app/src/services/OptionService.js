@@ -1,4 +1,4 @@
-import axiosInstance from "../utils/axiosCustomize";
+import axiosInstance from "../utils/SimpleAxiosCustomize";
 
 export const getAllOptions = async (pageNumber = 1, filter) => {
   return axiosInstance.get("/api/admin/options/fetch", {

@@ -32,7 +32,7 @@ import ProtectedRoute from "./components/auth/ProtectedRoute.js";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 const isAuthenticated = !!localStorage.getItem("accessToken");
 const user = JSON.parse(localStorage.getItem("user"));
-const userRole = user?.role || "GUEST";
+const userRole = user?.role || "USER";
 
 root.render(
   <React.StrictMode>

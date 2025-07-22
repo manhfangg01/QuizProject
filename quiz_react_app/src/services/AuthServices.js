@@ -1,13 +1,8 @@
-import axios from "axios";
-import axiosCustom from "../utils/axiosCustomize";
+import axiosCustom from "../utils/SimpleAxiosCustomize";
+// import admin from "firebase-admin";
 export const callRegister = (fullName, email, password, confirmPassword) => {
   return axiosCustom.post("/api/auth/signup", { fullName, email, password, confirmPassword });
 };
-
-const instance = axios.create({
-  baseURL: "http://localhost:8080",
-  withCredentials: true,
-});
 
 export const callLogin = (username, password) => {
   return axiosCustom.post("/api/auth/login", { username, password });
@@ -22,7 +17,7 @@ export const callRefreshToken = () => {
 };
 
 export const callLogout = () => {
-  return instance.post("/api/auth/logout", null, {
+  return axiosCustom.post("/api/auth/logout", null, {
     headers: {
       Authorization: "Bearer " + window.localStorage.getItem("accessToken"),
     },
@@ -42,4 +37,8 @@ export const callResetPassword = (resetToken, newPassword) => {
     resetToken,
     newPassword,
   });
+};
+
+export const callSocialLogin = (data) => {
+  return axiosCustom.post("/api/auth/social-login", data);
 };

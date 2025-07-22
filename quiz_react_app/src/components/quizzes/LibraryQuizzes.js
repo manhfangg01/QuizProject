@@ -8,9 +8,10 @@ import { CiClock2 } from "react-icons/ci";
 import { LiaUserEditSolid } from "react-icons/lia";
 import { IoBulbOutline, IoDocumentTextOutline } from "react-icons/io5";
 import UserBox from "./UserBox";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const LibraryQuizzes = () => {
+  const navigate = useNavigate();
   const [quizzes, setQuizzes] = useState([]);
   const [filter, setFilter] = useState({
     title: "",
@@ -39,9 +40,8 @@ const LibraryQuizzes = () => {
       const res = await getLibraryQuizzes(pageNumber, filter);
       console.log("check  res library", res);
 
-      if (res.data.statusCode === 200) {
-        const { quizzes, metadata } = res.data.data;
-
+      if (res.statusCode === 200) {
+        const { quizzes, metadata } = res.data;
         setQuizzes(quizzes);
         setMetadata(metadata);
       } else {
@@ -73,6 +73,19 @@ const LibraryQuizzes = () => {
       default:
         return "text-secondary";
     }
+  };
+
+  const handleDoQuiz = ({ quiz }) => {
+    const token = localStorage.getItem("accessToken");
+    const user = localStorage.getItem("user");
+
+    if (!token || !user) {
+      toast.warning("Vui lòng đăng nhập để làm bài thi!");
+      navigate("/login");
+      return;
+    }
+
+    navigate(`/do-quiz/${quiz.quizId}`);
   };
 
   return (
@@ -119,11 +132,9 @@ const LibraryQuizzes = () => {
                   </Button>
                 </Link>
               ) : (
-                <Link to={`/do-quiz/${quiz.quizId}`}>
-                  <Button variant="primary" size="sm">
-                    Làm bài thi
-                  </Button>
-                </Link>
+                <Button variant="primary" size="sm" onClick={handleDoQuiz}>
+                  Làm bài thi
+                </Button>
               )}
             </div>
           </div>

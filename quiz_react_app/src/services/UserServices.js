@@ -1,4 +1,4 @@
-import axiosInstance from "../utils/axiosCustomize";
+import axiosInstance from "../utils/SimpleAxiosCustomize";
 
 export const getTopUsers = async () => {
   return await axiosInstance.get("/api/admin/stat/top-users");

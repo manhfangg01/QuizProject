@@ -1,6 +1,7 @@
 import { Navigate } from "react-router-dom";
 
 const ProtectedRoute = ({ isAuthenticated, allowedRoles = [], userRole, children }) => {
+  console.log("check protected route", { isAuthenticated, allowedRoles, userRole, children });
   if (!isAuthenticated) {
     return <Navigate to="/unauthenticated" replace />;
   }
