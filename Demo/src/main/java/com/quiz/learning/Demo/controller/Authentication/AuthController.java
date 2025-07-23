@@ -9,7 +9,9 @@ import com.quiz.learning.Demo.domain.auth.LoginResponse;
 import com.quiz.learning.Demo.domain.auth.SignupRequest;
 import com.quiz.learning.Demo.domain.auth.SignupResponse;
 import com.quiz.learning.Demo.domain.restResponse.ApiMessage;
+import com.quiz.learning.Demo.service.admin.AdminUserService;
 import com.quiz.learning.Demo.service.auth.AuthService;
+import com.quiz.learning.Demo.service.client.ClientQuizService;
 import com.quiz.learning.Demo.util.error.InvalidToken;
 import com.quiz.learning.Demo.util.error.UnauthorizedException;
 import com.quiz.learning.Demo.util.security.SecurityUtil;
@@ -19,6 +21,8 @@ import jakarta.validation.Valid;
 
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -45,13 +49,16 @@ public class AuthController {
         private final AuthService authService;
         private final SecurityUtil securityUtil;
         private final UserDetailsService userDetailsService;
+        private final AdminUserService adminUserService;
 
         public AuthController(AuthenticationManager authenticationManager, AuthService authService,
-                        SecurityUtil securityUtil, UserDetailsService userDetailsService) {
+                        SecurityUtil securityUtil, UserDetailsService userDetailsService,
+                        AdminUserService adminUserService) {
                 this.authenticationManager = authenticationManager;
                 this.authService = authService;
                 this.securityUtil = securityUtil;
                 this.userDetailsService = userDetailsService;
+                this.adminUserService = adminUserService;
 
         }
 
@@ -165,6 +172,8 @@ public class AuthController {
         public ResponseEntity<LoginResponse> loginWithFirebase(
                         @RequestBody Map<String, String> request,
                         HttpServletResponse servletResponse) {
+
+                Logger logger = LoggerFactory.getLogger(AuthController.class);
                 // 1. Lấy Firebase ID Token từ request
                 String firebaseToken = request.get("token");
                 if (!StringUtils.hasText(firebaseToken)) {
@@ -190,18 +199,18 @@ public class AuthController {
                         LoginResponse loginResponse = authService.handleSocialLogin(
                                         email,
                                         name != null ? name : email.split("@")[0],
-                                        pictureUrl);
+                                        pictureUrl, uid);
 
                         // 5. Tạo refresh token và lưu vào database
                         String refreshToken = authService.handleCreateRefreshToken(email);
 
                         // 6. Tạo HTTP Only cookie
-                        ResponseCookie refreshCookie = ResponseCookie.from("refresh_token", refreshToken)
+                        ResponseCookie responseCookie = ResponseCookie
+                                        .from("refresh_token", refreshToken)
                                         .httpOnly(true)
-                                        .secure(true) // Chỉ gửi qua HTTPS
+                                        .secure(true)
                                         .path("/")
-                                        .maxAge(86400) // 24 giờ
-                                        .sameSite("Strict") // Chống CSRF
+                                        .maxAge(refreshTokenExpiration)
                                         .build();
 
                         // 7. Cập nhật thông tin user (nếu cần)
@@ -218,16 +227,12 @@ public class AuthController {
 
                         // 8. Trả về response
                         return ResponseEntity.ok()
-                                        .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
+                                        .header(HttpHeaders.SET_COOKIE, responseCookie.toString())
                                         .body(loginResponse);
 
                 } catch (FirebaseAuthException e) {
-                        String errorMsg = switch (e.getErrorCode().toString()) {
-                                case "id-token-expired" -> "Firebase token expired";
-                                case "id-token-revoked" -> "Firebase token revoked";
-                                default -> "Invalid Firebase token: " + e.getMessage();
-                        };
-                        throw new InvalidToken(errorMsg);
+                        logger.error("ERROR >>> Firebase Auth Error: {}", e.getErrorCode());
+                        throw new InvalidToken(e.getMessage());
                 } catch (Exception e) {
                         throw new UnauthorizedException("Authentication failed: " + e.getMessage());
                 }

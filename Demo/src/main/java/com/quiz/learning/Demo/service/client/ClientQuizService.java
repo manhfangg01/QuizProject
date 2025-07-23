@@ -114,26 +114,27 @@ public class ClientQuizService {
 
         Long userId = currentUser.get().getId();
         logger.debug("Current user ID: {}", userId);
+        if (currentUser.get().getResults() != null) {
+            // Tìm result mới nhất của user cho quiz này
+            try {
+                List<Result> results = resultRepository.findAllByUserIdAndQuizId(userId, quiz.getId());
+                Optional<Result> latestResult = results.stream()
+                        .filter(result -> Boolean.TRUE.equals(result.getIsLastest()))
+                        .findFirst(); // Hoặc .max(...) nếu bạn muốn theo thời gian
 
-        // Tìm result mới nhất của user cho quiz này
-        try {
-            List<Result> results = resultRepository.findAllByUserIdAndQuizId(userId, quiz.getId());
-            Optional<Result> latestResult = results.stream()
-                    .filter(result -> Boolean.TRUE.equals(result.getIsLastest()))
-                    .findFirst(); // Hoặc .max(...) nếu bạn muốn theo thời gian
+                if (latestResult.isPresent()) {
+                    logger.debug("Found latest result for user {} and quiz {}: resultId={}",
+                            userId, quiz.getId(), latestResult.get().getId());
+                    dto.setResultId(latestResult.get().getId());
+                } else {
+                    logger.debug("No latest result found for user {} and quiz {}", userId, quiz.getId());
+                }
 
-            if (latestResult.isPresent()) {
-                logger.debug("Found latest result for user {} and quiz {}: resultId={}",
-                        userId, quiz.getId(), latestResult.get().getId());
-                dto.setResultId(latestResult.get().getId());
-            } else {
-                logger.debug("No latest result found for user {} and quiz {}", userId, quiz.getId());
+                logger.debug("CHECK >>>>>" + latestResult.get());
+            } catch (Exception e) {
+                logger.error("Error while fetching latest result for user {} and quiz {}: {}",
+                        userId, quiz.getId(), e.getMessage());
             }
-
-            logger.debug("CHECK >>>>>" + latestResult.get());
-        } catch (Exception e) {
-            logger.error("Error while fetching latest result for user {} and quiz {}: {}",
-                    userId, quiz.getId(), e.getMessage());
         }
 
         return dto;

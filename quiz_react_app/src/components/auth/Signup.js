@@ -6,7 +6,8 @@ import { useState } from "react";
 import { Bounce, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
-import { callRegister } from "../../services/AuthServices";
+import { callRegister, callSocialLogin } from "../../services/AuthServices";
+import { authWithGoogle } from "./oauth2Login/firebase";
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -95,6 +96,42 @@ const Signup = () => {
       setIsLoading(false);
     }
   };
+
+  const handleGoogleAuth = async (e) => {
+    e.preventDefault();
+
+    try {
+      const user = await authWithGoogle();
+      console.log("CHECK google firebase", user);
+      const idToken = await user.getIdToken();
+      console.log("CHECK google token", idToken);
+
+      const res = await callSocialLogin({ token: idToken });
+
+      if (res.data) {
+        const token = res.data.accessToken;
+        localStorage.setItem("accessToken", token);
+        localStorage.setItem(
+          "user",
+          JSON.stringify({
+            id: res.data.userId,
+            fullName: res.data.fullName,
+            email: res.data.email,
+            avatar: res.data.userAvatarUrls,
+            role: res.data.role,
+          })
+        );
+
+        window.dispatchEvent(new Event("loginSuccess"));
+        showToast("success", "Đăng nhập thành công!");
+        navigate("/");
+      }
+    } catch (error) {
+      console.log("ERROR >>> ", error, error.message);
+      showToast("error", "Đăng nhập bằng Google thất bại");
+    }
+  };
+
   return (
     <Container fluid className="d-flex  justify-content-center align-items-center bg-light" style={{ paddingTop: "5px" }}>
       <Row className="w-100 justify-content-center">
@@ -164,7 +201,7 @@ const Signup = () => {
                 <Button variant="outline-primary" className="rounded-circle d-flex align-items-center justify-content-center" style={{ width: 48, height: 48 }}>
                   <FaFacebookF />
                 </Button>
-                <Button variant="outline-danger" className="rounded-circle d-flex align-items-center justify-content-center" style={{ width: 48, height: 48 }}>
+                <Button variant="outline-danger" className="rounded-circle d-flex align-items-center justify-content-center" style={{ width: 48, height: 48 }} onClick={handleGoogleAuth}>
                   <FaGoogle />
                 </Button>
                 <Button variant="outline-dark" className="rounded-circle d-flex align-items-center justify-content-center" style={{ width: 48, height: 48 }}>

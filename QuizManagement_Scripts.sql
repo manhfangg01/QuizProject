@@ -1,6 +1,16 @@
 use quizdb;
 select *
-from users;
+from users user1, users user2
+where user1.id<>user2.id and (user1.email=user2.email );
+select * from roles;
+select *
+from users
+where users.email='manhanh329@gmail.com';
+ALTER TABLE users ADD CONSTRAINT uk_user_email UNIQUE (email);
+
+select * from quiz;
+select * from results
+order by submitted_at desc;
 
 INSERT INTO users (full_name, email, password, created_at, updated_at, created_by, updated_by)
 VALUES
@@ -83,6 +93,7 @@ insert into roles(description, is_active,name)
 values
 ("Has all authorities in system",true, "ADMIN"),
 ("Has some authorities in system",true, "USER");
+
 
 
 

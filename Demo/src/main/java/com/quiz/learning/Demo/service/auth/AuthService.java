@@ -176,7 +176,7 @@ public class AuthService {
         }
     }
 
-    public LoginResponse handleSocialLogin(String email, String name, String pictureUrl) {
+    public LoginResponse handleSocialLogin(String email, String name, String pictureUrl, String uid) {
         Optional<User> userOptional = userRepository.findByEmail(email);
 
         User user = userOptional.orElseGet(() -> {
@@ -185,7 +185,9 @@ public class AuthService {
             newUser.setEmail(email);
             newUser.setFullName(name);
             newUser.setUserAvatarUrls(pictureUrl);
-            newUser.setRole(roleRepository.findByName("USER").orElseThrow());
+            newUser.setRole(roleRepository.findByName("USER").get());
+            newUser.setFirebaseUid(uid);
+
             return userRepository.save(newUser);
         });
 

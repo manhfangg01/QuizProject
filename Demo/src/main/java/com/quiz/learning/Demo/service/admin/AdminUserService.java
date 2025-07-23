@@ -63,6 +63,15 @@ public class AdminUserService {
 
     }
 
+    public boolean handleCheckDuplicatedEmail(String email) {
+        Optional<User> checkUser = this.userRepository.findByEmail(email);
+        if (checkUser.isPresent()) {
+            return true;
+        }
+        return false;
+
+    }
+
     public List<UserTopScoreDTO> handleGetTopUsers(Pageable pageable) {
         return userRepository.findTopUsersByAverageScore(PageRequest.of(0, 5));
     }

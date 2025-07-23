@@ -28,13 +28,15 @@ public class CustomUserDetail implements UserDetailsService {
 
         System.out.println("=== USER FOUND ===");
         System.out.println("Email: " + validUser.getEmail());
-        System.out.println("Password: " + validUser.getPassword());
+        System.out.println("Password: " + validUser.getPassword() != null ? validUser.getPassword() : "");
         System.out.println("CreatedAt: " + validUser.getCreatedAt());
 
+        String password = validUser.getPassword() != null ? validUser.getPassword() : "";
         return new org.springframework.security.core.userdetails.User(
                 validUser.getEmail(),
-                validUser.getPassword(),
+                password,
                 Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + validUser.getRole().getName())));
+
     }
 
     public CustomUserDetail(UserRepository userRepository) {
