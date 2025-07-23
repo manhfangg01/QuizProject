@@ -7,7 +7,7 @@ import { Bounce, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import { callRegister, callSocialLogin } from "../../services/AuthServices";
-import { authWithGoogle } from "./oauth2Login/firebase";
+import { authWithGithub, authWithGoogle } from "./oauth2Login/firebase";
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -102,9 +102,41 @@ const Signup = () => {
 
     try {
       const user = await authWithGoogle();
-      console.log("CHECK google firebase", user);
       const idToken = await user.getIdToken();
-      console.log("CHECK google token", idToken);
+
+      const res = await callSocialLogin({ token: idToken });
+
+      if (res.data) {
+        const token = res.data.accessToken;
+        localStorage.setItem("accessToken", token);
+        localStorage.setItem(
+          "user",
+          JSON.stringify({
+            id: res.data.userId,
+            fullName: res.data.fullName,
+            email: res.data.email,
+            avatar: res.data.userAvatarUrls,
+            role: res.data.role,
+          })
+        );
+
+        window.dispatchEvent(new Event("loginSuccess"));
+        showToast("success", "Đăng nhập thành công!");
+        navigate("/");
+      }
+    } catch (error) {
+      console.log("ERROR >>> ", error, error.message);
+      showToast("error", "Đăng nhập bằng Google thất bại");
+    }
+  };
+
+  const handleGithubAuth = async (e) => {
+    e.preventDefault();
+
+    try {
+      const user = await authWithGithub(); // result user
+      console.log("CHECK user github", user);
+      const idToken = await user.getIdToken();
 
       const res = await callSocialLogin({ token: idToken });
 
@@ -198,13 +230,10 @@ const Signup = () => {
               <div className="text-center mb-3 text-muted">Hoặc đăng ký bằng</div>
 
               <div className="d-flex justify-content-center gap-3 mb-3">
-                <Button variant="outline-primary" className="rounded-circle d-flex align-items-center justify-content-center" style={{ width: 48, height: 48 }}>
-                  <FaFacebookF />
-                </Button>
                 <Button variant="outline-danger" className="rounded-circle d-flex align-items-center justify-content-center" style={{ width: 48, height: 48 }} onClick={handleGoogleAuth}>
                   <FaGoogle />
                 </Button>
-                <Button variant="outline-dark" className="rounded-circle d-flex align-items-center justify-content-center" style={{ width: 48, height: 48 }}>
+                <Button variant="outline-dark" className="rounded-circle d-flex align-items-center justify-content-center" style={{ width: 48, height: 48 }} onClick={handleGithubAuth}>
                   <FaGithub />
                 </Button>
               </div>

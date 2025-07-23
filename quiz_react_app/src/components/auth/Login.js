@@ -3,11 +3,10 @@ import { Form, Button, Card, Container, Row, Col } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import "./auth.scss";
 import { useState } from "react";
-import axios from "axios";
-import { Bounce, ToastContainer, toast } from "react-toastify";
+import { Bounce, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { callLogin, callSocialLogin } from "../../services/AuthServices";
-import { authWithGoogle } from "./oauth2Login/firebase";
+import { authWithGithub, authWithGoogle } from "./oauth2Login/firebase";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -112,7 +111,40 @@ const Login = () => {
       const idToken = await user.getIdToken();
 
       const res = await callSocialLogin({ token: idToken });
-      console.log("check res: ", res);
+
+      if (res.data) {
+        const token = res.data.accessToken;
+        localStorage.setItem("accessToken", token);
+        localStorage.setItem(
+          "user",
+          JSON.stringify({
+            id: res.data.userId,
+            fullName: res.data.fullName,
+            email: res.data.email,
+            avatar: res.data.userAvatarUrls,
+            role: res.data.role,
+          })
+        );
+
+        window.dispatchEvent(new Event("loginSuccess"));
+        showToast("success", "Đăng nhập thành công!");
+        navigate("/");
+      }
+    } catch (error) {
+      console.log("ERROR >>> ", error, error.message);
+      showToast("error", "Đăng nhập bằng Google thất bại");
+    }
+  };
+
+  const handleGithubAuth = async (e) => {
+    e.preventDefault();
+
+    try {
+      const user = await authWithGithub(); // result user
+      console.log("CHECK user github", user);
+      const idToken = await user.getIdToken();
+
+      const res = await callSocialLogin({ token: idToken });
 
       if (res.data) {
         const token = res.data.accessToken;
@@ -198,13 +230,10 @@ const Login = () => {
               <div className="text-center mb-3 text-muted">Hoặc đăng nhập bằng</div>
 
               <div className="d-flex justify-content-center gap-3 mb-3">
-                <Button variant="outline-primary" className="rounded-circle d-flex align-items-center justify-content-center" style={{ width: 48, height: 48 }}>
-                  <FaFacebookF />
-                </Button>
                 <Button variant="outline-danger" className="rounded-circle d-flex align-items-center justify-content-center" style={{ width: 48, height: 48 }} onClick={handleGoogleAuth}>
                   <FaGoogle />
                 </Button>
-                <Button variant="outline-dark" className="rounded-circle d-flex align-items-center justify-content-center" style={{ width: 48, height: 48 }}>
+                <Button variant="outline-dark" className="rounded-circle d-flex align-items-center justify-content-center" style={{ width: 48, height: 48 }} onClick={handleGithubAuth}>
                   <FaGithub />
                 </Button>
               </div>

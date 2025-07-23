@@ -95,3 +95,8 @@ export const putUpdateProfile = async (id, fullName, about, avatar) => {
 
   return response;
 };
+
+export const getUserStatistic = async () => {
+  const response = await axiosInstance.get("/api/client/users/user-statistics");
+  return response;
+};

@@ -13,7 +13,6 @@ export default function AccuracyPieChart() {
   const fetchDataAccuracy = async () => {
     try {
       const response = await getAccuracy();
-      console.log("Check accuracy", response);
       if (response.statusCode === 200) {
         const { correct, incorrect, skipped } = response.data;
         const total = correct + incorrect + skipped;

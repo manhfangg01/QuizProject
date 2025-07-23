@@ -68,7 +68,6 @@ const Setting = () => {
         toast.error("Cập nhật thất bại!");
       }
     } catch (err) {
-      console.log("check err", err);
       toast.error("Có lỗi xảy ra!");
     }
   };

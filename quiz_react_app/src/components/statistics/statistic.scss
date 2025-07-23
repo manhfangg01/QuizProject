@@ -1,0 +1,15 @@
+.statistic-container {
+  .content-container {
+    min-height: calc(100vh - 430px);
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 1170px;
+    padding-top: 2rem;
+    padding-bottom: 3rem;
+
+    .card-body {
+      min-height: 200px;
+    }
+  }
+}

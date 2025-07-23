@@ -82,14 +82,14 @@ const Profile = () => {
         <span className="status-badge">Trang công khai</span>
       </div>
 
-      <Tab.Container defaultActiveKey="courses">
+      <Tab.Container defaultActiveKey="history">
         <div className="tab-section mt-4">
           <Nav variant="tabs" className="justify-content-center">
             <Nav.Item>
-              <Nav.Link eventKey="courses">Khoá học</Nav.Link>
+              <Nav.Link eventKey="history">Kết quả luyện thi</Nav.Link>
             </Nav.Item>
             <Nav.Item>
-              <Nav.Link eventKey="history">Kết quả luyện thi</Nav.Link>
+              <Nav.Link eventKey="courses">Khoá học</Nav.Link>
             </Nav.Item>
           </Nav>
 

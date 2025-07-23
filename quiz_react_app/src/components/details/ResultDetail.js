@@ -23,7 +23,6 @@ const ResultDetail = () => {
     const fetchResultDetail = async () => {
       try {
         const res = await getDetailResult(id);
-        console.log("check  res result", res);
 
         if (res.statusCode === 200) {
           setResult(res.data);

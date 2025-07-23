@@ -16,6 +16,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.quiz.learning.Demo.domain.Answer;
+import com.quiz.learning.Demo.domain.Quiz;
+import com.quiz.learning.Demo.domain.Result;
 import com.quiz.learning.Demo.domain.User;
 import com.quiz.learning.Demo.domain.filterCriteria.admin.UserFilter;
 import com.quiz.learning.Demo.domain.metadata.Metadata;
@@ -26,6 +29,8 @@ import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO.AdminStats;
 import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO.FetchUserDTO;
 import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO.FetchUserPaginationDTO;
 import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO.UserTopScoreDTO;
+import com.quiz.learning.Demo.domain.response.client.statistics.ClientStatistics;
+import com.quiz.learning.Demo.domain.response.client.statistics.ClientStatistics.DoneResult;
 import com.quiz.learning.Demo.repository.QuestionRepository;
 import com.quiz.learning.Demo.repository.QuizRepository;
 import com.quiz.learning.Demo.repository.ResultRepository;
@@ -253,5 +258,7 @@ public class AdminUserService {
         realUser.setRefreshToken(token);
         this.userRepository.save(realUser);
     }
+
+    // Thống kê
 
 }

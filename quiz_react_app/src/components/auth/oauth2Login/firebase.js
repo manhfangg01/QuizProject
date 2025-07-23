@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider, signInWithRedirect, getRedirectResult } from "firebase/auth";
+import { getAuth, GoogleAuthProvider, signInWithRedirect, getRedirectResult, GithubAuthProvider } from "firebase/auth";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBdLUbKCKEesZ6z209IOridEks2gEl6lt4",
@@ -15,6 +15,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
+const githubProvier = new GithubAuthProvider();
 
 // Hàm xử lý đăng nhập bằng redirect
 export const authWithGoogle = async () => {
@@ -30,6 +31,23 @@ export const authWithGoogle = async () => {
     return null;
   } catch (error) {
     console.error("Lỗi đăng nhập Google:", error);
+    throw error;
+  }
+};
+
+export const authWithGithub = async () => {
+  try {
+    // 1. Chuyển hướng sang trang đăng nhập Google
+    await signInWithRedirect(auth, githubProvier);
+
+    // 2. Sau khi redirect trở về, lấy kết quả
+    const result = await getRedirectResult(auth);
+    if (result) {
+      return result.user; // Trả về user nếu thành công
+    }
+    return null;
+  } catch (error) {
+    console.error("Lỗi đăng nhập Github:", error);
     throw error;
   }
 };

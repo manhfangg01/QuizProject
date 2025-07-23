@@ -5,6 +5,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.quiz.learning.Demo.domain.request.client.user.ClientRequestUserUpdate;
 import com.quiz.learning.Demo.domain.response.client.profile.ProfileDTO;
+import com.quiz.learning.Demo.domain.response.client.statistics.ClientStatistics;
 import com.quiz.learning.Demo.domain.response.client.user.ClientResponseUserUpdate;
 import com.quiz.learning.Demo.service.client.ClientUserService;
 
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/api")
@@ -37,6 +39,11 @@ public class ClientUserController {
             @RequestPart(value = "avatar", required = false) MultipartFile avatar) {
 
         return ResponseEntity.ok(this.userService.handleUpdate(updatedUser, avatar));
+    }
+
+    @GetMapping("/client/users/user-statistics")
+    public ResponseEntity<ClientStatistics> getStatistics() {
+        return ResponseEntity.ok(this.userService.handleFetchUserStatistics());
     }
 
 }

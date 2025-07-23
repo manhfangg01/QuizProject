@@ -3,10 +3,6 @@ import { toast } from "react-toastify";
 
 const FormQuizFilter = ({ filter, setFilter, fetchAllQuizzes }) => {
   const handleSearch = (pageNumber, filter) => {
-    console.log("Current filter values:", {
-      title: filter.title,
-      subject: filter.subject,
-    });
     toast.warning("GAY");
     fetchAllQuizzes(pageNumber, filter);
   };
