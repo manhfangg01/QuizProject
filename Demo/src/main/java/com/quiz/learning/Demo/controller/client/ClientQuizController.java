@@ -17,6 +17,7 @@ import com.quiz.learning.Demo.domain.response.client.ResponseSavingProgress;
 import com.quiz.learning.Demo.domain.response.client.ResponseSubmissionDTO;
 import com.quiz.learning.Demo.domain.response.client.FetchClientDTO.QuizClientPaginationDTO;
 import com.quiz.learning.Demo.domain.response.client.FetchClientDTO.QuizClientPlayDTO;
+import com.quiz.learning.Demo.domain.response.client.quiz.DetailedQuiz;
 import com.quiz.learning.Demo.domain.restResponse.ApiMessage;
 import com.quiz.learning.Demo.service.client.ClientQuizService;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -42,6 +43,11 @@ public class ClientQuizController {
             @RequestParam(defaultValue = "asc") String order,
             @ModelAttribute QuizClientFilter filterCriteria) {
         return ResponseEntity.ok().body(this.quizService.handleFetchQuizzes(page, size, sortBy, order, filterCriteria));
+    }
+
+    @GetMapping("/client/quizzes/fetch/{id}")
+    public ResponseEntity<DetailedQuiz> fetchDetailQuizzes(@PathVariable("id") Long id) {
+        return ResponseEntity.ok(this.quizService.handleFetchDetailedQuiz(id));
     }
 
     @GetMapping("/client/quizzes/display/{id}")

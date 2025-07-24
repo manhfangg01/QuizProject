@@ -73,7 +73,7 @@ const LibraryQuizzes = () => {
 
   const formatTime = (time) => {
     if (!time) return "0";
-    const minutes = Math.floor(time / 60);
+    const minutes = Math.floor(time);
     return `${minutes}`;
   };
 
@@ -90,16 +90,16 @@ const LibraryQuizzes = () => {
     }
   };
 
-  const handleDoQuiz = (quiz) => {
+  const handleMoreDetail = (quiz) => {
     const token = localStorage.getItem("accessToken");
     const user = localStorage.getItem("user");
 
     if (!token || !user) {
-      toast.warning("Please login to take the quiz!");
-      navigate("/login", { state: { from: `/do-quiz/${quiz.quizId}` } });
+      toast.warning("Please login to see more detail !");
+      navigate("/login", { state: { from: `/detailedQuiz/${quiz.quizId}` } });
       return;
     }
-    navigate(`/do-quiz/${quiz.quizId}`);
+    navigate(`/detailedQuiz/${quiz.quizId}`);
   };
 
   if (loading && quizzes.length === 0) {
@@ -137,7 +137,9 @@ const LibraryQuizzes = () => {
               <div key={quiz.quizId} className="col">
                 <div className="card h-100 shadow-sm">
                   <div className="card-body">
-                    <h5 className="card-title text-primary">{quiz.title}</h5>
+                    <h5 className="card-title text-primary" style={{ textAlign: "center" }}>
+                      {quiz.title}
+                    </h5>
 
                     <div className="card-text text-muted mb-3">
                       <div className="d-flex align-items-center mb-1">
@@ -172,8 +174,8 @@ const LibraryQuizzes = () => {
                         View Result
                       </Link>
                     ) : (
-                      <Button variant="primary" className="w-100" onClick={() => handleDoQuiz(quiz)}>
-                        Take Quiz
+                      <Button variant="primary" className="w-100" onClick={() => handleMoreDetail(quiz)}>
+                        More Detail
                       </Button>
                     )}
                   </div>

@@ -68,3 +68,7 @@ export const submitQuiz = async (quizId, userId, duration, answers, optionLabelM
     optionLabelMap,
   });
 };
+
+export const showDetailQuiz = async (id) => {
+  return await axiosInstance.get(`/api/client/quizzes/fetch/${id}`);
+};

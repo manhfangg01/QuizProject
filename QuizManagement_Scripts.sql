@@ -1,4 +1,5 @@
 use quizdb;
+select * from quiz;
 select *
 from users user1, users user2
 where user1.id<>user2.id and (user1.email=user2.email );
@@ -11,7 +12,7 @@ ALTER TABLE users ADD CONSTRAINT uk_user_email UNIQUE (email);
 select * from quiz;
 select * from results
 order by submitted_at desc;
-
+ALTER TABLE results DROP COLUMN spent_time;
 INSERT INTO users (full_name, email, password, created_at, updated_at, created_by, updated_by)
 VALUES
 ('Alice Nguyen', 'alice@example.com', 'password123', NOW(), NOW(), 'system', 'system'),

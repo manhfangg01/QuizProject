@@ -3,6 +3,7 @@ package com.quiz.learning.Demo.service.client;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -36,6 +37,8 @@ import com.quiz.learning.Demo.domain.response.client.FetchClientDTO.QuizClientDT
 import com.quiz.learning.Demo.domain.response.client.FetchClientDTO.QuizClientPaginationDTO;
 import com.quiz.learning.Demo.domain.response.client.FetchClientDTO.QuizClientPlayDTO;
 import com.quiz.learning.Demo.domain.response.client.ResponseSubmissionDTO.Detail;
+import com.quiz.learning.Demo.domain.response.client.quiz.DetailedQuiz;
+import com.quiz.learning.Demo.domain.response.client.quiz.DetailedQuiz.RecentResult;
 import com.quiz.learning.Demo.repository.AnswerRepository;
 import com.quiz.learning.Demo.repository.OptionRepository;
 import com.quiz.learning.Demo.repository.QuestionRepository;
@@ -380,6 +383,40 @@ public class ClientQuizService {
         response.setUserId(saved.getUserId());
         response.setSavedAt(saved.getSavedAt());
         return response;
+    }
+
+    public DetailedQuiz handleFetchDetailedQuiz(Long quizId) {
+        DetailedQuiz quiz = new DetailedQuiz();
+        Optional<Quiz> checkQuiz = this.quizRepository.findById(quizId);
+        Quiz realQuiz = checkQuiz.orElseThrow(() -> new ObjectNotFound("Detail quiz not found"));
+        quiz.setQuizTitle(realQuiz.getTitle());
+        quiz.setSubject(realQuiz.getSubjectName());
+        quiz.setTimeLimit(realQuiz.getTimeLimit());
+        quiz.setTotalComments(0);
+        quiz.setTotalParticipants(realQuiz.getTotalParticipants());
+        quiz.setTotalParts(1);
+        quiz.setTotalQuestions(realQuiz.getQuestions() == null ? 0 : realQuiz.getQuestions().size());
+        List<Result> results = this.resultRepository.findByQuizId(quizId);
+        if (results != null) {
+            List<RecentResult> recentResults = results.stream()
+                    .sorted(Comparator.comparing(Result::getSubmittedAt).reversed()) // Sắp xếp theo thời gian giảm dần
+                                                                                     // (mới nhất đầu tiên)
+                    .limit(5) // Giới hạn chỉ lấy 5 kết quả
+                    .map(res -> {
+
+                        RecentResult recentResult = new RecentResult();
+                        recentResult.setDuration(res.getDuration());
+                        recentResult.setResultId(res.getId());
+                        recentResult.setScore(res.getScore());
+                        recentResult.setSubmittedDate(res.getSubmittedAt());
+                        recentResult.setTotalQuestions(quiz.getTotalQuestions());
+                        return recentResult;
+                    })
+                    .collect(Collectors.toList()); // Sử dụng collect thay vì toList() để rõ ràng hơn
+            quiz.setResults(recentResults);// Nên dùng tên setRecentResults thay vì setResults
+        }
+
+        return quiz;
     }
 
 }

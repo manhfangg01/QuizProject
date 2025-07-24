@@ -29,6 +29,7 @@ import DoQuiz from "./components/play/DoQuiz.js";
 import Unauthenticated from "./components/auth/unauthorized/Unauthenticated.js";
 import ProtectedRoute from "./components/auth/ProtectedRoute.js";
 import Statistics from "./components/statistics/Statistics.js";
+import DetailedQuiz from "./components/quizzes/DetailedQuiz.js";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 const isAuthenticated = !!localStorage.getItem("accessToken");
@@ -98,6 +99,15 @@ root.render(
             element={
               <ProtectedRoute isAuthenticated={isAuthenticated} userRole={userRole} allowedRoles={["USER", "ADMIN"]}>
                 <DoQuiz />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/detailedQuiz/:id"
+            element={
+              <ProtectedRoute isAuthenticated={isAuthenticated} userRole={userRole} allowedRoles={["USER", "ADMIN"]}>
+                <DetailedQuiz />
               </ProtectedRoute>
             }
           />

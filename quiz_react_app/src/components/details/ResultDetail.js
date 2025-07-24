@@ -42,6 +42,18 @@ const ResultDetail = () => {
     element?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
+  const handleMoreDetail = (quizId) => {
+    const token = localStorage.getItem("accessToken");
+    const user = localStorage.getItem("user");
+
+    if (!token || !user) {
+      toast.warning("Please login to see more detail !");
+      navigate("/login", { state: { from: `/detailedQuiz/${quizId}` } });
+      return;
+    }
+    navigate(`/detailedQuiz/${quizId}`);
+  };
+
   return (
     <Container>
       <Alert variant="warning">Bạn chưa tạo mục tiêu...</Alert>
@@ -67,11 +79,9 @@ const ResultDetail = () => {
         </div>
         <div>
           <div style={{ textAlign: "center" }}>
-            <Link to={`/do-quiz/${result?.quizId}`} className="d-block h-100">
-              <Button variant="primary" className="h-100">
-                Làm lại
-              </Button>
-            </Link>
+            <Button variant="primary" className="h-100" onClick={() => handleMoreDetail(result?.quizId)}>
+              Làm lại
+            </Button>
             <div className="d-flex align-items-center gap-1">
               <IoIosInformationCircleOutline /> Kết quả của bạn sẽ được cập nhật lại sau khi làm
             </div>

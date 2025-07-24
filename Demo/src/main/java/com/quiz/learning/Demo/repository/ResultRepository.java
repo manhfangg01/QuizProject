@@ -15,7 +15,7 @@ import com.quiz.learning.Demo.domain.User;
 
 @Repository
 public interface ResultRepository extends JpaRepository<Result, Long>, JpaSpecificationExecutor<Result> {
-    public Optional<Result> findByQuizId(Long quizId);
+    public List<Result> findByQuizId(Long quizId);
 
     public Optional<Result> findByUserAndQuiz(User user, Quiz quiz);
 

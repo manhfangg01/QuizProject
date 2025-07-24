@@ -1,18 +1,22 @@
 import { useEffect, useState } from "react";
-import { Link, useParams, useNavigate } from "react-router-dom";
+import { Link, useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { displayQuiz, submitQuiz } from "../../services/QuizServices";
 import "./DoQuiz.scss";
-import { Button } from "react-bootstrap";
+import { Button, Spinner } from "react-bootstrap";
 
 const DoQuiz = () => {
   const { id } = useParams();
+  const [searchParams] = useSearchParams();
+  const timeParam = searchParams.get("time");
+
   const [answers, setAnswers] = useState([]);
   const [quiz, setQuiz] = useState(null);
   const [loading, setLoading] = useState(true);
   const [timeLeft, setTimeLeft] = useState(0);
   const [timer, setTimer] = useState(null);
   const [elapsedTime, setElapsedTime] = useState(0);
+  const [isUnlimitedTime, setIsUnlimitedTime] = useState(false);
 
   const navigate = useNavigate();
 
@@ -40,28 +44,31 @@ const DoQuiz = () => {
 
   const startTimer = () => {
     if (timer) clearInterval(timer);
+
     const newTimer = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev <= 1) {
-          clearInterval(newTimer);
-          handleTimeUp();
-          return 0;
-        }
-        const newTimeLeft = prev - 1;
-        setElapsedTime(quiz.timeLimit * 60 - newTimeLeft);
-        return newTimeLeft;
-      });
+      setElapsedTime((prev) => prev + 1);
+
+      if (!isUnlimitedTime) {
+        setTimeLeft((prev) => {
+          if (prev <= 1) {
+            clearInterval(newTimer);
+            handleTimeUp();
+            return 0;
+          }
+          return prev - 1;
+        });
+      }
     }, 1000);
+
     setTimer(newTimer);
   };
 
   const handleTimeUp = () => {
-    toast.warning("Hết giờ! Tự động nộp bài...");
+    toast.warning("Time's up! Submitting your quiz...");
     handleSubmit();
   };
 
   const handleAnswer = (questionId, selectedOptionId) => {
-    // Ghi đè nếu đã chọn trước đó
     setAnswers((prev) => {
       const updated = prev.filter((ans) => ans.questionId !== questionId);
       return [...updated, { questionId, selectedOptionId }];
@@ -88,32 +95,42 @@ const DoQuiz = () => {
 
   const handleSubmit = async () => {
     try {
-      const stored = localStorage.getItem("user");
+      if (isUnlimitedTime && elapsedTime < 60) {
+        toast.warning("Please spend at least 1 minute on the quiz");
+        return;
+      }
 
+      const stored = localStorage.getItem("user");
       if (stored) {
         const userInfo = JSON.parse(stored);
         const optionLabelMap = generateOptionLabelMap();
 
         const res = await submitQuiz(id, userInfo.id, elapsedTime, answers, optionLabelMap);
+
         if (res.statusCode === 200) {
           if (timer) clearInterval(timer);
           toast.success("Quiz submitted successfully!");
           navigate(`/results/${res.data.resultId}`);
         } else {
-          toast.warning("Gọi API thất bại");
+          toast.warning("Failed to submit quiz");
         }
+      } else {
+        toast.warning("Please login to submit the quiz");
       }
     } catch (err) {
-      toast.warning(err.message || "Lỗi khi nộp bài");
+      toast.error(err.message || "Error submitting quiz");
     }
   };
 
   useEffect(() => {
     fetchQuizData(id);
+    setIsUnlimitedTime(timeParam === "infinity");
 
     const handleBeforeUnload = (event) => {
-      event.preventDefault();
-      event.returnValue = "Bạn có chắc muốn rời khỏi trang? Tiến trình quiz có thể bị mất!";
+      if (answers.length > 0) {
+        event.preventDefault();
+        event.returnValue = "You have unsaved answers. Are you sure you want to leave?";
+      }
       return event.returnValue;
     };
 
@@ -123,17 +140,29 @@ const DoQuiz = () => {
       if (timer) clearInterval(timer);
       window.removeEventListener("beforeunload", handleBeforeUnload);
     };
-  }, [id]);
+  }, [id, timeParam]);
 
   useEffect(() => {
-    if (quiz && quiz.timeLimit) {
-      setTimeLeft(quiz.timeLimit * 60);
+    if (quiz) {
+      if (isUnlimitedTime) {
+        setTimeLeft(0);
+        setElapsedTime(0);
+      } else {
+        const timeLimit = timeParam ? parseInt(timeParam) : quiz.timeLimit;
+        setTimeLeft(timeLimit * 60);
+        setElapsedTime(0);
+      }
       startTimer();
     }
-  }, [quiz]);
+  }, [quiz, isUnlimitedTime, timeParam]);
 
   if (loading) {
-    return <div className="text-center py-5">Loading quiz...</div>;
+    return (
+      <div className="text-center py-5">
+        <Spinner animation="border" variant="primary" />
+        <p>Loading quiz...</p>
+      </div>
+    );
   }
 
   if (!quiz) {
@@ -142,30 +171,39 @@ const DoQuiz = () => {
 
   return (
     <div className="quiz-container">
-      <div className="quiz-header d-flex justify-content-center align-items-center mb-5 gap-3">
-        <h1>{quiz.title}</h1>
-        <Link to={"/quizzes"}>
-          <Button>Thoát</Button>
-        </Link>
+      <div className="quiz-header d-flex justify-content-between align-items-center mb-4 p-3 bg-light rounded">
+        <h2 className="mb-0">{quiz.title}</h2>
+        <div className="d-flex gap-2">
+          <Button variant="outline-danger" onClick={() => window.confirm("Are you sure you want to exit?") && navigate("/quizzes")}>
+            Exit Quiz
+          </Button>
+        </div>
       </div>
+
       <div className="quiz-content d-flex">
-        <div className="quiz-content flex-grow-1 pe-4">
+        <div className="quiz-questions flex-grow-1 pe-4">
           {quiz.questions?.map((question, index) => (
-            <div key={question.questionId} id={`question-${question.questionId}`} className="question-card mb-4 p-3 border rounded">
-              <h5 className="question-title fw-bold mb-3">
-                {index + 1}. {question.context}
-              </h5>
+            <div key={question.questionId} id={`question-${question.questionId}`} className="question-card mb-4 p-4 border rounded shadow-sm">
+              <h4 className="question-title fw-bold mb-3">
+                <span className="text-primary">Question {index + 1}:</span> {question.context}
+              </h4>
+              {question.imageUrl && (
+                <div className="mb-3">
+                  <img src={question.imageUrl} alt={`Question ${index + 1}`} className="img-fluid rounded" style={{ maxHeight: "200px" }} />
+                </div>
+              )}
               <div className="options-list">
                 {question.options?.map((option) => (
-                  <div key={option.optionId} className="form-check mb-2">
+                  <div key={option.optionId} className="form-check mb-3">
                     <input
                       className="form-check-input"
                       type="radio"
                       name={`question-${question.questionId}`}
                       id={`option-${option.optionId}`}
                       onChange={() => handleAnswer(question.questionId, option.optionId)}
+                      checked={answers.some((a) => a.questionId === question.questionId && a.selectedOptionId === option.optionId)}
                     />
-                    <label className="form-check-label" htmlFor={`option-${option.optionId}`}>
+                    <label className="form-check-label fs-5" htmlFor={`option-${option.optionId}`}>
                       {option.content}
                     </label>
                   </div>
@@ -175,31 +213,40 @@ const DoQuiz = () => {
           ))}
         </div>
 
-        <div className="quiz-sidebar" style={{ width: "250px" }}>
-          <div className="sidebar-card border rounded p-3 question-box">
-            <div className="time-remaining mb-3">
-              <h6 className="fw-bold">Thời gian còn lại:</h6>
-              <div className="time-display fs-4">{formatTime(timeLeft)}</div>
+        <div className="quiz-sidebar" style={{ width: "300px" }}>
+          <div className="sidebar-card border rounded p-3 shadow-sm sticky-top" style={{ top: "20px" }}>
+            <div className="time-display mb-4 text-center">
+              <h5 className="fw-bold">{isUnlimitedTime ? "Time Elapsed" : "Time Remaining"}</h5>
+              <div className={`display-4 ${!isUnlimitedTime && timeLeft < 300 ? "text-danger" : "text-primary"}`}>{isUnlimitedTime ? formatTime(elapsedTime) : formatTime(timeLeft)}</div>
+              {isUnlimitedTime ? <small className="text-muted">No time limit</small> : <small className="text-muted">{timeParam || quiz.timeLimit} minute quiz</small>}
             </div>
 
-            <button className="submit-btn btn btn-primary w-100 mb-3" onClick={handleSubmit}>
-              Nộp bài
-            </button>
+            <Button variant="primary" size="lg" className="w-100 mb-3 fw-bold" onClick={handleSubmit}>
+              Submit Quiz
+            </Button>
 
-            <hr className="my-2" />
+            <hr className="my-3" />
 
-            <div className="question-navigation">
-              <h6 className="fw-bold mb-2">Câu hỏi</h6>
-              <div className="d-flex flex-wrap gap-2">
+            <div className="question-progress">
+              <h5 className="fw-bold mb-3 text-center">Question Navigation</h5>
+              <div className="d-flex flex-wrap gap-2 justify-content-center">
                 {quiz.questions?.map((question, index) => (
-                  <button
+                  <Button
                     key={question.questionId}
-                    className={`question-btn btn btn-sm ${answers.find((a) => a.questionId === question.questionId) ? "btn-success" : "btn-outline-secondary"}`}
+                    variant={answers.some((a) => a.questionId === question.questionId) ? "success" : "outline-secondary"}
+                    size="sm"
+                    className="fs-5"
+                    style={{ width: "40px", height: "40px" }}
                     onClick={() => scrollToQuestion(question.questionId)}
                   >
                     {index + 1}
-                  </button>
+                  </Button>
                 ))}
+              </div>
+              <div className="mt-3 text-center">
+                <small className="text-muted">
+                  Completed: {answers.length}/{quiz.questions?.length}
+                </small>
               </div>
             </div>
           </div>
