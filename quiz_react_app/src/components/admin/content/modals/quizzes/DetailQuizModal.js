@@ -2,6 +2,7 @@ import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import { getQuizById } from "../../../../../services/QuizServices";
 import { useEffect, useState } from "react";
+import AudioPlayer from "../../../../../utils/AudioPlayer";
 
 const DetailQuizModal = ({ show, setShow, quizData }) => {
   const [fullQuizData, setFullQuizData] = useState({});
@@ -69,6 +70,15 @@ const DetailQuizModal = ({ show, setShow, quizData }) => {
               </ul>
             ) : (
               <div className="text-muted">Không có câu hỏi nào.</div>
+            )}
+
+            {fullQuizData.audioUrl ? (
+              <div className="mb-2">
+                <strong>Audio mô tả:</strong>
+                <AudioPlayer audioUrl={fullQuizData.audioUrl} />
+              </div>
+            ) : (
+              <div className="text-muted">Không có ghi âm nào</div>
             )}
           </>
         ) : (

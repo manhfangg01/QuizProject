@@ -191,6 +191,7 @@ public class ClientQuizService {
         Quiz realQuiz = checkQuiz.get();
         QuizClientPlayDTO dto = new QuizClientPlayDTO();
         dto.setQuizId(realQuiz.getId());
+        dto.setAudioUrl(realQuiz.getAudioUrl());
         dto.setDifficulty(realQuiz.getDifficulty());
         dto.setIsActive(realQuiz.getIsActive());
         dto.setNumberOfQuestion(realQuiz.getQuestions() == null ? 0 : realQuiz.getQuestions().size());
@@ -200,6 +201,7 @@ public class ClientQuizService {
         dto.setTotalParticipants(realQuiz.getTotalParticipants());
         dto.setQuestions(realQuiz.getQuestions() == null ? Collections.emptyList()
                 : realQuiz.getQuestions().stream().map(clientQuestionService::convertToDto).toList());
+
         return dto;
 
     }

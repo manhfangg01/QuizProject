@@ -1,5 +1,7 @@
 package com.quiz.learning.Demo.service.admin;
 
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -12,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.quiz.learning.Demo.domain.Question;
 import com.quiz.learning.Demo.domain.Quiz;
@@ -27,8 +30,10 @@ import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO.FetchResultDTO
 import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO.FetchTableQuizDTO;
 import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO.QuizPopularityDTO;
 import com.quiz.learning.Demo.repository.QuizRepository;
+import com.quiz.learning.Demo.service.azure.AzureBlobService;
 import com.quiz.learning.Demo.service.specification.QuizSpecs;
 import com.quiz.learning.Demo.util.error.DuplicatedObjectException;
+import com.quiz.learning.Demo.util.error.InvalidUploadedFile;
 import com.quiz.learning.Demo.util.error.NullObjectException;
 import com.quiz.learning.Demo.util.error.ObjectNotFound;
 
@@ -38,13 +43,15 @@ public class AdminQuizService {
     private final AdminQuestionService adminQuestionService;
     private final AdminResultService adminResultService;
     private final QuizSpecs quizSpecs;
+    private final AzureBlobService azureBlobService;
 
     public AdminQuizService(QuizRepository quizRepository, AdminQuestionService adminQuestionService,
-            AdminResultService adminResultService, QuizSpecs quizSpecs) {
+            AdminResultService adminResultService, QuizSpecs quizSpecs, AzureBlobService azureBlobService) {
         this.quizRepository = quizRepository;
         this.adminQuestionService = adminQuestionService;
         this.adminResultService = adminResultService;
         this.quizSpecs = quizSpecs;
+        this.azureBlobService = azureBlobService;
     }
 
     public List<QuizPopularityDTO> handleGetTopQuizzes(Pageable pageable) {
@@ -72,6 +79,7 @@ public class AdminQuizService {
         dto.setTotalParticipants(quiz.getTotalParticipants());
         dto.setIsActive(quiz.getIsActive());
         dto.setDifficulty(quiz.getDifficulty());
+        dto.setAudioUrl(quiz.getAudioUrl());
 
         // 🔥 Quan trọng: map câu hỏi sang FetchQuestionDTO
         List<FetchQuestionDTO> questions = quiz.getQuestions().stream()
@@ -172,7 +180,31 @@ public class AdminQuizService {
                         .collect(Collectors.toList());
     }
 
-    public FetchAdminDTO.FetchTableQuizDTO handleCreateQuiz(CreateQuizRequest createdQuiz) {
+    public void handleAssigningAudio(Quiz quiz, MultipartFile audioFile) {
+        try {
+            if (audioFile != null && !audioFile.isEmpty()) {
+                String fileName = audioFile.getOriginalFilename();
+                List<String> allowedExtensions = Arrays.asList("mp3", "wav", "ogg", "aac");
+                boolean isValid = allowedExtensions.stream()
+                        .anyMatch(ext -> fileName.toLowerCase().endsWith(ext));
+
+                if (!isValid) {
+                    throw new InvalidUploadedFile(
+                            "Invalid audio file extension. Only allows: " + allowedExtensions);
+                }
+
+                String audioUrl = azureBlobService.uploadFile(audioFile);
+                quiz.setAudioUrl(audioUrl);
+            } else {
+
+                quiz.setAudioUrl("");
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to upload audio file", e);
+        }
+    }
+
+    public FetchAdminDTO.FetchTableQuizDTO handleCreateQuiz(CreateQuizRequest createdQuiz, MultipartFile audioFile) {
         if (createdQuiz == null) {
             throw new NullObjectException("Quiz is null");
         }
@@ -180,7 +212,6 @@ public class AdminQuizService {
         if (quizRepository.findByTitle(createdQuiz.getTitle()).isPresent()) {
             throw new DuplicatedObjectException("Quiz's title is duplicated");
         }
-
         if (createdQuiz.getQuestions() == null || createdQuiz.getQuestions().isEmpty()) {
             throw new NullObjectException("Quiz must contain at least one question");
         }
@@ -194,11 +225,12 @@ public class AdminQuizService {
         quiz.setTitle(createdQuiz.getTitle());
         quiz.setTotalParticipants(Long.valueOf(0));
 
+        this.handleAssigningAudio(quiz, audioFile);
         Quiz saved = quizRepository.save(quiz);
         return convertToTableDTO(saved);
     }
 
-    public FetchAdminDTO.FetchTableQuizDTO handleUpdateQuiz(UpdateQuizRequest request) {
+    public FetchAdminDTO.FetchTableQuizDTO handleUpdateQuiz(UpdateQuizRequest request, MultipartFile audioFile) {
         Quiz quiz = quizRepository.findById(request.getQuizId())
                 .orElseThrow(() -> new ObjectNotFound("Quiz with id " + request.getQuizId() + " not found"));
 
@@ -217,6 +249,9 @@ public class AdminQuizService {
         // Lấy danh sách câu hỏi mới
         List<Question> updatedQuestions = fetchQuestionsByIds(request.getQuestions());
         quiz.setQuestions(updatedQuestions);
+        if (audioFile != null) {
+            this.handleAssigningAudio(quiz, audioFile);
+        }
 
         return convertToTableDTO(quizRepository.save(quiz));
     }

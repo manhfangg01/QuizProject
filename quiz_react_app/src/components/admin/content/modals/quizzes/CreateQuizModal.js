@@ -13,6 +13,7 @@ const CreateQuizModal = ({ show, setShow, onCreateQuiz, setShowQuestionSelection
   const [difficulty, setDifficulty] = useState("EASY");
   const [isActive, setIsActive] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
+  const [audioFile, setAudioFile] = useState(null);
   const handleClose = () => {
     setShow(false);
     setTitle("");
@@ -38,26 +39,43 @@ const CreateQuizModal = ({ show, setShow, onCreateQuiz, setShowQuestionSelection
       toast.warning("Vui lòng chọn từ 2 câu hỏi trở lên");
       return;
     }
+
+    // ✅ Kiểm tra định dạng file audio nếu có
+    if (audioFile) {
+      const allowedTypes = ["audio/mpeg", "audio/wav", "audio/ogg"];
+      if (!allowedTypes.includes(audioFile.type)) {
+        toast.warning("Định dạng audio không hợp lệ! Chỉ chấp nhận .mp3, .wav hoặc .ogg");
+        return;
+      }
+    }
+
     try {
       setIsLoading(true);
-      const res = await postCreateQuiz(title, subjectName, timeLimit, difficulty, isActive, selectedQuestionIds);
+      const res = await postCreateQuiz(
+        title,
+        subjectName,
+        timeLimit,
+        difficulty,
+        isActive,
+        selectedQuestionIds,
+        audioFile // ✅ Gửi file audio lên backend
+      );
 
       if (res.statusCode === 200 || res.statusCode === 201) {
-        toast.success("success", "Tạo bài quiz thành công!");
+        toast.success("Tạo bài quiz thành công!");
         onCreateQuiz();
         handleClose();
       } else {
-        toast.warning("warning", res.message || "Tạo quiz thất bại!");
+        toast.warning(res.message || "Tạo quiz thất bại!");
       }
     } catch (err) {
       console.error("Error creating quiz:", err);
       const msg = err?.response?.data?.message || "Đã xảy ra lỗi khi tạo quiz!";
-      toast.warning("error", msg);
+      toast.warning(msg);
     } finally {
       setIsLoading(false);
     }
   };
-
   return (
     <Modal show={show} onHide={handleClose} size="lg" backdrop="static">
       <Modal.Header closeButton>
@@ -95,6 +113,11 @@ const CreateQuizModal = ({ show, setShow, onCreateQuiz, setShowQuestionSelection
 
         <Form.Group className="mb-3">
           <Form.Check type="checkbox" label="Kích hoạt bài Quiz ngay" checked={isActive} onChange={(e) => setIsActive(e.target.checked)} />
+        </Form.Group>
+
+        <Form.Group className="mb-3">
+          <Form.Label>Audio</Form.Label>
+          <Form.Control type="file" onChange={(e) => setAudioFile(e.target.files[0])} />
         </Form.Group>
 
         {/* Chọn câu hỏi */}

@@ -11,6 +11,7 @@ const UpdateQuizModal = ({ show, setShow, onUpdateQuiz, quizData, setShowUpdateQ
   const [difficulty, setDifficulty] = useState("EASY");
   const [isActive, setIsActive] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
+  const [audioFile, setAudioFile] = useState(null);
 
   // Load dữ liệu quiz khi mở modal
   useEffect(() => {
@@ -35,7 +36,8 @@ const UpdateQuizModal = ({ show, setShow, onUpdateQuiz, quizData, setShowUpdateQ
     setIsActive(true); // ✅ Thay null bằng giá trị mặc định
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     if (!title || !subjectName || updatedQuestionIds.length < 2) {
       toast.warning("Vui lòng nhập đầy đủ thông tin và chọn ít nhất 2 câu hỏi.");
       return;
@@ -43,7 +45,16 @@ const UpdateQuizModal = ({ show, setShow, onUpdateQuiz, quizData, setShowUpdateQ
 
     setIsLoading(true);
     try {
-      const res = await putUpdateQuiz(quizData.quizId, title, subjectName, timeLimit, difficulty, isActive, updatedQuestionIds);
+      const res = await putUpdateQuiz(
+        quizData.quizId,
+        title,
+        subjectName,
+        timeLimit,
+        difficulty,
+        isActive,
+        updatedQuestionIds,
+        audioFile // ✅ truyền vào đây
+      );
       if (res?.statusCode === 200 || res?.statusCode === 201) {
         toast.success("Cập nhật bài Quiz thành công");
         onUpdateQuiz(1, {});
@@ -93,6 +104,10 @@ const UpdateQuizModal = ({ show, setShow, onUpdateQuiz, quizData, setShowUpdateQ
 
         <Form.Group className="mb-3">
           <Form.Check type="checkbox" label="Kích hoạt bài quiz" checked={isActive} onChange={(e) => setIsActive(e.target.checked)} />
+        </Form.Group>
+        <Form.Group className="mb-3">
+          <Form.Label>Audio mô tả (nếu có)</Form.Label>
+          <Form.Control type="file" accept="audio/*" onChange={(e) => setAudioFile(e.target.files[0])} />
         </Form.Group>
 
         <Form.Group className="mb-3">

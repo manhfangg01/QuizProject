@@ -25,6 +25,7 @@ public class ClientQuestionService {
                 : question.getOptions().stream().map(clientOptionService::convertToDto).toList());
         dto.setQuestionId(question.getId());
         dto.setQuestionImage(question.getQuestionImage());
+
         return dto;
     }
 

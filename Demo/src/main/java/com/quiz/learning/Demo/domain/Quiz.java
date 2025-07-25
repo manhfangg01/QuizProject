@@ -28,6 +28,7 @@ public class Quiz {
     private String subjectName;
     private Long timeLimit;
     private Long totalParticipants;
+    private String audioUrl;
 
     private Boolean isActive;
     @Enumerated(EnumType.STRING)

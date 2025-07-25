@@ -1,10 +1,12 @@
 package com.quiz.learning.Demo.controller.admin;
 
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.quiz.learning.Demo.domain.filterCriteria.admin.QuizFilter;
 import com.quiz.learning.Demo.domain.request.admin.quiz.CreateQuizRequest;
 import com.quiz.learning.Demo.domain.request.admin.quiz.UpdateQuizRequest;
+import com.quiz.learning.Demo.domain.request.admin.user.CreateUserRequest;
 import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO;
 import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO.FetchQuizPaginationDTO;
 import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO.QuizPopularityDTO;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 
 import java.util.List;
 
@@ -63,16 +66,19 @@ public class AdminQuizController {
 
     @PostMapping("/admin/quizzes/create")
     @ApiMessage("create a question")
-    public ResponseEntity<FetchAdminDTO.FetchTableQuizDTO> create(@Valid @RequestBody CreateQuizRequest quiz) {
-        return ResponseEntity.ok().body(this.quizService.handleCreateQuiz(quiz));
+    public ResponseEntity<FetchAdminDTO.FetchTableQuizDTO> create(
+            @Valid @RequestPart("createQuizRequest") CreateQuizRequest quiz,
+            @RequestPart(value = "audioFile", required = false) MultipartFile audioFile) {
+        return ResponseEntity.ok().body(this.quizService.handleCreateQuiz(quiz, audioFile));
     }
 
     @PutMapping("/admin/quizzes/update")
     @ApiMessage("update a quiz")
     public ResponseEntity<FetchAdminDTO.FetchTableQuizDTO> updateQuiz(
-            @Valid @RequestBody UpdateQuizRequest updatedQuiz) {
+            @Valid @RequestPart("updateQuizRequest") UpdateQuizRequest quiz,
+            @RequestPart(value = "audioFile", required = false) MultipartFile audioFile) {
 
-        return ResponseEntity.ok().body(this.quizService.handleUpdateQuiz(updatedQuiz));
+        return ResponseEntity.ok().body(this.quizService.handleUpdateQuiz(quiz, audioFile));
     }
 
     @DeleteMapping("admin/quizzes/delete/{id}")

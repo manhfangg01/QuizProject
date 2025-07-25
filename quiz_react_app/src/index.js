@@ -30,6 +30,7 @@ import Unauthenticated from "./components/auth/unauthorized/Unauthenticated.js";
 import ProtectedRoute from "./components/auth/ProtectedRoute.js";
 import Statistics from "./components/statistics/Statistics.js";
 import DetailedQuiz from "./components/quizzes/DetailedQuiz.js";
+import Test from "./utils/Test.js";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 const isAuthenticated = !!localStorage.getItem("accessToken");
@@ -43,6 +44,7 @@ root.render(
         <Route path="/" element={<App />}>
           {/* Public routes */}
           <Route index element={<Home />} />
+          <Route path="test" element={<Test />} />
           <Route path="login" element={<Login />} />
           <Route path="signup" element={<Signup />} />
           <Route path="forgot-password" element={<CheckingEmail />} />

@@ -17,18 +17,11 @@ export const getQuizById = async (quizId) => {
   return await axiosInstance.get(`/api/admin/quizzes/fetch/${quizId}`);
 };
 
-export const postCreateQuiz = async (title, subjectName, timeLimit, difficulty, isActive, questions) => {
-  return axiosInstance.post("/api/admin/quizzes/create", {
-    title,
-    subjectName,
-    timeLimit,
-    isActive,
-    difficulty,
-    questions,
-  });
-};
-export const putUpdateQuiz = async (quizId, title, subjectName, timeLimit, difficulty, isActive, updatedQuestionIds) => {
-  const response = await axiosInstance.put("/api/admin/quizzes/update", {
+export const putUpdateQuiz = async (quizId, title, subjectName, timeLimit, difficulty, isActive, updatedQuestionIds, audioFile) => {
+  const formData = new FormData();
+
+  // Tạo object chứa thông tin quiz (không gồm file)
+  const quizData = {
     quizId,
     title,
     subjectName,
@@ -36,9 +29,51 @@ export const putUpdateQuiz = async (quizId, title, subjectName, timeLimit, diffi
     difficulty,
     isActive,
     questions: updatedQuestionIds,
+  };
+
+  const quizBlob = new Blob([JSON.stringify(quizData)], {
+    type: "application/json",
   });
 
+  formData.append("updateQuizRequest", quizBlob);
+
+  if (audioFile) {
+    formData.append("audioFile", audioFile);
+  }
+
+  const response = await axiosInstance.put("/api/admin/quizzes/update", formData);
   return response;
+};
+
+export const postCreateQuiz = async (title, subjectName, timeLimit, difficulty, isActive, questions, audioFile) => {
+  const formData = new FormData();
+
+  // Tạo object chứa thông tin quiz (không gồm file)
+  const quizData = {
+    title,
+    subjectName,
+    timeLimit,
+    difficulty,
+    isActive,
+    questions, // Mảng các câu hỏi (object), backend cần hỗ trợ parse mảng JSON
+  };
+
+  const quizBlob = new Blob([JSON.stringify(quizData)], {
+    type: "application/json",
+  });
+
+  formData.append("createQuizRequest", quizBlob); // giống như @RequestPart("createQuizRequest")
+
+  if (audioFile) {
+    formData.append("audioFile", audioFile); // giống như @RequestParam MultipartFile audioFile
+  }
+
+  const response = await axiosInstance.post("/api/admin/quizzes/create", formData);
+  return response;
+};
+
+export const deleteQuestion = async (questionId) => {
+  return axiosInstance.delete(`/api/admin/questions/delete/${questionId}`);
 };
 
 export const deleteQuizById = async (quizId) => {

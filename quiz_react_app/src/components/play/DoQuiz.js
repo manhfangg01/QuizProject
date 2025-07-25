@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import { Link, useParams, useNavigate, useSearchParams } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { displayQuiz, submitQuiz } from "../../services/QuizServices";
 import "./DoQuiz.scss";
 import { Button, Spinner } from "react-bootstrap";
+import AudioPlayer from "../../utils/AudioPlayer";
 
 const DoQuiz = () => {
   const { id } = useParams();
@@ -17,6 +18,7 @@ const DoQuiz = () => {
   const [timer, setTimer] = useState(null);
   const [elapsedTime, setElapsedTime] = useState(0);
   const [isUnlimitedTime, setIsUnlimitedTime] = useState(false);
+  const [highlightEnabled, setHighlightEnabled] = useState(true); // Highlight toggle
 
   const navigate = useNavigate();
 
@@ -24,6 +26,7 @@ const DoQuiz = () => {
     try {
       setLoading(true);
       const response = await displayQuiz(quizId);
+      console.log("CHECK res", response);
       if (response.statusCode === 200) {
         setQuiz(response.data);
       } else {
@@ -170,10 +173,13 @@ const DoQuiz = () => {
   }
 
   return (
-    <div className="quiz-container">
+    <div className={`quiz-container ${highlightEnabled ? "" : "no-highlight"}`}>
       <div className="quiz-header d-flex justify-content-between align-items-center mb-4 p-3 bg-light rounded">
         <h2 className="mb-0">{quiz.title}</h2>
         <div className="d-flex gap-2">
+          <Button variant={highlightEnabled ? "outline-warning" : "outline-success"} onClick={() => setHighlightEnabled(!highlightEnabled)}>
+            {highlightEnabled ? "Disable Highlight" : "Enable Highlight"}
+          </Button>
           <Button variant="outline-danger" onClick={() => window.confirm("Are you sure you want to exit?") && navigate("/quizzes")}>
             Exit Quiz
           </Button>
@@ -182,10 +188,14 @@ const DoQuiz = () => {
 
       <div className="quiz-content d-flex">
         <div className="quiz-questions flex-grow-1 pe-4">
+          {quiz.audioUrl && (
+            <div className="mb-4">
+              <AudioPlayer audioUrl={quiz.audioUrl} />
+            </div>
+          )}
           {quiz.questions?.map((question, index) => (
             <div key={question.questionId} id={`question-${question.questionId}`} className="question-card mb-4 p-4 border rounded shadow-sm">
               <div className="d-flex align-items-start">
-                {/* Question Image on the left */}
                 {question.questionImage && (
                   <div className="me-4" style={{ width: "500px", flexShrink: 0 }}>
                     <img
@@ -202,7 +212,6 @@ const DoQuiz = () => {
                   </div>
                 )}
 
-                {/* Question content on the right */}
                 <div style={{ flex: 1 }}>
                   <h4 className="question-title fw-bold mb-3">
                     <span className="text-primary">Question {index + 1}:</span> {question.context}

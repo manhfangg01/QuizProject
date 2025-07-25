@@ -129,6 +129,7 @@ public class FetchAdminDTO {
     @Setter
     public static class FetchFullQuizDTO {
         private Long quizId;
+        private String audioUrl;
         private String title;
         private String subjectName;
         private Long timeLimit;

@@ -15,6 +15,7 @@ public class FetchClientDTO {
     @Setter
     public static class QuizClientDTO {
         private Long quizId;
+        private String audioUrl;
         private String title;
         @Enumerated(EnumType.STRING)
         private DifficultyLevel difficulty;
@@ -22,7 +23,6 @@ public class FetchClientDTO {
         private Long totalParticipants;
         private int totalQuestions;
         private String subject;
-        // Do trong hệ thống thì mỗi người dùng chỉ có một kết quả đối với 1 bài quiz
         private Long resultId;
 
     }
@@ -40,6 +40,8 @@ public class FetchClientDTO {
         private Long quizId;
         private String title;
         private String subjectName;
+        private String audioUrl;
+
         @Enumerated(EnumType.STRING)
         private DifficultyLevel difficulty;
         private Long timeLimit;
