@@ -1,6 +1,8 @@
 package com.quiz.learning.Demo.service.admin;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -12,9 +14,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.quiz.learning.Demo.domain.Option;
 import com.quiz.learning.Demo.domain.Question;
+import com.quiz.learning.Demo.domain.User;
 import com.quiz.learning.Demo.domain.filterCriteria.admin.QuestionFilter;
 import com.quiz.learning.Demo.domain.metadata.Metadata;
 import com.quiz.learning.Demo.domain.request.admin.question.CreateQuestionRequest;
@@ -23,8 +27,10 @@ import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO;
 import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO.FetchQuestionPaginationDTO;
 import com.quiz.learning.Demo.repository.OptionRepository;
 import com.quiz.learning.Demo.repository.QuestionRepository;
+import com.quiz.learning.Demo.service.azure.AzureBlobService;
 import com.quiz.learning.Demo.service.specification.QuestionSpecs;
 import com.quiz.learning.Demo.util.error.DuplicatedObjectException;
+import com.quiz.learning.Demo.util.error.InvalidUploadedFile;
 import com.quiz.learning.Demo.util.error.NullObjectException;
 import com.quiz.learning.Demo.util.error.ObjectNotFound;
 
@@ -34,13 +40,15 @@ public class AdminQuestionService {
     private final AdminOptionService adminOptionService;
     private final QuestionSpecs questionSpecs;
     private final OptionRepository optionRepository;
+    private final AzureBlobService azureBlobService;
 
     public AdminQuestionService(QuestionRepository questionRepository, AdminOptionService adminOptionService,
-            QuestionSpecs questionSpecs, OptionRepository optionRepository) {
+            QuestionSpecs questionSpecs, OptionRepository optionRepository, AzureBlobService azureBlobService) {
         this.questionRepository = questionRepository;
         this.adminOptionService = adminOptionService;
         this.questionSpecs = questionSpecs;
         this.optionRepository = optionRepository;
+        this.azureBlobService = azureBlobService;
     }
 
     public Question handleGetQuestion(Long id) {
@@ -55,6 +63,7 @@ public class AdminQuestionService {
         FetchAdminDTO.FetchQuestionDTO dto = new FetchAdminDTO.FetchQuestionDTO();
         dto.setQuestionId(question.getId());
         dto.setContext(question.getContext());
+        dto.setQuestionImage(question.getQuestionImage());
 
         List<Option> options = question.getOptions();
 
@@ -118,7 +127,29 @@ public class AdminQuestionService {
                         .collect(Collectors.toList());
     }
 
-    public FetchAdminDTO.FetchQuestionDTO handleCreateQuestion(CreateQuestionRequest newQuestion) {
+    public void handleAssignQuestionImage(Question question, MultipartFile image) {
+        try {
+            if (image != null && !image.isEmpty()) {
+                String fileName = image.getOriginalFilename();
+                List<String> allowedExtensions = Arrays.asList("pdf", "jpg", "jpeg", "png", "doc", "docx", "webp");
+                boolean isValid = allowedExtensions.stream().anyMatch(item -> fileName.toLowerCase().endsWith(item));
+                if (!isValid) {
+                    throw new InvalidUploadedFile(
+                            "Invalid file extension. only allows: " + allowedExtensions.toString());
+                }
+                String imageUrl = azureBlobService.uploadFile(image);
+                question.setQuestionImage(imageUrl);
+            } else {
+                question.setQuestionImage("");
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to upload avatar", e);
+        }
+
+    }
+
+    public FetchAdminDTO.FetchQuestionDTO handleCreateQuestion(CreateQuestionRequest newQuestion,
+            MultipartFile questionImage) {
 
         if (newQuestion == null) {
             throw new NullObjectException("New Question is Null");
@@ -140,12 +171,14 @@ public class AdminQuestionService {
             opt.setQuestion(question); // Quan trọng: gán ngược lại
         }
         question.setOptions(options);
+        this.handleAssignQuestionImage(question, questionImage);
 
         Question saved = questionRepository.save(question);
         return convertToDTO(saved);
     }
 
-    public FetchAdminDTO.FetchQuestionDTO handleUpdateQuestion(UpdateQuestionRequest updatedQuestion) {
+    public FetchAdminDTO.FetchQuestionDTO handleUpdateQuestion(UpdateQuestionRequest updatedQuestion,
+            MultipartFile questionImage) {
         Optional<Question> checkQuestion = this.questionRepository.findById(updatedQuestion.getQuestionId());
         if (checkQuestion.isEmpty()) {
             throw new ObjectNotFound("Question not found");
@@ -178,6 +211,18 @@ public class AdminQuestionService {
             newOption.setQuestion(realQuestion); // đảm bảo liên kết
         }
         realQuestion.setOptions(newOptions);
+        if (questionImage != null) {
+            try {
+
+                if (questionImage != null && !questionImage.isEmpty()) {
+                    String imageUrl = azureBlobService.uploadFile(questionImage);
+                    realQuestion.setQuestionImage(imageUrl);
+                }
+
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to upload avatar", e);
+            }
+        }
 
         // Lưu lại
         Question saved = questionRepository.save(realQuestion);

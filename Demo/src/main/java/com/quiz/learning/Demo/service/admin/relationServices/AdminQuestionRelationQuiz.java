@@ -8,16 +8,20 @@ import com.quiz.learning.Demo.domain.Question;
 import com.quiz.learning.Demo.domain.Quiz;
 import com.quiz.learning.Demo.repository.QuestionRepository;
 import com.quiz.learning.Demo.repository.QuizRepository;
+import com.quiz.learning.Demo.service.azure.AzureBlobService;
 import com.quiz.learning.Demo.util.error.ObjectNotFound;
 
 @Service
 public class AdminQuestionRelationQuiz {
     private final QuestionRepository questionRepository;
     private final QuizRepository quizRepository;
+    private final AzureBlobService azureBlobService;
 
-    public AdminQuestionRelationQuiz(QuestionRepository questionRepository, QuizRepository quizRepository) {
+    public AdminQuestionRelationQuiz(QuestionRepository questionRepository, QuizRepository quizRepository,
+            AzureBlobService azureBlobService) {
         this.questionRepository = questionRepository;
         this.quizRepository = quizRepository;
+        this.azureBlobService = azureBlobService;
     }
 
     public void handleDeleteQuestion(Long id) {
@@ -31,6 +35,13 @@ public class AdminQuestionRelationQuiz {
         for (Quiz quiz : question.getQuizzes()) {
             quiz.getQuestions().remove(question);
             quizRepository.save(quiz); // cập nhật thay đổi vào DB
+        }
+
+        if (question.getQuestionImage() != null && !question.getQuestionImage().isEmpty()) {
+            String blobName = azureBlobService.getBlobNameFromUrl(question.getQuestionImage());
+            if (blobName != null) {
+                azureBlobService.deleteFile(blobName);
+            }
         }
 
         questionRepository.delete(question);

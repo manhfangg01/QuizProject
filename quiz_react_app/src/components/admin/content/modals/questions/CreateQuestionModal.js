@@ -2,9 +2,20 @@ import { useState } from "react";
 import { Modal, Button, Form, Badge } from "react-bootstrap";
 import { getOptionsByIds } from "../../../../../services/OptionService";
 import { toast } from "react-toastify";
+import { LuImagePlus } from "react-icons/lu";
 
 const CreateQuestionModal = ({ show, setShow, onCreateQuestion, setShowOptionSelection, selectedOptionIds = [], setSelectedOptionIds }) => {
   const [context, setContext] = useState("");
+  const [previewImage, setPreviewImage] = useState("");
+  const [imageFile, setImageFile] = useState(null);
+
+  const handleUploadImage = (event) => {
+    if (event.target?.files?.[0]) {
+      const file = event.target.files[0];
+      setPreviewImage(URL.createObjectURL(file));
+      setImageFile(file);
+    }
+  };
   const handleCheckAtLeastOneTrueOption = async (optionIds) => {
     try {
       if (optionIds.length < 2 || optionIds.length > 4) {
@@ -48,6 +59,7 @@ const CreateQuestionModal = ({ show, setShow, onCreateQuestion, setShowOptionSel
     const questionData = {
       context: context.trim(),
       optionIds: selectedOptionIds,
+      imageFile: imageFile,
     };
 
     if (onCreateQuestion(questionData)) {
@@ -61,6 +73,8 @@ const CreateQuestionModal = ({ show, setShow, onCreateQuestion, setShowOptionSel
     setShow(false);
     setShowOptionSelection(false);
     setSelectedOptionIds([]);
+    setImageFile(null);
+    setPreviewImage("");
     // window.location.reload();
   };
 
@@ -77,6 +91,22 @@ const CreateQuestionModal = ({ show, setShow, onCreateQuestion, setShowOptionSel
         <Form.Group className="mb-3">
           <Form.Label>Nội dung câu hỏi</Form.Label>
           <Form.Control as="textarea" rows={3} value={context} onChange={(e) => setContext(e.target.value)} placeholder="Nhập nội dung câu hỏi..." />
+        </Form.Group>
+        <Form.Group className="mb-3">
+          <div className="col-12">
+            <label className="btn btn-outline-primary" htmlFor="imageUpload">
+              <LuImagePlus className="me-2" />
+              Tải lên ảnh minh họa
+            </label>
+            <input type="file" id="imageUpload" className="d-none" accept="image/*" onChange={handleUploadImage} />
+          </div>
+          <div className="col-12">
+            {previewImage ? (
+              <img src={previewImage} alt="Preview" className="img-thumbnail mt-2" style={{ maxWidth: "200px", maxHeight: "200px" }} />
+            ) : (
+              <div className="text-muted mt-2">Chưa có ảnh minh họa</div>
+            )}
+          </div>
         </Form.Group>
 
         <Form.Group className="mb-3">

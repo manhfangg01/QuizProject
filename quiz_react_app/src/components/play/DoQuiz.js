@@ -184,30 +184,48 @@ const DoQuiz = () => {
         <div className="quiz-questions flex-grow-1 pe-4">
           {quiz.questions?.map((question, index) => (
             <div key={question.questionId} id={`question-${question.questionId}`} className="question-card mb-4 p-4 border rounded shadow-sm">
-              <h4 className="question-title fw-bold mb-3">
-                <span className="text-primary">Question {index + 1}:</span> {question.context}
-              </h4>
-              {question.imageUrl && (
-                <div className="mb-3">
-                  <img src={question.imageUrl} alt={`Question ${index + 1}`} className="img-fluid rounded" style={{ maxHeight: "200px" }} />
-                </div>
-              )}
-              <div className="options-list">
-                {question.options?.map((option) => (
-                  <div key={option.optionId} className="form-check mb-3">
-                    <input
-                      className="form-check-input"
-                      type="radio"
-                      name={`question-${question.questionId}`}
-                      id={`option-${option.optionId}`}
-                      onChange={() => handleAnswer(question.questionId, option.optionId)}
-                      checked={answers.some((a) => a.questionId === question.questionId && a.selectedOptionId === option.optionId)}
+              <div className="d-flex align-items-start">
+                {/* Question Image on the left */}
+                {question.questionImage && (
+                  <div className="me-4" style={{ width: "500px", flexShrink: 0 }}>
+                    <img
+                      src={question.questionImage}
+                      alt={`Illustration for question ${index + 1}`}
+                      className="img-fluid rounded"
+                      style={{
+                        maxHeight: "500px",
+                        width: "100%",
+                        objectFit: "cover",
+                        border: "1px solid #dee2e6",
+                      }}
                     />
-                    <label className="form-check-label fs-5" htmlFor={`option-${option.optionId}`}>
-                      {option.content}
-                    </label>
                   </div>
-                ))}
+                )}
+
+                {/* Question content on the right */}
+                <div style={{ flex: 1 }}>
+                  <h4 className="question-title fw-bold mb-3">
+                    <span className="text-primary">Question {index + 1}:</span> {question.context}
+                  </h4>
+
+                  <div className="options-list">
+                    {question.options?.map((option) => (
+                      <div key={option.optionId} className="form-check mb-3">
+                        <input
+                          className="form-check-input"
+                          type="radio"
+                          name={`question-${question.questionId}`}
+                          id={`option-${option.optionId}`}
+                          onChange={() => handleAnswer(question.questionId, option.optionId)}
+                          checked={answers.some((a) => a.questionId === question.questionId && a.selectedOptionId === option.optionId)}
+                        />
+                        <label className="form-check-label fs-5" htmlFor={`option-${option.optionId}`}>
+                          {option.content}
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
           ))}

@@ -62,7 +62,7 @@ const ManageQuestions = () => {
 
   const handleCreateQuestion = async (questionData) => {
     try {
-      const res = await postCreateQuestion(questionData.context, questionData.optionIds);
+      const res = await postCreateQuestion(questionData.context, questionData.optionIds, questionData.imageFile);
       if (res.statusCode === 200 || res.statusCode === 201) {
         toast.success("Question created successfully!");
         fetchQuestions(1, filter);

@@ -54,6 +54,7 @@ public class FetchClientDTO {
     public static class QuestionClientPlayDTO {
         private Long questionId;
         private String context;
+        private String questionImage;
         private List<OptionClientPlayDTO> options;
     }
 

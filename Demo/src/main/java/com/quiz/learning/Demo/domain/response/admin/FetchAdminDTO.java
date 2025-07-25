@@ -62,6 +62,7 @@ public class FetchAdminDTO {
     public static class FetchQuestionDTO {
         private Long questionId;
         private String context;
+        private String questionImage;
         private List<FetchOptionDTO> options;
     }
 

@@ -13,8 +13,8 @@ const CreateUserModal = (props) => {
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [role, setRole] = useState("USER");
-  const [previewAvatar, setPreviewAvatar] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [previewAvatar, setPreviewAvatar] = useState("");
   const [imageFile, setImageFile] = useState(null);
   const onCreateUser = props.onCreateUser;
 

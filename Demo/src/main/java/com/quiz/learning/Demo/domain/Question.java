@@ -15,8 +15,6 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter
-@Setter
 @Entity
 @Table(name = "questions")
 public class Question {
@@ -26,11 +24,60 @@ public class Question {
     @Column(columnDefinition = "MEDIUMTEXT")
     private String context;
     private String explaination;
+    private String questionImage;
 
     @OneToMany(mappedBy = "question")
     private List<Option> options;
 
     @ManyToMany(mappedBy = "questions")
     private List<Quiz> quizzes;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getContext() {
+        return context;
+    }
+
+    public void setContext(String context) {
+        this.context = context;
+    }
+
+    public String getExplaination() {
+        return explaination;
+    }
+
+    public void setExplaination(String explaination) {
+        this.explaination = explaination;
+    }
+
+    public String getQuestionImage() {
+        return questionImage;
+    }
+
+    public void setQuestionImage(String questionImage) {
+        this.questionImage = questionImage;
+    }
+
+    public List<Option> getOptions() {
+        return options;
+    }
+
+    public void setOptions(List<Option> options) {
+        this.options = options;
+    }
+
+    public List<Quiz> getQuizzes() {
+        return quizzes;
+    }
+
+    public void setQuizzes(List<Quiz> quizzes) {
+        this.quizzes = quizzes;
+    }
 
 }
