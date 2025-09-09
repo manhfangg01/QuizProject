@@ -27,7 +27,7 @@ public class CustomAuthExceptionHandler implements AuthenticationEntryPoint, Acc
     public void commence(HttpServletRequest request, HttpServletResponse response,
             AuthenticationException authException) throws IOException {
         if (response.isCommitted()) {
-            return; // response đã được ghi rồi, không nên ghi đè nữa
+            return;
         }
 
         RestResponse<Object> errorResponse = new RestResponse<>();
@@ -58,5 +58,4 @@ public class CustomAuthExceptionHandler implements AuthenticationEntryPoint, Acc
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
     }
-
 }

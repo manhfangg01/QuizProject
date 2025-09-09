@@ -1,0 +1,55 @@
+.homepage-container {
+  .homepage-content {
+    position: relative;
+    @media (min-width: 1301px) {
+      padding-left: 60px;
+      padding-right: 900px;
+      margin-top: 70px;
+    }
+  }
+  font-size: 30px;
+  .title-1 {
+    font-size: 60px;
+    line-height: 1.2;
+    font-weight: 300;
+    margin-bottom: 20px;
+  }
+
+  .title-2 {
+    font-size: 23px;
+    margin-bottom: 20px;
+
+    &.title-highlight {
+      background-color: #fadadd;
+    }
+  }
+
+  .title-3 {
+    color: whitesmoke;
+    margin-bottom: 20px;
+
+    .btn {
+      height: 40px;
+    }
+
+    .content-notice {
+      color: black;
+      font-size: 15px;
+
+      .icon {
+        margin-right: 8px;
+      }
+    }
+  }
+  @media (max-width: 1300px) {
+    .content-container {
+      display: flex;
+    }
+    .title-3 {
+      display: flex;
+      .btn {
+        margin-right: 20px;
+      }
+    }
+  }
+}

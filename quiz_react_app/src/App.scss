@@ -15,96 +15,6 @@ body {
   }
 }
 .app-container {
-  .homepage-container {
-    .homepage-content {
-      position: relative;
-      padding-left: 60px;
-      padding-right: 900px;
-      margin-top: 70px;
-      font-size: 30px;
-      height: 400px;
-
-      .title-1 {
-        font-size: 60px;
-        line-height: 1.2;
-        font-weight: 300;
-        margin-bottom: 20px;
-      }
-
-      .title-2 {
-        font-size: 23px;
-        margin-bottom: 20px;
-
-        &.title-highlight {
-          background-color: #fadadd;
-        }
-      }
-
-      .title-3 {
-        color: whitesmoke;
-        margin-bottom: 20px;
-
-        .btn {
-          height: 30px;
-        }
-      }
-
-      .content-notice {
-        font-size: 15px;
-
-        .icon {
-          margin-right: 8px;
-        }
-      }
-
-      // ✅ Responsive cho màn hình nhỏ (dưới 768px)
-      @media (max-width: 768px) {
-        padding-left: 20px;
-        padding-right: 20px;
-        font-size: 20px;
-        height: auto;
-
-        .title-1 {
-          font-size: 36px;
-        }
-
-        .title-2 {
-          font-size: 18px;
-        }
-
-        .title-3 {
-          .btn {
-            height: 40px;
-            font-size: 14px;
-          }
-        }
-
-        .content-notice {
-          font-size: 13px;
-        }
-      }
-
-      // ✅ Responsive cho điện thoại rất nhỏ (dưới 480px)
-      @media (max-width: 480px) {
-        .title-1 {
-          font-size: 28px;
-        }
-
-        .title-2 {
-          font-size: 16px;
-        }
-
-        .title-3 {
-          text-align: center;
-
-          .btn {
-            width: 100%;
-          }
-        }
-      }
-    }
-  }
-
   .header-container {
     .btn-login,
     .btn-signup {
@@ -133,15 +43,6 @@ body {
         }
       }
     }
-
-    // ✅ Responsive nav
-    @media (max-width: 768px) {
-      .btn-login,
-      .btn-signup {
-        font-size: 14px;
-        padding: 0 10px;
-      }
-    }
   }
 }
 
@@ -158,11 +59,14 @@ video {
   width: 100vw;
   height: auto; /* Giữ tỉ lệ khung hình */
   object-fit: cover; /* hoặc contain tùy ý */
-
+  height: 92%;
   z-index: -1; /* Để không che các phần khác */
 
-  @media (max-width: 768px) {
-    height: 40vh; /* Giảm chiều cao trên tablet */
+  @media (max-width: 1300px) {
+    height: 50%; /* Giảm chiều cao trên tablet */
+  }
+  @media (max-width: 1300px) {
+    height: 40%; /* Giảm chiều cao trên tablet */
   }
 
   @media (max-width: 480px) {

@@ -47,7 +47,7 @@ const Header = () => {
   };
 
   return (
-    <Navbar expand="lg" className="bg-body-tertiary">
+    <Navbar expand="xl" className="bg-body-tertiary">
       <Container>
         <NavLink className="navbar-brand" to="/">
           QuizProject
