@@ -146,9 +146,12 @@ public class AdminOptionService {
     }
 
     public FetchAdminDTO.FetchOptionDTO handleCreateOption(CreateOptionRequest newOption) {
-        if (this.optionRepository.findByContext(newOption.getContext()).isPresent()) {
-            throw new DuplicatedObjectException("There is an option has this context");
-        }
+        // if (this.optionRepository.findByContext(newOption.getContext()).isPresent())
+        // {
+        // throw new DuplicatedObjectException("There is an option has this context");
+        // }
+
+        // Sẽ có option trùng nội dung thôi, chỉ có khác là đúng hoặc sai
         Option option = new Option();
         option.setContext(newOption.getContext());
         option.setIsCorrect(newOption.getIsCorrect());

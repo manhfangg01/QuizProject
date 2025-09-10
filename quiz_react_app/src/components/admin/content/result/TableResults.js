@@ -1,5 +1,5 @@
 import { Table, Button } from "react-bootstrap";
-import CustomPagination from "../CustomPagination";
+import AdvancedPagination from "../AdvancedPagination";
 
 const TableResults = ({ fetchResults, results, metadata, onDelete, onDetail, filter }) => {
   const onPageChange = (pageNumber, filter) => {
@@ -51,7 +51,7 @@ const TableResults = ({ fetchResults, results, metadata, onDelete, onDetail, fil
         </tbody>
       </Table>
 
-      <CustomPagination metadata={metadata} onPageChange={onPageChange} filter={filter} />
+      <AdvancedPagination metadata={metadata} onPageChange={onPageChange} filter={filter} />
     </>
   );
 };

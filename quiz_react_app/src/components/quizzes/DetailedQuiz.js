@@ -66,7 +66,9 @@ const DetailedQuiz = () => {
   const TimeModifierSelect = () => {
     return (
       <Form.Select className="my-4" onChange={(e) => handleSelectTimeModifier(e.target.value)} value={timeModifier}>
-        <option value="">Chọn thời gian</option>
+        <option value="" style={{ textAlign: "center" }}>
+          -- Chọn thời gian --
+        </option>
         <option value="infinity">Không giới hạn</option> {/* Đổi label cho rõ ràng */}
         <option value="20">20 phút</option>
         <option value="25">25 phút</option>

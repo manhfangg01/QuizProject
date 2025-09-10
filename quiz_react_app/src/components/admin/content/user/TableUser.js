@@ -1,7 +1,7 @@
 import { Table, Button, Pagination } from "react-bootstrap";
 import { getUserById } from "../../../../services/UserServices";
 import { Bounce, toast } from "react-toastify";
-import CustomPagination from "../CustomPagination";
+import AdvancedPagination from "../AdvancedPagination";
 
 const TableUser = ({ fetchUsers, users, metadata, onEdit, onDelete, onDetail, filter }) => {
   const showToast = (type, message) => {
@@ -86,7 +86,7 @@ const TableUser = ({ fetchUsers, users, metadata, onEdit, onDelete, onDetail, fi
           )}
         </tbody>
       </Table>
-      <CustomPagination metadata={metadata} onPageChange={onPageChange} filter={filter} />
+      <AdvancedPagination metadata={metadata} onPageChange={onPageChange} filter={filter} />
     </>
   );
 };

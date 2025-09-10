@@ -1,5 +1,6 @@
 use quizdb;
 select * from quiz;
+select * from options;
 select *
 from users user1, users user2
 where user1.id<>user2.id and (user1.email=user2.email );
@@ -8,7 +9,7 @@ select *
 from users
 where users.email='manhanh329@gmail.com';
 ALTER TABLE users ADD CONSTRAINT uk_user_email UNIQUE (email);
-
+select * from questions;
 select * from quiz;
 select * from results
 order by submitted_at desc;
@@ -94,6 +95,92 @@ insert into roles(description, is_active,name)
 values
 ("Has all authorities in system",true, "ADMIN"),
 ("Has some authorities in system",true, "USER");
+
+
+insert into options(context, is_correct) values
+("in front of", true),
+("opposed to", false),
+("against",false),
+("versus", false),
+("somewhat",false),
+("extremely",true),
+("relatively",false),
+("objectively",false),
+("keen on him", false),
+("stuck on him", false),
+("fell for him", true),
+("wed him", false),
+("mainly", false),
+("fairly",true),
+("especially",false),
+("slightly",false),
+("challenge", false),
+("realization",false),
+("achievement",true),
+("experiment",false),
+("empathetic",false),
+("selfish",true),
+("juvenile",false),
+("frivolous", false),
+("look him up at", false),
+("make a reservation from",false),
+("make contact for", false),
+("book him into", true),
+("optimistic",true),
+("gleeful",false),
+("humble",false),
+("respectful",false),
+("gathering",false),
+("extravaganza",true),
+("fete", false),
+("ritual", false),
+("My sister always wears my clothes", false),
+("I feel this is too dressy for the occasion.", false),
+("I bought it in a charity shop last week.", true),
+("I haven’t worn this in a while.", false),
+("My brother just turned five, too.", false),
+("Haven’t I told you that I only have a sister?", false),
+("I know what you mean; mine drives me crazy.", true),
+("I told my mom not to let him come in my room.", false),
+("I cook quite often.", false),
+("Please help yourself.", false),
+("I’ll see if I can get it for you", false),
+("You’ll never guess.", true),
+("Where are you taking him?", false),
+("Of course, I’d love to.", true),
+("I already fed him today.", false),
+("I used to have a cat.", false),
+("That jacket looks too tight on you.", false),
+("I’m not sure my sister would like that style.", false),
+("I bought it online because it was cheaper.", false),
+("Better make up your mind before the store closes.", true),
+("Yes, would you like some tea?", false),
+("Isn’t it warm to put the heater on?", false),
+("When is it going to be ready?", false),
+("Don’t make it too hot, OK?", true),
+("Have you taken anything for it?", true),
+("For how long will you be away?", false),
+("I wish he would leave you alone.", false),
+("Stop making so much noise.", false),
+("It looks like it’s going to rain any minute.", false),
+("Sure, let me grab my jacket because it’s chilly outside.", true),
+("Let’s wait until the sun goes down in an hour or so.", false),
+(" Astronomy is not my expertise, so I’m not sure.", false),
+("He has enough credits to graduate as a French major.", false),
+("His teacher recommended me for this course.", false),
+("I need to take one more class to fulfill my requirements.", false),
+("I had a terrible experience with him last semester.", true),
+("I wanted to call you, but my phone battery died on me right before I made a call.", false),
+("I already left her a message saying you won’t be home until late tonight.", false),
+("She is a responsible girl, so she will contact you if she feels she needs to.", true),
+("She does have a habit of getting up late on weekends.", false);
+
+
+
+
+
+
+
 
 
 

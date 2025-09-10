@@ -3,12 +3,13 @@ import { Button, Badge, Spinner } from "react-bootstrap";
 import { getLibraryQuizzes } from "../../services/QuizServices";
 import FormLibraryFilter from "./FormLibraryFilter";
 import { toast } from "react-toastify";
-import CustomPagination from "../admin/content/CustomPagination";
+import AdvancedPagination from "../admin/content/AdvancedPagination";
 import { CiClock2 } from "react-icons/ci";
 import { LiaUserEditSolid } from "react-icons/lia";
 import { IoBulbOutline, IoDocumentTextOutline } from "react-icons/io5";
 import UserBox from "./UserBox";
 import { Link, useNavigate } from "react-router-dom";
+import TestBanner from "../../assets/testonline_banner.jpg";
 
 const LibraryQuizzes = () => {
   const navigate = useNavigate();
@@ -186,11 +187,18 @@ const LibraryQuizzes = () => {
 
           {metadata.totalPages > 1 && (
             <div className="mt-4">
-              <CustomPagination metadata={metadata} onPageChange={onPageChange} />
+              <AdvancedPagination metadata={metadata} onPageChange={onPageChange} />
             </div>
           )}
         </>
       )}
+      <br />
+      <br />
+      <div className="image-wrapper">
+        <Link to={"/level-test"}>
+          <img src={TestBanner} alt="Kiểm tra trình độ banner" className="img-fluid banner" />
+        </Link>
+      </div>
     </div>
   );
 };

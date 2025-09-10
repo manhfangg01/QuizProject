@@ -1,7 +1,7 @@
 import { Table, Button, Badge } from "react-bootstrap";
 import { getOptionById } from "../../../../services/OptionService";
 import { Bounce, toast } from "react-toastify";
-import CustomPagination from "../CustomPagination";
+import AdvancedPagination from "../AdvancedPagination";
 
 const TableOptions = ({ fetchOptions, options, metadata, onEdit, onDelete, onDetail, filter }) => {
   const showToast = (type, message) => {
@@ -86,7 +86,7 @@ const TableOptions = ({ fetchOptions, options, metadata, onEdit, onDelete, onDet
           )}
         </tbody>
       </Table>
-      <CustomPagination metadata={metadata} onPageChange={onPageChange} filter={filter} />
+      <AdvancedPagination metadata={metadata} onPageChange={onPageChange} filter={filter} />
     </>
   );
 };

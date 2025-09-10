@@ -130,12 +130,15 @@ public class AdminQuestionService {
     public void handleAssignQuestionImage(Question question, MultipartFile image) {
         try {
             if (image != null && !image.isEmpty()) {
-                String fileName = image.getOriginalFilename();
+
                 List<String> allowedExtensions = Arrays.asList("pdf", "jpg", "jpeg", "png", "doc", "docx", "webp");
-                boolean isValid = allowedExtensions.stream().anyMatch(item -> fileName.toLowerCase().endsWith(item));
-                if (!isValid) {
+                String fileName = image.getOriginalFilename().toLowerCase();
+                String contentType = image.getContentType();
+                boolean validMine = contentType != null && contentType.startsWith("image/");
+                boolean validExt = allowedExtensions.stream().anyMatch(fileName::endsWith);
+                if (!validMine || !validExt) {
                     throw new InvalidUploadedFile(
-                            "Invalid file extension. only allows: " + allowedExtensions.toString());
+                            "Invalid file type. Only allows: " + allowedExtensions.toString());
                 }
                 String imageUrl = azureBlobService.uploadFile(image);
                 question.setQuestionImage(imageUrl);
@@ -148,8 +151,33 @@ public class AdminQuestionService {
 
     }
 
+    public void handleAssignQuestionAudio(Question question, MultipartFile audio) {
+        try {
+            if (audio != null && !audio.isEmpty()) {
+                List<String> allowedExtensions = List.of(".mp3", ".wav", ".ogg", ".m4a");
+
+                String fileName = audio.getOriginalFilename().toLowerCase();
+                String contentType = audio.getContentType();
+                // boolean validMime = contentType != null && contentType.startsWith("audio/");
+                // // Kiểm tra định dạng MINE
+                boolean validExt = allowedExtensions.stream().anyMatch(fileName::endsWith); // Kiểm tra phần mở rộng
+                if (!validExt) {
+                    throw new InvalidUploadedFile(
+                            "Invalid file type. Only allows: " + allowedExtensions.toString());
+                }
+
+                String audioUrl = azureBlobService.uploadFile(audio);
+                question.setQuestionAudio(audioUrl);
+            } else {
+                question.setQuestionAudio("");
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to upload audio", e);
+        }
+    }
+
     public FetchAdminDTO.FetchQuestionDTO handleCreateQuestion(CreateQuestionRequest newQuestion,
-            MultipartFile questionImage) {
+            MultipartFile questionImage, MultipartFile questionAudio) {
 
         if (newQuestion == null) {
             throw new NullObjectException("New Question is Null");
@@ -172,6 +200,7 @@ public class AdminQuestionService {
         }
         question.setOptions(options);
         this.handleAssignQuestionImage(question, questionImage);
+        this.handleAssignQuestionAudio(question, questionAudio);
 
         Question saved = questionRepository.save(question);
         return convertToDTO(saved);

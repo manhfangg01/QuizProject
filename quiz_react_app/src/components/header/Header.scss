@@ -32,8 +32,10 @@
     transition: all 0.3s ease;
 
     &.active {
-      color: var(--primary-color) !important;
+      // color: var(--primary-color) !important;
       font-weight: 600;
+      text-decoration: underline; // hoặc border-bottom nếu bạn thích
+      color: #0d6efd !important; // xanh bootstrap
 
       &::after {
         content: "";

@@ -8,7 +8,7 @@ import { PiBookOpenThin, PiTargetThin } from "react-icons/pi";
 import { CiClock2 } from "react-icons/ci";
 import { getHistory } from "../../services/ResultServices";
 import { Link } from "react-router-dom";
-import CustomPagination from "../admin/content/CustomPagination";
+import AdvancedPagination from "../admin/content/AdvancedPagination";
 const Statistics = () => {
   const [statistic, setStatistic] = useState({});
   const [history, setHistory] = useState([]); // từ {} -> []
@@ -232,7 +232,7 @@ const Statistics = () => {
                   </tbody>
                 </table>
 
-                <CustomPagination metadata={metadata} onPageChange={onPageChange} />
+                <AdvancedPagination metadata={metadata} onPageChange={onPageChange} />
               </>
             )}
           </div>

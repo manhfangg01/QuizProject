@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Modal, Table, Form, Button } from "react-bootstrap";
 import FormOptionFilter from "../../option/FormOptionFilter";
-import CustomPagination from "../../CustomPagination";
+import AdvancedPagination from "../../AdvancedPagination";
 import { getAllOptions } from "../../../../../services/OptionService";
 import { toast } from "react-toastify";
 
@@ -142,7 +142,7 @@ const UpdateOptionsForQuestionModal = ({ show, setShow, selectedOptionIds, setSe
         </Modal.Body>
         <Modal.Footer>
           <div className="col-12">
-            <CustomPagination metadata={metadata} onPageChange={onPageChange} filter={filter} />
+            <AdvancedPagination metadata={metadata} onPageChange={onPageChange} filter={filter} />
           </div>
           <Button variant="secondary" onClick={handleClose}>
             Cancel

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Modal, Table, Form, Button, Badge } from "react-bootstrap";
 import { toast } from "react-toastify";
-import CustomPagination from "../../CustomPagination";
+import AdvancedPagination from "../../AdvancedPagination";
 import FormQuestionFilter from "../../question/FormQuestionFilter";
 
 const UpdateQuestionsForQuizModal = ({ show, setShow, questions, updatedQuestionIds, setUpdatedQuestionIds, fetchAllQuestions }) => {
@@ -92,7 +92,7 @@ const UpdateQuestionsForQuizModal = ({ show, setShow, questions, updatedQuestion
         </Table>
       </Modal.Body>
       <Modal.Footer className="d-flex justify-content-between align-items-center">
-        <CustomPagination metadata={metadata} onPageChange={onPageChange} filter={filter} />
+        <AdvancedPagination metadata={metadata} onPageChange={onPageChange} filter={filter} />
         <div className="d-flex gap-2">
           <Button variant="secondary" onClick={handleClose}>
             Hủy

@@ -6,7 +6,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.quiz.learning.Demo.domain.filterCriteria.admin.QuestionFilter;
 import com.quiz.learning.Demo.domain.request.admin.question.CreateQuestionRequest;
 import com.quiz.learning.Demo.domain.request.admin.question.UpdateQuestionRequest;
-import com.quiz.learning.Demo.domain.request.admin.user.CreateUserRequest;
 import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO;
 import com.quiz.learning.Demo.domain.response.admin.FetchAdminDTO.FetchQuestionPaginationDTO;
 import com.quiz.learning.Demo.domain.restResponse.ApiMessage;
@@ -24,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -62,9 +60,10 @@ public class AdminQuestionController {
     @ApiMessage("create a question")
     public ResponseEntity<FetchAdminDTO.FetchQuestionDTO> create(
             @Valid @RequestPart("createQuestionRequest") CreateQuestionRequest ques,
-            @RequestPart(value = "questionImage", required = false) MultipartFile questionImage) {
+            @RequestPart(value = "questionImage", required = false) MultipartFile questionImage,
+            @RequestPart(value = "questionImage", required = false) MultipartFile questionAudio) {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(this.questionService.handleCreateQuestion(ques, questionImage));
+                .body(this.questionService.handleCreateQuestion(ques, questionImage, questionAudio));
     }
 
     @PutMapping("/admin/questions/update")

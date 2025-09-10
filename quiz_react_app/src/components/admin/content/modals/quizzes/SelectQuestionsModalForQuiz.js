@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Modal, Table, Form, Button } from "react-bootstrap";
-import CustomPagination from "../../CustomPagination";
+import AdvancedPagination from "../../AdvancedPagination";
 import FormQuestionFilter from "../../question/FormQuestionFilter";
 
 const SelectQuestionsModalForQuiz = ({ show, setShow, questions = [], selectedQuestionIds, setSelectedQuestionIds, metadata, fetchAllQuestions }) => {
@@ -92,7 +92,7 @@ const SelectQuestionsModalForQuiz = ({ show, setShow, questions = [], selectedQu
 
       <Modal.Footer>
         <div className="col-12">
-          <CustomPagination metadata={metadata} onPageChange={onPageChange} filter={filter} />
+          <AdvancedPagination metadata={metadata} onPageChange={onPageChange} filter={filter} />
         </div>
         <Button variant="secondary" onClick={handleClose}>
           Hủy

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Modal, Table, Form, Button } from "react-bootstrap";
 import FormOptionFilter from "../../option/FormOptionFilter";
-import CustomPagination from "../../CustomPagination";
+import AdvancedPagination from "../../AdvancedPagination";
 
 const SelectOptionModal = ({ show, setShow, availableOptions = [], setSelectedOptionIds, metadata, fetchOptions }) => {
   const [selectedIds, setSelectedIds] = useState([]);
@@ -83,7 +83,7 @@ const SelectOptionModal = ({ show, setShow, availableOptions = [], setSelectedOp
         </Modal.Body>
         <Modal.Footer>
           <div className="col-12">
-            <CustomPagination metadata={metadata} onPageChange={onPageChange} filter={filter} />
+            <AdvancedPagination metadata={metadata} onPageChange={onPageChange} filter={filter} />
           </div>
           <Button variant="secondary" onClick={handleClose}>
             Cancel

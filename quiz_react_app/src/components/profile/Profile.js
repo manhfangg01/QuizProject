@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 import { getProfile } from "../../services/UserServices";
 import { getHistory } from "../../services/ResultServices";
 import { toast } from "react-toastify";
-import CustomPagination from "../admin/content/CustomPagination";
+import AdvancedPagination from "../admin/content/AdvancedPagination";
 
 const Profile = () => {
   const [user, setUser] = useState({});
@@ -125,7 +125,7 @@ const Profile = () => {
                     </div>
                   ))}
 
-                  <CustomPagination metadata={metadata} onPageChange={onPageChange} />
+                  <AdvancedPagination metadata={metadata} onPageChange={onPageChange} />
                 </>
               )}
             </Tab.Pane>

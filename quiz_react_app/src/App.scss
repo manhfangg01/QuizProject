@@ -59,7 +59,7 @@ video {
   width: 100vw;
   height: auto; /* Giữ tỉ lệ khung hình */
   object-fit: cover; /* hoặc contain tùy ý */
-  height: 92%;
+  height: 90.5%;
   z-index: -1; /* Để không che các phần khác */
 
   @media (max-width: 1300px) {
